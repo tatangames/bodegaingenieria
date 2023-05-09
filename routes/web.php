@@ -6,6 +6,10 @@ use App\Http\Controllers\Backend\Perfil\PerfilController;
 use App\Http\Controllers\Backend\Roles\RolesController;
 use App\Http\Controllers\Controles\ControlController;
 use App\Http\Controllers\Backend\Roles\PermisoController;
+use App\Http\Controllers\Backend\UnidadMedida\UnidadMedidaController;
+use App\Http\Controllers\Backend\Repuestos\RepuestosController;
+
+
 
 Route::get('/', [LoginController::class,'index'])->name('login');
 
@@ -42,4 +46,34 @@ Route::post('/admin/editar-perfil/actualizar', [PerfilController::class, 'editar
 
 // --- SIN PERMISOS VISTA 403 ---
 Route::get('sin-permisos', [ControlController::class,'indexSinPermiso'])->name('no.permisos.index');
+
+
+// registro unidad de medida
+Route::get('/admin/unidadmedida/index', [UnidadMedidaController::class,'index'])->name('admin.unidadmedida.index');
+Route::get('/admin/unidadmedida/tabla/index', [UnidadMedidaController::class,'tablaUnidadMedida']);
+Route::post('/admin/unidadmedida/nuevo', [UnidadMedidaController::class, 'nuevaUnidadMedida']);
+Route::post('/admin/unidadmedida/informacion', [UnidadMedidaController::class, 'informacionUnidadMedida']);
+Route::post('/admin/unidadmedida/editar', [UnidadMedidaController::class, 'editarUnidadMedida']);
+
+// registro de repuestos para tener un inventario
+Route::get('/admin/inventario/index', [RepuestosController::class,'index'])->name('admin.materiales.index');
+Route::get('/admin/inventario/tabla/index', [RepuestosController::class,'tablaMateriales']);
+Route::post('/admin/inventario/nuevo', [RepuestosController::class, 'nuevoMaterial']);
+Route::post('/admin/inventario/informacion', [RepuestosController::class, 'informacionMaterial']);
+Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
