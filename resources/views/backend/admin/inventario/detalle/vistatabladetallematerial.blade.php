@@ -7,21 +7,21 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th>Proyecto</th>
-                                <th>Opciones</th>
+                                <th style="width: 4%">Fecha Entro</th>
+                                <th style="width: 40%">Proyecto</th>
+                                <th style="width: 4%">Cantidad</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @foreach($lista as $dato)
+                                @if($dato->total > 0)
                                 <tr>
-                                    <td>{{ $dato->nombre }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Editar"></i>&nbsp; Editar
-                                        </button>
-                                    </td>
+                                    <td>{{ $dato->fecha }}</td>
+                                    <td>{{ $dato->nomproyecto }}</td>
+                                    <td>{{ $dato->total }}</td>
                                 </tr>
+                                @endif
                             @endforeach
 
                             </tbody>

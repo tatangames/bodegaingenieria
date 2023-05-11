@@ -68,8 +68,58 @@
                                 </a>
                             </li>
 
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.tiposproyecto.index') }}" target="frameprincipal" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Lista de Proyectos</p>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
+
+
+
+
+
+                        <li class="nav-item">
+
+                            <a href="#" class="nav-link nav-">
+                                <i class="far fa-edit"></i>
+                                <p>
+                                    Registro Repuestos
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+
+                            <ul class="nav nav-treeview">
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.entrada.registro.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Registrar Entrada</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.salida.registro.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Registrar Salida</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.transferencias.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Transferencias</p>
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </li>
+
 
 
             </ul>

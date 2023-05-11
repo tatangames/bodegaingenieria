@@ -8,8 +8,8 @@ use App\Http\Controllers\Controles\ControlController;
 use App\Http\Controllers\Backend\Roles\PermisoController;
 use App\Http\Controllers\Backend\UnidadMedida\UnidadMedidaController;
 use App\Http\Controllers\Backend\Repuestos\RepuestosController;
-
-
+use App\Http\Controllers\Backend\Proyectos\TipoProyectoController;
+use App\Http\Controllers\Backend\Repuestos\SalidasController;
 
 Route::get('/', [LoginController::class,'index'])->name('login');
 
@@ -63,9 +63,38 @@ Route::post('/admin/inventario/informacion', [RepuestosController::class, 'infor
 Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);
 
 
+// detalle repuestos
+Route::get('/admin/detalle/material/cantidad/{id}', [RepuestosController::class,'vistaDetalleMaterial']);
+Route::get('/admin/detalle/materialtabla/cantidad/{id}', [RepuestosController::class,'tablaDetalleMaterial']);
 
 
+// registro de un proyecto
+Route::get('/admin/proyecto/index', [TipoProyectoController::class,'index'])->name('admin.tiposproyecto.index');
+Route::get('/admin/proyecto/tabla/index', [TipoProyectoController::class,'tablaProyectos']);
+Route::post('/admin/proyecto/nuevo', [TipoProyectoController::class, 'nuevoProyecto']);
+Route::post('/admin/proyecto/informacion', [TipoProyectoController::class, 'informacionProyecto']);
+Route::post('/admin/proyecto/editar', [TipoProyectoController::class, 'editarProyecto']);
 
+
+// registrar entrada para repuestos
+Route::get('/admin/registro/entrada', [RepuestosController::class,'indexRegistroEntrada'])->name('admin.entrada.registro.index');
+Route::post('/admin/buscar/material',  [RepuestosController::class,'buscadorMaterial']);
+Route::post('/admin/entrada/guardar',  [RepuestosController::class,'guardarEntrada']);
+
+
+// registrar salida de repuestos
+Route::get('/admin/registro/salida', [SalidasController::class,'indexRegistroSalida'])->name('admin.salida.registro.index');
+Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalida']);
+
+Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
+
+Route::get('/admin/repuesto/cantidad/bloque/{id}', [SalidasController::class,'bloqueCantidades']);
+
+
+// transferencias
+
+Route::get('/admin/transferecias/a/huesera', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
+Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'geenrarSalidaTransferencia']);
 
 
 

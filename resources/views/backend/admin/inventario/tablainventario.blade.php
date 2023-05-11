@@ -20,7 +20,7 @@
                                 <tr>
                                     <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nombre }}</td>
-                                    <td>{{ $dato->nombre }}</td>
+                                    <td>{{ $dato->medida }}</td>
                                     <td>{{ $dato->total }}</td>
                                     <td>
 
