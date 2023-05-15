@@ -7,21 +7,19 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 4%">Fecha Entro</th>
-                                <th style="width: 40%">Proyecto</th>
+                                <th style="width: 4%">Proyecto</th>
                                 <th style="width: 4%">Cantidad</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @foreach($lista as $dato)
-                                @if($dato->total > 0)
+
                                 <tr>
-                                    <td>{{ $dato->fecha }}</td>
-                                    <td>{{ $dato->nomproyecto }}</td>
-                                    <td>{{ $dato->total }}</td>
+                                    <td>{{ $dato->nombrepro }}</td>
+                                    <td>{{ $dato->cantidad }}</td>
                                 </tr>
-                                @endif
+
                             @endforeach
 
                             </tbody>

@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EntradasDetalle extends Model
+class HistorialEntradasDeta extends Model
 {
     use HasFactory;
-    protected $table = 'entradas_detalle';
+    protected $table = 'historial_entradas_deta';
     public $timestamps = false;
 }

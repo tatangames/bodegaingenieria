@@ -112,7 +112,7 @@
                                 <li class="nav-item">
                                     <a href="{{ route('admin.transferencias.index') }}" target="frameprincipal" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Transferencias</p>
+                                        <p>Cierre de Proyecto</p>
                                     </a>
                                 </li>
 

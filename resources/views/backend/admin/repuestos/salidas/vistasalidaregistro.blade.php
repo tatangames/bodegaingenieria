@@ -169,6 +169,62 @@
         <button type="button" class="btn btn-success" onclick="preguntaGuardar()">Guardar</button>
     </div>
 
+
+    <div class="modal fade" id="modalBloque">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cantidad de Salida</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formulario-bloque">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div class="form-group">
+                                        <input type="hidden" id="id-editar">
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label>Repuesto:</label>
+                                        <input type="text" disabled class="form-control" autocomplete="off" id="nombre-modal">
+                                        <input type="hidden" id="id-modal">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Cantidad de Inventario:</label>
+                                            <input type="text" disabled class="form-control" autocomplete="off" id="cantidad-inventario-modal">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Cantidad a Retirar:</label>
+                                            <input type="text" class="form-control" autocomplete="off" id="cantidad-sacar-modal" maxlength="12">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="agregarFila()">Agregar a Detalle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 
 @extends('backend.menus.footerjs')
@@ -195,7 +251,6 @@
             document.getElementById('fecha').value = fecha.toJSON().slice(0,10);
 
             window.seguroBuscador = true;
-            window.txtContenedorGlobal = this;
 
             $(document).click(function(){
                 $(".droplista").hide();
@@ -228,8 +283,6 @@
             document.getElementById("formulario-repuesto").reset();
             $('#select-equipo').prop('selectedIndex', 0).change();
             $('#modalRepuesto').modal('show');
-            // $('#modalRepuesto').css('overflow-y', 'auto');
-            // $('#modalRepuesto').modal({backdrop: 'static', keyboard: false})
         }
 
         function verificarSalida(){
@@ -256,128 +309,90 @@
 
         function agregarFila(){
 
-            var repuesto = document.querySelector('#repuesto');
-            var nomRepuesto = document.getElementById('repuesto').value;
+
+            var idMaterial = document.getElementById('id-modal').value;
+            var nomRepuesto = document.getElementById('nombre-modal').value;
+            var cantidadActual = document.getElementById('cantidad-inventario-modal').value;
+            var cantidadSalida = document.getElementById('cantidad-sacar-modal').value;
 
             var reglaNumeroDosDecimal = /^([0-9]+\.?[0-9]{0,2})$/;
 
-            // VERIFICACIONES
-            if(repuesto.dataset.info == 0){
-                toastr.error("Repuesto es requerido");
+
+            if(idMaterial === ''){
+                toastr.error('Material es requerido');
+            }
+
+
+            if(cantidadSalida === ''){
+                toastr.error('Cantidad de Salidad es requerida');
                 return;
             }
 
-            if(nomRepuesto === ''){
-                toastr.error('Repuesto es requerido');
+            if(!cantidadSalida.match(reglaNumeroDosDecimal)) {
+                toastr.error('Cantidad de Salida debe ser número Decimal (2 decimales) y no Negativo');
+                return;
             }
 
-            // id de entrada_material
-            var inputidcantidad = $("input[name='arraysalida[]']").map(function(){return $(this).attr("data-idcantidad");}).get();
-            // input cantidad a sacar
-            var inputcantidad = $("input[name='arraysalida[]']").map(function(){return $(this).val();}).get();
-            // input max cantidad
-            var inputmaxcantidad = $("input[name='arraysalida[]']").map(function(){return $(this).attr("data-maxcantidad");}).get();
-
-            for(var a = 0; a < inputcantidad.length; a++) {
-
-                let datoNumero = inputcantidad[a];
-                let detalleIdCantidad = inputidcantidad[a];
-                let detalleMaxCantidad = inputmaxcantidad[a];
-
-                // identifica si el 0 es tipo number o texto
-                if(detalleIdCantidad == 0){
-                    divColorRojo(a);
-                    alertaMensaje('info', 'No encontrado', 'En el Bloque de salida #' + (a+1) + " No se encuentra el identificador. Volver a buscar el Repuesto.");
-                    return;
-                }
-
-                // identifica si el 0 es tipo number o texto
-                if(datoNumero === ''){
-                    divColorRojo(a);
-                    toastr.error('Cantidad es requerida');
-                    return;
-                }
-
-                if(!datoNumero.match(reglaNumeroDosDecimal)) {
-                    divColorRojo(a);
-                    toastr.error('Cantidad debe ser número Decima (2 decimales) y no Negativo');
-                    return;
-                }
-
-                if(datoNumero < 0){
-                    divColorRojo(a);
-                    toastr.error('Cantidad no debe ser negativo');
-                    return;
-                }
-
-                // ignorar si la cantidad actual es 0
-
-                let maximodeta = parseInt(detalleMaxCantidad);
-
-                if(maximodeta != 0){
-                    // no superar la maxima cantidad
-                    if(datoNumero > maximodeta){
-                        divColorRojo(a);
-                        toastr.error('La cantidad a Retirar no puede ser mayor a: ' + maximodeta);
-                        return;
-                    }
-                }
+            if(cantidadSalida <= 0){
+                toastr.error('Cantidad no debe ser negativo o cero');
+                return;
             }
 
-            // agregar a fila cada iteración mayor a 0
-            //**************
-            for(var z = 0; z < inputcantidad.length; z++) {
-
-                let datoNumero = inputcantidad[z];
-                let detalleIdEntrDeta = inputidcantidad[z]; // id entrada_detalle
-                let detalleMaxCantidad = inputmaxcantidad[z]; // cantidad en inventario de este bloque
-
-                if(datoNumero > 0){
-
-                    var nFilas = $('#matriz >tbody >tr').length;
-                    nFilas += 1;
-
-                    var markup = "<tr>" +
-
-                        "<td>" +
-                        "<p id='fila" + (nFilas) + "' class='form-control' style='max-width: 65px'>" + (nFilas) + "</p>" +
-                        "</td>" +
-
-                        "<td>" +
-                        "<input name='identradadetalleArray[]' type='hidden' data-identradadetalle='" + detalleIdEntrDeta + "'>" +
-                        "<input disabled value='" + nomRepuesto + "' class='form-control' type='text'>" +
-                        "</td>" +
-
-                        "<td>" +
-                        "<input disabled value='" + detalleMaxCantidad + "' class='form-control' type='text'>" +
-                        "</td>" +
-
-                        "<td>" +
-                        "<input name='salidaArray[]' disabled value='" + datoNumero + "' class='form-control' type='text'>" +
-                        "</td>" +
-
-                        "<td>" +
-                        "<button type='button' class='btn btn-block btn-danger' onclick='borrarFila(this)'>Borrar</button>" +
-                        "</td>" +
-
-                        "</tr>";
-
-                    $("#matriz tbody").append(markup);
-                }
-
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: 'Agregado al Detalle',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-
-                $(txtContenedorGlobal).attr('data-info', '0');
-                document.getElementById('tablaRepuesto').innerHTML = "";
-                $('#select-equipo').prop('selectedIndex', 0).change();
-                document.getElementById("formulario-repuesto").reset();
+            if(cantidadSalida > 9000000){
+                toastr.error('Cantidad de salida máximo 9 millón');
+                return;
             }
+
+            if(cantidadActual < cantidadSalida){
+                toastr.error('Las unidades de Salida supera a las Disponibles');
+                return;
+            }
+
+
+            var nFilas = $('#matriz >tbody >tr').length;
+            nFilas += 1;
+
+            var markup = "<tr>" +
+
+                "<td>" +
+                "<p id='fila" + (nFilas) + "' class='form-control' style='max-width: 65px'>" + (nFilas) + "</p>" +
+                "</td>" +
+
+                "<td>" +
+                "<input name='idmaterialArray[]' type='hidden' data-idmaterialArray='" + idMaterial + "'>" +
+                "<input disabled value='" + nomRepuesto + "' class='form-control' type='text'>" +
+                "</td>" +
+
+                "<td>" +
+                "<input disabled value='" + cantidadActual + "' class='form-control' type='text'>" +
+                "</td>" +
+
+                "<td>" +
+                "<input name='salidaArray[]' disabled value='" + cantidadSalida + "' class='form-control' type='text'>" +
+                "</td>" +
+
+                "<td>" +
+                "<button type='button' class='btn btn-block btn-danger' onclick='borrarFila(this)'>Borrar</button>" +
+                "</td>" +
+
+                "</tr>";
+
+            $("#matriz tbody").append(markup);
+
+            $('#modalBloque').modal('hide');
+
+
+
+            document.getElementById('repuesto').value = '';
+
+
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Agregado al Detalle',
+                showConfirmButton: false,
+                timer: 1500
+            })
         }
 
         function divColorRojo(pos){
@@ -467,8 +482,16 @@
 
         function guardarSalida(){
 
+            var idProyecto = document.getElementById('select-tipoproyecto').value;
+
+
             var fecha = document.getElementById('fecha').value;
             var descripc = document.getElementById('descripcion').value; // max 800
+
+
+            if(idProyecto === ''){
+                toastr.error('ID proyecto es requerido');
+            }
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
@@ -479,7 +502,8 @@
                 return;
             }
 
-            var reglaNumeroEntero = /^[0-9]\d*$/;
+            var reglaNumeroDosDecimal = /^([0-9]+\.?[0-9]{0,2})$/;
+
 
             var nRegistro = $('#matriz > tbody >tr').length;
             let formData = new FormData();
@@ -489,14 +513,14 @@
                 return;
             }
 
-            var identradaDetalle = $("input[name='identradadetalleArray[]']").map(function(){return $(this).attr("data-identradadetalle");}).get();
+            var idmaterialDetalle = $("input[name='idmaterialArray[]']").map(function(){return $(this).attr("data-idmaterialArray");}).get();
             var salidaDetalle = $("input[name='salidaArray[]']").map(function(){return $(this).val();}).get();
 
-            // verificar que id entrada detalle exista
-            // verificar que salida array detalle exista
+
+            // RECORRER CADA TABLA
             for(var a = 0; a < salidaDetalle.length; a++){
 
-                let detalleS = identradaDetalle[a];
+                let detalleS = idmaterialDetalle[a];
                 let datoCantidad = salidaDetalle[a];
 
                 // identifica si el 0 es tipo number o texto
@@ -512,15 +536,15 @@
                     return;
                 }
 
-                if (!datoCantidad.match(reglaNumeroEntero)) {
+                if (!datoCantidad.match(reglaNumeroDosDecimal)) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad de salida debe ser entero y no negativo');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad de salida debe ser Decimal (2 decimales) y no negativo');
                     return;
                 }
 
                 if (datoCantidad <= 0) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad de salida no debe ser negativo');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad de salida no debe ser negativo o ceros');
                     return;
                 }
 
@@ -538,32 +562,31 @@
             for(var p = 0; p < salidaDetalle.length; p++){
 
                 formData.append('salida[]', salidaDetalle[p]);
-                formData.append('identrada[]', identradaDetalle[p]);
+                formData.append('idmaterial[]', idmaterialDetalle[p]);
             }
 
             openLoading();
 
             formData.append('fecha', fecha);
             formData.append('descripcion', descripc);
+            formData.append('idproyecto', idProyecto);
 
             axios.post(url+'/salida/guardar', formData, {
             })
                 .then((response) => {
                     closeLoading();
 
+                    // CANTIDAD NO ALCANZA PARA RETIRAR
                     if(response.data.success === 1){
-                        toastr.success('Registrado correctamente');
-                        limpiar();
-                    }
-                    else if(response.data.success === 3){
 
                         let fila = response.data.fila;
-                        let cantidad = response.data.cantidad;
+                        let cantidad = response.data.cantidadactual;
+                        let cantidadsalida = response.data.cantidadrestar;
                         colorRojoTabla(fila);
                         Swal.fire({
                             title: 'Cantidad no Disponible',
-                            text: "Fila #" + (fila+1) + ", el repuesto cuenta con: " + cantidad + " unidades disponible",
-                            icon: 'question',
+                            text: "Fila #" + (fila+1) + ", el repuesto cuenta con: " + cantidad + " unidades disponible, y se quiere retirar " + cantidadsalida + " Unidades",
+                            icon: 'info',
                             showCancelButton: false,
                             confirmButtonColor: '#28a745',
                             confirmButtonText: 'Aceptar'
@@ -572,6 +595,28 @@
 
                             }
                         })
+                    }
+                    else if(response.data.success === 2){
+                        // MATERIAL NO ENCONTRADO
+                        let fila = response.data.fila;
+                        colorRojoTabla(fila);
+                        Swal.fire({
+                            title: 'Repuesto no Encontrado',
+                            text: "Fila #" + (fila+1) + ", el repuesto no se Encontro, por favor borrar Fila y volver a ingresarlo",
+                            icon: 'info',
+                            showCancelButton: false,
+                            confirmButtonColor: '#28a745',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        })
+                    } else if(response.data.success === 3){
+
+                        // REGISTRADO CORRECTAMENTE
+                        toastr.success('Salida Registrada');
+                        limpiar();
                     }
                     else{
                         toastr.error('Error al guardar');
@@ -591,20 +636,56 @@
             $("#matriz tbody tr").css('background', 'white');
         }
 
-        function modificarValor(edrop){
+        function modificarValor(edrop) {
 
             // obtener texto del li
             let texto = $(edrop).text();
             // setear el input de la descripcion
             $(txtContenedorGlobal).val(texto);
 
-            // agregar el id al atributo del input descripcion
-            $(txtContenedorGlobal).attr('data-info', edrop.id);
+            // OBTENER ID DEL TIPO DE PROYECTO
+            var idProy = document.getElementById('select-tipoproyecto').value;
 
-            var ruta = "{{ URL::to('/admin/repuesto/cantidad/bloque') }}/" + edrop.id;
-            $('#tablaRepuesto').load(ruta);
 
-            //$(txtContenedorGlobal).data("info");
+            // ABRIR MODAL SOLO PARA COLOCAR CANTIDAD A DESCARGAR
+
+            document.getElementById("formulario-bloque").reset();
+
+
+            openLoading();
+            var formData = new FormData();
+            formData.append('idproy', idProy);
+            formData.append('idmaterial', edrop.id);
+
+            openLoading();
+
+            axios.post(url+'/repuesto/cantidad/bloque', formData, {
+            })
+                .then((response) => {
+                    closeLoading();
+
+                    if(response.data.success === 1){
+                        // ABRIR MODAL
+
+                        $('#id-modal').val(edrop.id);
+                        $('#nombre-modal').val(response.data.infomaterial.nombre);
+                        $('#cantidad-inventario-modal').val(response.data.cantidad);
+
+                        $('#modalBloque').modal('show');
+
+                    }
+                    else if(response.data.success === 2){
+
+                      // NO ENCONTRADO
+                    }
+                    else {
+                        toastr.error('Error al buscar');
+                    }
+                })
+                .catch((error) => {
+                    toastr.error('Error al buscar');
+                    closeLoading();
+                });
         }
 
         function limpiar(){

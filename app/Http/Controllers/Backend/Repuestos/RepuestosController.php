@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Backend\Repuestos;
 use App\Http\Controllers\Controller;
 use App\Models\Entradas;
 use App\Models\EntradasDetalle;
+use App\Models\HistorialEntradas;
+use App\Models\HistorialEntradasDeta;
 use App\Models\Materiales;
 use App\Models\SalidasDetalle;
 use App\Models\TipoProyecto;
@@ -34,28 +36,22 @@ class RepuestosController extends Controller
             if($dataUnidad = UnidadMedida::where('id', $item->id_medida)->first()){
                 $medida = $dataUnidad->nombre;
             }
+
             $item->medida = $medida;
 
-            // obtener todas las entradas detalle de este material
+            // OBTENER CANTIDAD DE CADA MATERIAL, SUMANDO DE TODOS LOS PROYECTOS
+            // EN VISTA DETALLE SE MOSTRARA DE QUE PROYECTO SON CADA UNO
 
-            $entradaDetalle = EntradasDetalle::where('id_material', $item->id)->get();
+            $arrayEntradas = Entradas::where('id_material', $item->id)->get();
 
-            $valor = 0;
-            foreach ($entradaDetalle as $data){
+            $sumatoria = 0;
+            foreach ($arrayEntradas as $data){
 
-                // buscar la entrada_detalle de cada salida. obtener la suma de salidas
-                $salidaDetalle = SalidasDetalle::where('id_entrada_detalle', $data->id)
-                    ->where('id_material', $item->id)
-                    ->sum('cantidad');
-
-                // total: es la cantidad actual
-                $total = $data->cantidad - $salidaDetalle;
-
-                // valor: es la suma de cantidad actual
-                $valor = $valor + $total;
+                // SIEMPRE SUMARA TODOS, YA QUE PARA SACAR CANTIDAD LLEGARA HASTA 0
+                $sumatoria += $data->cantidad;
             }
 
-            $item->total = $valor;
+            $item->total = $sumatoria;
         }
 
         return view('backend.admin.inventario.tablainventario', compact('lista'));
@@ -202,7 +198,7 @@ class RepuestosController extends Controller
         }
     }
 
-
+    // GUARDAR ENTRADAS
     public function guardarEntrada(Request $request){
 
         $rules = array(
@@ -219,20 +215,55 @@ class RepuestosController extends Controller
 
         try {
 
-            $r = new Entradas();
-            $r->fecha = $request->fecha;
-            $r->descripcion = $request->descripcion;
-            $r->id_tipoproyecto = $request->tipoproyecto;
-            $r->save();
+            // PRIMERO GUARDAR UN HISTORIAL
+            $histoEntrada = new HistorialEntradas();
+            $histoEntrada->fecha = $request->fecha;
+            $histoEntrada->descripcion = $request->descripcion;
+            $histoEntrada->id_tipoproyecto = $request->tipoproyecto;
+            $histoEntrada->save();
+
+            // HOY GUARDAR HISTORIAL DEL DETALLE
+            for ($i = 0; $i < count($request->cantidad); $i++) {
+
+                $histoDetalle = new HistorialEntradasDeta();
+                $histoDetalle->id_historial = $histoEntrada->id;
+                $histoDetalle->id_material = $request->datainfo[$i];
+                $histoDetalle->cantidad = $request->cantidad[$i];
+                $histoDetalle->save();
+            }
+
+
+            // GUARDAR LA CANTIDAD
+            // SI EL MATERIAL EXISTE, SOLO SE SUMARA
+            // SI EL MATERIAL NO EXISTE, SE CREARA
 
             for ($i = 0; $i < count($request->cantidad); $i++) {
 
-                $rDetalle = new EntradasDetalle();
-                $rDetalle->id_entrada = $r->id;
-                $rDetalle->id_material = $request->datainfo[$i];
-                $rDetalle->cantidad = $request->cantidad[$i];
-                $rDetalle->save();
+
+                if($info = Entradas::where('id_tipoproyecto', $request->tipoproyecto)
+                    ->where('id_material', $request->datainfo[$i])
+                    ->first()){
+                    // MATERIAL ENCONTRADO PARA EL PROYECTO SELECCIONADO
+                    // SOLO SE SUMARA LA CANTIDAD
+
+                    $suma = $info->cantidad + $request->cantidad[$i];
+
+                    // ACTUALIZAR CANTIDAD
+                    Entradas::where('id', $info->id)->update([
+                        'cantidad' => $suma
+                    ]);
+                }else{
+
+                    // MATERIAL NO EXISTE, ASI QUE CREAR CON SU TIPO PROYECTO
+                    $nuevoIngreso = new Entradas();
+                    $nuevoIngreso->id_material = $request->datainfo[$i];
+                    $nuevoIngreso->id_tipoproyecto = $request->tipoproyecto;
+                    $nuevoIngreso->cantidad = $request->cantidad[$i];
+                    $nuevoIngreso->save();
+                }
             }
+
+            // ENTRADA COMPLETADA
 
             DB::commit();
             return ['success' => 1];
@@ -263,27 +294,33 @@ class RepuestosController extends Controller
 
     public function tablaDetalleMaterial($id){
 
-        $lista =  EntradasDetalle::where('id_material', $id)->get();
+        // SOLO HABRA 1 MATERIAL POR CADA PROYECTO
+        $arrayEntradas =  Entradas::where('id_material', $id)->get();
 
-        foreach ($lista as $data){
+        $pilaArrayEntrada = array();
 
-            // buscar la entrada_detalle de cada salida. obtener la suma de salidas
-            $salidaDetalle = SalidasDetalle::where('id_entrada_detalle', $data->id)
-                ->where('id_material', $id)
-                ->sum('cantidad');
 
-            $infoEntrada = Entradas::where('id', $data->id_entrada)->first();
-            $data->fecha = date("d-m-Y", strtotime($infoEntrada->fecha));
+        foreach ($arrayEntradas as $data){
 
-            $infoProyecto = TipoProyecto::where('id', $infoEntrada->id_tipoproyecto)->first();
-            $data->nomproyecto = $infoProyecto->nombre;
-
-            // total de la cantidad actual
-            $total = $data->cantidad - $salidaDetalle;
-            $data->total = $total;
+            // VERIFICAR QUE LA CANTIDAD SEA MAYOR A 0 PARA PODER
+            // MOSTRARLO
+           if($data->cantidad > 0){
+               array_push($pilaArrayEntrada, $data->id);
+           }
         }
 
-        return view('backend.admin.inventario.detalle.vistatabladetallematerial', compact('lista'));
+        $lista = Entradas::whereIn('id', $pilaArrayEntrada)
+            ->orderBy('id_tipoproyecto', 'ASC')
+            ->get();
+
+        foreach ($lista as $info){
+            // OBTENER NOMBRE DE PROYECTO
+
+            $infoProyecto = TipoProyecto::where('id', $info->id_tipoproyecto)->first();
+            $info->nombrepro = $infoProyecto->nombre;
+        }
+
+        return view('backend.admin.inventario.detalle.tabladetallematerial', compact('lista'));
     }
 
 }

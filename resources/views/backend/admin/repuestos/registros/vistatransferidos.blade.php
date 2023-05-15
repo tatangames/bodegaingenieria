@@ -144,6 +144,9 @@
 
             var fecha = document.getElementById('fecha').value;
             var descripc = document.getElementById('descripcion').value; // max 800
+            var idproyecto = document.getElementById('select-tipoproyecto').value;
+
+            var documento = document.getElementById('documento');
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
@@ -154,11 +157,26 @@
                 return;
             }
 
+            if(idproyecto === ''){
+                toastr.error('Proyecto es requerido');
+                return;
+            }
+
+            if(documento.files && documento.files[0]){ // si trae doc
+                if (!documento.files[0].type.match('image/jpeg|image/jpeg|image/png|.pdf')){
+                    toastr.error('formato permitidos: .png .jpg .jpeg .pdf');
+                    return;
+                }
+            }
+
             openLoading();
 
             let formData = new FormData();
             formData.append('fecha', fecha);
             formData.append('descripcion', descripc);
+            formData.append('idproyecto', idproyecto);
+            formData.append('documento', documento.files[0]);
+
 
             axios.post(url+'/generar/salida/transferencia', formData, {
             })
@@ -166,24 +184,52 @@
                     closeLoading();
 
                     if(response.data.success === 1){
-                        toastr.success('Registrado correctamente');
-                        limpiar();
-                    }
-                    else if(response.data.success === 3){
-
-                        let fila = response.data.fila;
-                        let cantidad = response.data.cantidad;
-                        colorRojoTabla(fila);
                         Swal.fire({
-                            title: 'Cantidad no Disponible',
-                            text: "Fila #" + (fila+1) + ", el repuesto cuenta con: " + cantidad + " unidades disponible",
-                            icon: 'question',
+                            title: 'No Guardado',
+                            text: "Este Proyecto ya tiene 1 Transferencia",
+                            icon: 'info',
                             showCancelButton: false,
                             confirmButtonColor: '#28a745',
                             confirmButtonText: 'Aceptar'
                         }).then((result) => {
                             if (result.isConfirmed) {
 
+                            }
+                        })
+                    }
+
+                    else if(response.data.success === 2){
+                        // NO TIENE REGISTRADO MATERIALES O NO TIENE CANTIDAD YA PARA TRANSFERIR
+                        Swal.fire({
+                            title: 'No Guardado',
+                            text: "el Proyecto no tiene Registrados Materiales o No tiene cantidad ya disponibles",
+                            icon: 'info',
+                            showCancelButton: false,
+                            confirmButtonColor: '#28a745',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        })
+                    }
+                    else if(response.data.success === 3){
+
+                        // TRANSFERENCIA CORRECTA
+                        toastr.success('Transferencia Correcta');
+
+
+                        Swal.fire({
+                            title: 'Transferencia Correcta',
+                            text: "Los materiales han sido agregados al Inventario General",
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#28a745',
+                            confirmButtonText: 'Aceptar',
+                            closeOnClickOutside: false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload()
                             }
                         })
                     }

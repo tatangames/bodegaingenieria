@@ -88,7 +88,7 @@ Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalida']
 
 Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
 
-Route::get('/admin/repuesto/cantidad/bloque/{id}', [SalidasController::class,'bloqueCantidades']);
+Route::post('/admin/repuesto/cantidad/bloque', [SalidasController::class,'bloqueCantidades']);
 
 
 // transferencias

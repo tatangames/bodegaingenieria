@@ -4,24 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEntradasTable extends Migration
+class CreateHistorialSalidasTable extends Migration
 {
     /**
-     * Run the migrations.
+     * HISTORIAL DE SALIDAS
      *
      * @return void
      */
     public function up()
     {
-        Schema::create('entradas', function (Blueprint $table) {
+        Schema::create('historial_salidas', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_material')->unsigned();
             $table->bigInteger('id_tipoproyecto')->unsigned();
 
-            // la entradas puede ser decimales
-            $table->decimal('cantidad', 10, 2);
+            $table->date('fecha');
+            $table->string('descripcion', 800)->nullable();
 
-            $table->foreign('id_material')->references('id')->on('materiales');
+            // esta entrada debe ser para un proyecto o inventario general
             $table->foreign('id_tipoproyecto')->references('id')->on('tipoproyecto');
         });
     }
@@ -33,6 +32,6 @@ class CreateEntradasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('entradas');
+        Schema::dropIfExists('historial_salidas');
     }
 }
