@@ -75,7 +75,7 @@
                         </div>
                         <div class="p-5 bg-white rounded shadow-lg">
                             <h3 class="mb-2 text-center pt-5"><strong>Alcaldía Municipal de Metapán</strong></h3>
-                            <p class="text-center lead">Control de Requerimientos</p>
+                            <p class="text-center lead">Repuestos de Bodega Eléctrica</p>
                             <form>
                                 <label style="margin-top: 10px" class="font-500">Usuario</label>
                                 <input class="form-control form-control-lg mb-3" id="usuario" autocomplete="off" type="text">
@@ -132,7 +132,7 @@
         formData.append('usuario', usuario);
         formData.append('password', password);
 
-        axios.post('/login', formData, {
+        axios.post('/bodegaelectrica/login', formData, {
         })
             .then((response) => {
                 closeLoading();
