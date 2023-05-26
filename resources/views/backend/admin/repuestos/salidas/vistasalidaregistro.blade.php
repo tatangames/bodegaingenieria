@@ -199,7 +199,7 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Cantidad de Inventario:</label>
-                                            <input type="text" disabled class="form-control" autocomplete="off" id="cantidad-inventario-modal">
+                                            <input type="number" disabled class="form-control" autocomplete="off" id="cantidad-inventario-modal">
                                         </div>
                                     </div>
 
@@ -267,7 +267,7 @@
                 theme: "bootstrap-5",
                 "language": {
                     "noResults": function(){
-                        return "Busqueda no encontrada";
+                        return "Búsqueda no encontrada";
                     }
                 },
             });
@@ -309,10 +309,9 @@
 
         function agregarFila(){
 
-
             var idMaterial = document.getElementById('id-modal').value;
             var nomRepuesto = document.getElementById('nombre-modal').value;
-            var cantidadActual = document.getElementById('cantidad-inventario-modal').value;
+            var cantidadInventario = document.getElementById('cantidad-inventario-modal').value;
             var cantidadSalida = document.getElementById('cantidad-sacar-modal').value;
 
             var reglaNumeroDosDecimal = /^([0-9]+\.?[0-9]{0,2})$/;
@@ -343,8 +342,14 @@
                 return;
             }
 
-            if(cantidadActual < cantidadSalida){
-                toastr.error('Las unidades de Salida supera a las Disponibles');
+            var cantiInventario = parseFloat(cantidadInventario);
+            var cantiSalida = parseFloat(cantidadSalida);
+
+            console.log('inventiario: ' + cantiInventario);
+            console.log('saldran: ' + cantiSalida);
+
+            if(cantiSalida > cantiInventario){
+                toastr.error('Las unidades de Salida supera a las Disponiblesx');
                 return;
             }
 
@@ -364,7 +369,7 @@
                 "</td>" +
 
                 "<td>" +
-                "<input disabled value='" + cantidadActual + "' class='form-control' type='text'>" +
+                "<input disabled value='" + cantidadInventario + "' class='form-control' type='text'>" +
                 "</td>" +
 
                 "<td>" +
@@ -483,7 +488,6 @@
         function guardarSalida(){
 
             var idProyecto = document.getElementById('select-tipoproyecto').value;
-
 
             var fecha = document.getElementById('fecha').value;
             var descripc = document.getElementById('descripcion').value; // max 800
