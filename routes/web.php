@@ -10,6 +10,8 @@ use App\Http\Controllers\Backend\UnidadMedida\UnidadMedidaController;
 use App\Http\Controllers\Backend\Repuestos\RepuestosController;
 use App\Http\Controllers\Backend\Proyectos\TipoProyectoController;
 use App\Http\Controllers\Backend\Repuestos\SalidasController;
+use App\Http\Controllers\Backend\Reportes\ReportesController;
+
 
 Route::get('/', [LoginController::class,'index'])->name('login');
 
@@ -99,10 +101,15 @@ Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'g
 
 
 
+Route::get('/admin/entrada/reporte/vista', [ReportesController::class,'indexEntradaReporte'])->name('admin.entrada.reporte.index');
+Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController::class,'reportePdfEntradaSalida']);
 
 
 
 
+
+Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
+Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteInventarioActual']);
 
 
 

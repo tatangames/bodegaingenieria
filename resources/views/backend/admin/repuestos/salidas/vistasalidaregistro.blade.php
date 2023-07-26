@@ -349,7 +349,7 @@
             console.log('saldran: ' + cantiSalida);
 
             if(cantiSalida > cantiInventario){
-                toastr.error('Las unidades de Salida supera a las Disponiblesx');
+                toastr.error('Las unidades de Salida supera a las Disponibles');
                 return;
             }
 
