@@ -196,8 +196,8 @@ class ReportesController extends Controller
             }
 
 
-            $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
             $mpdf->SetTitle('Salidas');
 
             // mostrar erroresq     Q   n
@@ -296,9 +296,8 @@ class ReportesController extends Controller
             $item->total = $sumatoria;
         }
 
-
-        $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Inventario Actual');
 
         // mostrar errores

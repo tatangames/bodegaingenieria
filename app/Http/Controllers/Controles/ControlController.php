@@ -26,6 +26,10 @@ class ControlController extends Controller
             $ruta = 'admin.unidadmedida.index';
         }
 
+        else  if($user->hasRole('auditora')){
+            $ruta = 'admin.entrada.reporte.index';
+        }
+
         else{
             $ruta = 'no.permisos.index';
         }
