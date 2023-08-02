@@ -11,7 +11,7 @@ use App\Http\Controllers\Backend\Repuestos\RepuestosController;
 use App\Http\Controllers\Backend\Proyectos\TipoProyectoController;
 use App\Http\Controllers\Backend\Repuestos\SalidasController;
 use App\Http\Controllers\Backend\Reportes\ReportesController;
-
+use App\Http\Controllers\Backend\Herramientas\HerramientasController;
 
 Route::get('/', [LoginController::class,'index'])->name('login');
 
@@ -93,23 +93,49 @@ Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'bu
 Route::post('/admin/repuesto/cantidad/bloque', [SalidasController::class,'bloqueCantidades']);
 
 
-// transferencias
-
+// TRANSFERENCIAS
 Route::get('/admin/transferecias/a/huesera', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
 Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'geenrarSalidaTransferencia']);
 
 
 
-
+// REPORTES DE ENTRADAS Y SALIDAS
 Route::get('/admin/entrada/reporte/vista', [ReportesController::class,'indexEntradaReporte'])->name('admin.entrada.reporte.index');
 Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController::class,'reportePdfEntradaSalida']);
 
 
-
-
-
+// REPORTES DE INVENTARIO
 Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
 Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteInventarioActual']);
 
 
 
+// *** HERRAMIENTAS ***
+
+Route::get('/admin/inventario/herramientas/index', [HerramientasController::class,'indexInventarioHerramientas'])->name('admin.inventario.herramientas.index');
+Route::get('/admin/inventario/herramientas/tabla', [HerramientasController::class,'tablaInventarioHerramientas']);
+Route::post('/admin/inventario/herramientas/nuevo', [HerramientasController::class, 'nuevaHerramienta']);
+Route::post('/admin/inventario/herramientas/informacion', [HerramientasController::class, 'informacionHerramienta']);
+Route::post('/admin/inventario/herramienta/editar', [HerramientasController::class, 'editarMaterial']);
+
+
+// REGISTRO DE NUEVAS HERRAMIENTAS
+Route::get('/admin/registro/herramientas/index', [HerramientasController::class,'indexRegistroHerramientas'])->name('admin.registro.herramientas.index');
+Route::post('/admin/buscar/herramienta',  [HerramientasController::class,'buscadorHerramienta']);
+Route::post('/admin/entrada/herramienta/guardar',  [HerramientasController::class,'guardarEntradaHerramienta']);
+
+// SALIDA DE UNA HERRAMIENTA A UN USUARIO
+Route::get('/admin/salidas/herramientas/index', [HerramientasController::class,'indexSalidaHerramientas'])->name('admin.salida.herramientas.index');
+Route::get('/admin/herramienta/cantidad/bloque/{id}', [HerramientasController::class,'bloqueCantidadHerramienta']);
+Route::post('/admin/salida/herramienta/a/usuario',  [HerramientasController::class,'salidaHerramientaUsuario']);
+
+
+
+
+
+// INGRESO DE HERRAMIENTAS AL INVENTARIO
+//Route::get('/admin/inventario/herramientas/index', [HerramientasController::class,'indexHerramientas'])->name('admin.herramientas.index');
+//Route::get('/admin/inventario/herramientas/tabla/index', [HerramientasController::class,'tablaHerramientas']);
+//Route::post('/admin/inventario/nuevo', [RepuestosController::class, 'nuevoMaterial']);
+//Route::post('/admin/inventario/informacion', [RepuestosController::class, 'informacionMaterial']);
+//Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);

@@ -41,85 +41,84 @@
                 @endcan
 
 
-                    @can('sidebar.inventario')
-                    <li class="nav-item">
+                @can('sidebar.inventario')
+                <li class="nav-item">
 
-                        <a href="#" class="nav-link nav-">
-                            <i class="far fa-edit"></i>
-                            <p>
-                                Inventario
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
+                    <a href="#" class="nav-link nav-">
+                        <i class="far fa-edit"></i>
+                        <p>
+                            Inventario
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
 
-                        <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('admin.unidadmedida.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Unidad de Medida</p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.unidadmedida.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Unidad de Medida</p>
+                            </a>
+                        </li>
 
-                            <li class="nav-item">
-                                <a href="{{ route('admin.materiales.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Inventario</p>
-                                </a>
-                            </li>
-
-
-                            <li class="nav-item">
-                                <a href="{{ route('admin.tiposproyecto.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Lista de Proyectos</p>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.materiales.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Inventario</p>
+                            </a>
+                        </li>
 
 
+                        <li class="nav-item">
+                            <a href="{{ route('admin.tiposproyecto.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Lista de Proyectos</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
 
 
 
-                    <li class="nav-item">
 
-                        <a href="#" class="nav-link nav-">
-                            <i class="far fa-edit"></i>
-                            <p>
-                                Registro Repuestos
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
 
-                        <ul class="nav nav-treeview">
+                <li class="nav-item">
 
-                            <li class="nav-item">
-                                <a href="{{ route('admin.entrada.registro.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Registrar Entrada</p>
-                                </a>
-                            </li>
+                    <a href="#" class="nav-link nav-">
+                        <i class="far fa-edit"></i>
+                        <p>
+                            Registro Repuestos
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
 
-                            <li class="nav-item">
-                                <a href="{{ route('admin.salida.registro.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Registrar Salida</p>
-                                </a>
-                            </li>
+                    <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('admin.transferencias.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Cierre de Proyecto</p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.entrada.registro.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Registrar Entrada</p>
+                            </a>
+                        </li>
 
-                        </ul>
-                    </li>
-                    @endcan
+                        <li class="nav-item">
+                            <a href="{{ route('admin.salida.registro.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Registrar Salida</p>
+                            </a>
+                        </li>
 
+                        <li class="nav-item">
+                            <a href="{{ route('admin.transferencias.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Cierre de Proyecto</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endcan
 
                     @can('sidebar.reportes')
 
@@ -149,6 +148,56 @@
                 </li>
 
                         @endcan
+
+
+
+                @can('sidebar.reportes')
+
+                    <li class="nav-item">
+
+                        <a href="#" class="nav-link nav-">
+                            <i class="far fa-edit"></i>
+                            <p>
+                                Herramientas
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.inventario.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Inventario</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.salida.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Salida Herramienta</p>
+                                </a>
+                            </li>
+
+                            <hr>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.registro.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Nueva Herramienta</p>
+                                </a>
+                            </li>
+
+
+
+
+
+                        </ul>
+                    </li>
+
+                @endcan
+
+
 
 
 

@@ -67,13 +67,6 @@ class RepuestosController extends Controller
 
         if ($validar->fails()){ return ['success' => 0];}
 
-        if(Materiales::where('nombre', $request->nombre)
-            ->where('id_medida', $request->unidad)
-            ->where('codigo', $request->codigo)
-            ->first()){
-            return ['success' => 3];
-        }
-
         $dato = new Materiales();
         $dato->id_medida = $request->unidad;
         $dato->nombre = $request->nombre;
@@ -114,14 +107,6 @@ class RepuestosController extends Controller
         $validar = Validator::make($request->all(), $regla);
 
         if ($validar->fails()){ return ['success' => 0];}
-
-        if(Materiales::where('id', '!=', $request->id)
-            ->where('nombre', $request->nombre)
-            ->where('id_medida', $request->unidad)
-            ->where('codigo', $request->codigo)
-            ->first()){
-            return ['success' => 3];
-        }
 
         Materiales::where('id', $request->id)->update([
             'id_medida' => $request->unidad,

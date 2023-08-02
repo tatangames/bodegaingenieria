@@ -26,10 +26,10 @@
         <div class="row">
             <h1 style="margin-left: 5px">Inventario</h1>
 
-                <button type="button" style="margin-left: 15px" onclick="modalAgregar()" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus-square"></i>
-                    Registrar Material
-                </button>
+            <button type="button" style="margin-left: 15px" onclick="modalAgregar()" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus-square"></i>
+                Registrar Herramienta
+            </button>
 
         </div>
     </section>
@@ -38,7 +38,7 @@
         <div class="container-fluid">
             <div class="card card-success">
                 <div class="card-header">
-                    <h3 class="card-title">Listado Catálogo de Materiales</h3>
+                    <h3 class="card-title">Listado Catálogo de Herramientas</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -56,7 +56,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Nuevo Material</h4>
+                    <h4 class="modal-title">Nueva Herramienta</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -67,7 +67,7 @@
 
                             <div class="form-group">
                                 <label>Nombre:</label>
-                                <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresIngreso();" onkeyup="contarcaracteresIngreso();" maxlength="300" id="nombre-nuevo" placeholder="Nombre del material">
+                                <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresIngreso();" onkeyup="contarcaracteresIngreso();" maxlength="300" id="nombre-nuevo" placeholder="Nombre de la herramienta">
                                 <div id="res-caracter-nuevo" style="float: right">0/300</div>
                             </div>
 
@@ -136,7 +136,7 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Código:</label>
-                                            <input type="text" class="form-control" autocomplete="off" id="codigo-editar" maxlength="12">
+                                            <input type="text" class="form-control" autocomplete="off" id="codigo-editar" maxlength="100">
                                         </div>
                                     </div>
 
@@ -178,7 +178,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-            var ruta = "{{ URL::to('/admin/inventario/tabla/index') }}";
+            var ruta = "{{ URL::to('/admin/inventario/herramientas/tabla') }}";
             $('#tablaDatatable').load(ruta);
 
             $('#select-unidad-nuevo').select2({
@@ -206,7 +206,7 @@
     <script>
 
         function recargar(){
-            var ruta = "{{ url('/admin/inventario/tabla/index') }}";
+            var ruta = "{{ url('/admin/inventario/herramientas/tabla') }}";
             $('#tablaDatatable').load(ruta);
         }
 
@@ -223,7 +223,7 @@
 
         function verificarGuardar(){
             Swal.fire({
-                title: 'Guardar Material?',
+                title: 'Guardar Herramienta?',
                 text: "",
                 icon: 'question',
                 showCancelButton: true,
@@ -240,7 +240,7 @@
 
         function verificarEditar(){
             Swal.fire({
-                title: 'Actualizar Material?',
+                title: 'Actualizar Herramienta?',
                 text: "",
                 icon: 'question',
                 showCancelButton: true,
@@ -286,7 +286,7 @@
             formData.append('codigo', codigo);
             formData.append('unidad', unidad);
 
-            axios.post(url+'/inventario/nuevo', formData, {
+            axios.post(url+'/inventario/herramientas/nuevo', formData, {
             })
                 .then((response) => {
                     closeLoading();
@@ -295,6 +295,7 @@
                         $('#modalAgregar').modal('hide');
                         recargar();
                     }
+
                     else {
                         toastr.error('Error al registrar');
                     }
@@ -309,7 +310,7 @@
             openLoading();
             document.getElementById("formulario-editar").reset();
 
-            axios.post(url+'/inventario/informacion',{
+            axios.post(url+'/inventario/herramientas/informacion',{
                 'id': id
             })
                 .then((response) => {
@@ -318,8 +319,8 @@
                         $('#modalEditar').modal({backdrop: 'static', keyboard: false})
 
                         $('#id-editar').val(id);
-                        $('#nombre-editar').val(response.data.material.nombre);
-                        $('#codigo-editar').val(response.data.material.codigo);
+                        $('#nombre-editar').val(response.data.herramienta.nombre);
+                        $('#codigo-editar').val(response.data.herramienta.codigo);
 
                         contarcaracteresEditar();
 
@@ -328,7 +329,7 @@
 
                         // unidad de medida
                         $.each(response.data.unidad, function( key, val ){
-                            if(response.data.material.id_medida == val.id){
+                            if(response.data.herramienta.id_medida == val.id){
                                 $('#select-unidad-editar').append('<option value="' +val.id +'" selected="selected">'+ val.nombre +'</option>');
                             }else{
                                 $('#select-unidad-editar').append('<option value="' +val.id +'">'+ val.nombre +'</option>');
@@ -378,7 +379,7 @@
             formData.append('codigo', codigo);
             formData.append('unidad', unidad);
 
-            axios.post(url+'/inventario/editar', formData, {
+            axios.post(url+'/inventario/herramienta/editar', formData, {
             })
                 .then((response) => {
                     closeLoading();
