@@ -340,8 +340,25 @@ class ReportesController extends Controller
         $mpdf->WriteHTML($tabla,2);
 
         $mpdf->Output();
-
     }
+
+
+
+
+    public function vistaReporteHerramientas(){
+
+        return view('backend.admin.herramientas.reportes.vistareporteherramienta');
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 }

@@ -120,34 +120,7 @@
                 </li>
                 @endcan
 
-                    @can('sidebar.reportes')
 
-                <li class="nav-item">
-
-                    <a href="#" class="nav-link nav-">
-                        <i class="far fa-edit"></i>
-                        <p>
-                            Reportes
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.entrada.reporte.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Entradas y Salidas</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.reporte.inventario.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Inventario</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                        @endcan
 
 
 
@@ -207,7 +180,47 @@
 
 
 
+                    @can('sidebar.reportes')
 
+                        <li class="nav-item">
+
+                            <a href="#" class="nav-link nav-">
+                                <i class="far fa-edit"></i>
+                                <p>
+                                    Reportes
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.entrada.reporte.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Entradas y Salidas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reporte.inventario.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Inventario</p>
+                                    </a>
+                                </li>
+
+
+                                <hr>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reporte.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Herramientas</p>
+                                    </a>
+                                </li>
+
+
+
+                            </ul>
+                        </li>
+
+                    @endcan
 
 
 

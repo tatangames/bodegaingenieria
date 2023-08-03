@@ -12,6 +12,8 @@ use App\Http\Controllers\Backend\Proyectos\TipoProyectoController;
 use App\Http\Controllers\Backend\Repuestos\SalidasController;
 use App\Http\Controllers\Backend\Reportes\ReportesController;
 use App\Http\Controllers\Backend\Herramientas\HerramientasController;
+use App\Http\Controllers\Backend\Reportes\ReporteHerramientaController;
+
 
 Route::get('/', [LoginController::class,'index'])->name('login');
 
@@ -111,6 +113,16 @@ Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController
 // REPORTES DE INVENTARIO
 Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
 Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteInventarioActual']);
+
+
+// REPORTE DE HERRAMIENTAS
+Route::get('/admin/reporte/herramienta/index', [ReportesController::class,'vistaReporteHerramientas'])->name('admin.reporte.herramientas.index');
+Route::get('/admin/pdf/herramientas/inventario/actual', [ReporteHerramientaController::class,'pdfHerramientasActuales']);
+Route::get('/admin/pdf/herramientas/salidas/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasSalidas']);
+
+
+
+
 
 
 
