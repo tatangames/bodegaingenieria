@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Backend\Herramientas;
 use App\Http\Controllers\Controller;
 use App\Models\HerramientaPendiente;
 use App\Models\Herramientas;
+use App\Models\HistoHerramientaDescartada;
 use App\Models\HistoHerramientaRegistro;
 use App\Models\HistoHerramientaRegistroDeta;
+use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
 use App\Models\UnidadMedida;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -356,14 +359,216 @@ class HerramientasController extends Controller
             DB::rollback();
             return ['success' => 99];
         }
-
-
-
-
     }
 
 
 
+
+    //*******************************************************************************
+
+
+    public function indexReingresoHerramientas(){
+        return view('backend.admin.herramientas.reingreso.vistareingresoherramienta');
+    }
+
+
+    public function tablaReingresoHerramientas(){
+
+        $listado = HerramientaPendiente::orderBy('fecha', 'DESC')->get();
+
+        foreach ($listado as $dato){
+
+            $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
+
+            $infoHerra = Herramientas::where('id', $dato->id_herramienta)->first();
+            $dato->nomherra = $infoHerra->nombre;
+
+
+            $infoHistorial = HistoHerramientaSalida::where('id', $dato->id_histo_herra_salida)->first();
+
+            $dato->descripcion = $infoHistorial->descripcion;
+            $dato->quienrecibe = $infoHistorial->quien_recibe;
+            $dato->quienentrega = $infoHistorial->quien_entrega;
+        }
+
+
+        return view('backend.admin.herramientas.reingreso.tablareingresoherramienta', compact('listado'));
+    }
+
+
+    public function reingresoInformacion(Request $request){
+
+        $regla = array(
+            'id' => 'required', // id de herramienta pendiente
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+
+        $info = HerramientaPendiente::where('id', $request->id)->first();
+        $datoHerra = Herramientas::where('id', $info->id_herramienta)->first();
+
+
+
+        return ['success' => 1, 'lista' => $info, 'lista2' => $datoHerra];
+    }
+
+
+    public function reingresoCantidadHerramienta(Request $request){
+
+        $rules = array(
+            'id' => 'required',
+            'cantidad' => 'required'
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+        if ( $validator->fails()){
+            return ['success' => 0];
+        }
+
+        DB::beginTransaction();
+
+
+        try {
+
+            $infoPendiente = HerramientaPendiente::where('id', $request->id)->first();
+
+            if($request->cantidad > $infoPendiente->cantidad){
+
+                // cantidad a reingresar es mayor a la que está afuera de bodega
+                return ['success' => 1];
+            }
+
+
+            //*************************
+            // SUMAR CANTIDAD DE INVENTARIO
+
+            $infoInventario = Herramientas::where('id', $infoPendiente->id_herramienta)->first();
+
+            $sumatoria = $infoInventario->cantidad + $request->cantidad;
+
+
+            Herramientas::where('id', $infoInventario->id)->update([
+                'cantidad' => $sumatoria
+            ]);
+
+
+
+            //**************************
+            // RESTAR CANTIDAD A HERRAMIENTAS PENDIENTES, BORRAR FILA SI LLEGA A CERO
+
+            $restado = $infoPendiente->cantidad - $request->cantidad;
+
+            $fechaCarbon = Carbon::parse(Carbon::now());
+
+            // guardar historial de reingreso
+            $datoReingre = new HistoHerramientaReingreso();
+            $datoReingre->id_histo_herra_salida = $infoPendiente->id_histo_herra_salida;
+            $datoReingre->id_herramienta = $infoInventario->id;
+            $datoReingre->fecha = $fechaCarbon;
+            $datoReingre->cantidad = $request->cantidad;
+            $datoReingre->descripcion = $request->descripcion;
+            $datoReingre->save();
+
+
+            if($restado <= 0){
+                // eliminar registro
+
+                HerramientaPendiente::where('id', $request->id)->delete();
+
+            }else{
+                HerramientaPendiente::where('id', $request->id)->update([
+                    'cantidad' => $restado
+                ]);
+            }
+
+
+            DB::commit();
+            return ['success' => 2];
+
+        }catch(\Throwable $e){
+            Log::info('err ' . $e);
+            DB::rollback();
+            return ['success' => 99];
+        }
+    }
+
+
+
+   public function descartarCantidadHerramienta(Request $request){
+
+
+       $rules = array(
+           'id' => 'required',
+           'cantidad' => 'required',
+           'descripcion' => 'required'
+       );
+
+       $validator = Validator::make($request->all(), $rules);
+       if ( $validator->fails()){
+           return ['success' => 0];
+       }
+
+       DB::beginTransaction();
+
+
+       try {
+
+           $infoPendiente = HerramientaPendiente::where('id', $request->id)->first();
+
+           if($request->cantidad > $infoPendiente->cantidad){
+
+               // cantidad a descartar es mayor a la que está afuera de bodega
+               return ['success' => 1];
+           }
+
+
+
+
+           //**************************
+           // RESTAR CANTIDAD A HERRAMIENTAS PENDIENTES, BORRAR FILA SI LLEGA A CERO
+
+           $restado = $infoPendiente->cantidad - $request->cantidad;
+
+           $fechaCarbon = Carbon::parse(Carbon::now());
+
+           $infoInventario = Herramientas::where('id', $infoPendiente->id_herramienta)->first();
+
+
+           // guardar historial del descartado
+           $datoDescarto = new HistoHerramientaDescartada();
+           $datoDescarto->id_histo_herra_salida = $infoPendiente->id_histo_herra_salida;
+           $datoDescarto->id_herramienta = $infoInventario->id;
+           $datoDescarto->fecha = $fechaCarbon;
+           $datoDescarto->cantidad = $request->cantidad;
+           $datoDescarto->descripcion = $request->descripcion;
+           $datoDescarto->save();
+
+
+           if($restado <= 0){
+               // eliminar registro
+
+               HerramientaPendiente::where('id', $request->id)->delete();
+
+           }else{
+               HerramientaPendiente::where('id', $request->id)->update([
+                   'cantidad' => $restado
+               ]);
+           }
+
+
+           DB::commit();
+           return ['success' => 2];
+
+       }catch(\Throwable $e){
+           Log::info('err ' . $e);
+           DB::rollback();
+           return ['success' => 99];
+       }
+
+   }
 
 
 

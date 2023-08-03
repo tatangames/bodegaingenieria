@@ -185,10 +185,6 @@
                             <div class="row">
                                 <div class="col-md-12">
 
-                                    <div class="form-group">
-                                        <input type="hidden" id="id-editar">
-                                    </div>
-
 
                                     <div class="form-group">
                                         <label>Repuesto:</label>

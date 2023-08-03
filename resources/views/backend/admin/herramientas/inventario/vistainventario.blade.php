@@ -164,6 +164,71 @@
 </div>
 
 
+
+
+
+
+<div class="modal fade" id="modalDescartar">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Descartar Herramienta</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formulario-descartar">
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            <input type="hidden" id="id-descartar">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Herramienta:</label>
+                            <input type="text" disabled class="form-control" autocomplete="off" id="nombre-herra">
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Cantidad Disponible:</label>
+                                <input type="number" disabled class="form-control" autocomplete="off" id="cantidad-actual">
+                            </div>
+                        </div>
+
+
+                        <hr>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Descripción:</label>
+                                <input type="text" class="form-control" autocomplete="off" id="descripcion-descartar" maxlength="800">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Cantidad a Descartar:</label>
+                                <input type="number" min="1" class="form-control" autocomplete="off" id="cantidad-descartar" maxlength="10">
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="registrarDescarto()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @extends('backend.menus.footerjs')
 @section('archivos-js')
 
@@ -419,6 +484,128 @@
         function infoDetalle(id){
             window.location.href="{{ url('/admin/detalle/material/cantidad') }}/" + id;
         }
+
+
+
+
+
+        //************************************************
+
+        function infoModalDescartar(id){
+
+            openLoading();
+            document.getElementById("formulario-descartar").reset();
+
+            axios.post(url+'/informacion/herramienta/descartar',{
+                'id': id
+            })
+                .then((response) => {
+                    closeLoading();
+                    if(response.data.success === 1){
+                        $('#modalDescartar').modal({backdrop: 'static', keyboard: false})
+
+                        $('#id-descartar').val(id);
+                        $('#nombre-herra').val(response.data.info.nombre);
+                        $('#cantidad-actual').val(response.data.info.cantidad);
+
+                    }else{
+                        toastr.error('Información no encontrada');
+                    }
+                })
+                .catch((error) => {
+                    closeLoading();
+                    toastr.error('Información no encontrada');
+                });
+        }
+
+
+
+        function registrarDescarto(){
+
+            var id = document.getElementById('id-descartar').value;
+            var cantidadRe = document.getElementById('cantidad-descartar').value;
+            var descripcion = document.getElementById('descripcion-descartar').value;
+
+            var reglaNumeroEntero = /^[0-9]\d*$/;
+
+            if(cantidadRe === ''){
+                toastr.error('Cantidad a Descartar es requerido');
+                return;
+            }
+
+            if(!cantidadRe.match(reglaNumeroEntero)) {
+                toastr.error('Cantidad a Descartar debe ser número Entero y no Negativo');
+                return;
+            }
+
+            if(cantidadRe <= 0){
+                toastr.error('Cantidad a Descartar no debe ser negativo o cero');
+                return;
+            }
+
+            if(cantidadRe > 9000000){
+                toastr.error('Cantidad a Descartar no debe ser mayor 9 millones');
+                return;
+            }
+
+
+            if(descripcion === ''){
+                toastr.error('Descripción es requerido');
+                return;
+            }
+
+
+            openLoading();
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('cantidad', cantidadRe);
+            formData.append('descripcion', descripcion);
+
+            axios.post(url+'/descartar/herramienta/inventario', formData, {
+            })
+                .then((response) => {
+                    closeLoading();
+                    if(response.data.success === 1){
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: "La cantidad a Descartar es Mayor a la disponible",
+                            icon: 'info',
+                            showCancelButton: false,
+                            confirmButtonColor: '#28a745',
+                            cancelButtonColor: '#d33',
+                            cancelButtonText: 'Cancelar',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        })
+                    }
+
+                    else if(response.data.success === 2){
+
+                        toastr.success('Herramienta Descartada Correctamente');
+                        $('#modalDescartar').modal('hide');
+                        recargar();
+                    }
+                    else {
+                        toastr.error('Error al registrar');
+                    }
+                })
+                .catch((error) => {
+                    toastr.error('Error al registrar');
+                    closeLoading();
+                });
+
+
+        }
+
+
+
+
+
 
     </script>
 

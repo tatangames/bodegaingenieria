@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Backend\Repuestos;
 use App\Http\Controllers\Controller;
 use App\Models\Entradas;
 use App\Models\EntradasDetalle;
+use App\Models\Herramientas;
+use App\Models\HistoHerramientaDescartada;
 use App\Models\HistorialEntradas;
 use App\Models\HistorialEntradasDeta;
 use App\Models\Materiales;
 use App\Models\SalidasDetalle;
 use App\Models\TipoProyecto;
 use App\Models\UnidadMedida;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -115,6 +119,84 @@ class RepuestosController extends Controller
         ]);
 
         return ['success' => 1];
+    }
+
+
+    public function infoHerramientaDescartar(Request $request){
+
+        $regla = array(
+            'id' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        $info = Herramientas::where('id', $request->id)->first();
+
+
+        return ['success' => 1, 'info' => $info];
+    }
+
+
+    public function descartarHerramientaInventario(Request $request){
+
+
+        $rules = array(
+            'id' => 'required',
+            'cantidad' => 'required',
+            'descripcion' => 'required'
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+        if ( $validator->fails()){
+            return ['success' => 0];
+        }
+
+        DB::beginTransaction();
+
+
+        try {
+
+            $infoHerra = Herramientas::where('id', $request->id)->first();
+
+            if($request->cantidad > $infoHerra->cantidad){
+
+                // cantidad a descartar es mayor a la del inventario
+                return ['success' => 1];
+            }
+
+
+            //**************************
+            // RESTAR CANTIDAD A HERRAMIENTAS
+
+            $restado = $infoHerra->cantidad - $request->cantidad;
+            $fechaCarbon = Carbon::parse(Carbon::now());
+
+            Herramientas::where('id', $request->id)->update([
+                'cantidad' => $restado
+            ]);
+
+
+            // guardar historial del descartado
+            $datoDescarto = new HistoHerramientaDescartada();
+            $datoDescarto->id_histo_herra_salida = null;
+            $datoDescarto->id_herramienta = $infoHerra->id;
+            $datoDescarto->fecha = $fechaCarbon;
+            $datoDescarto->cantidad = $request->cantidad;
+            $datoDescarto->descripcion = $request->descripcion;
+            $datoDescarto->save();
+
+
+            DB::commit();
+            return ['success' => 2];
+
+        }catch(\Throwable $e){
+            Log::info('err ' . $e);
+            DB::rollback();
+            return ['success' => 99];
+        }
+
     }
 
 

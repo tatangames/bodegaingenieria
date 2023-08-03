@@ -63,6 +63,10 @@ Route::get('/admin/inventario/tabla/index', [RepuestosController::class,'tablaMa
 Route::post('/admin/inventario/nuevo', [RepuestosController::class, 'nuevoMaterial']);
 Route::post('/admin/inventario/informacion', [RepuestosController::class, 'informacionMaterial']);
 Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);
+Route::post('/admin/informacion/herramienta/descartar', [RepuestosController::class, 'infoHerramientaDescartar']);
+Route::post('/admin/descartar/herramienta/inventario', [RepuestosController::class, 'descartarHerramientaInventario']);
+
+
 
 
 // detalle repuestos
@@ -128,6 +132,17 @@ Route::post('/admin/entrada/herramienta/guardar',  [HerramientasController::clas
 Route::get('/admin/salidas/herramientas/index', [HerramientasController::class,'indexSalidaHerramientas'])->name('admin.salida.herramientas.index');
 Route::get('/admin/herramienta/cantidad/bloque/{id}', [HerramientasController::class,'bloqueCantidadHerramienta']);
 Route::post('/admin/salida/herramienta/a/usuario',  [HerramientasController::class,'salidaHerramientaUsuario']);
+
+
+// REINGRESO DE HERRAMIENTA
+Route::get('/admin/inventario/reingreso/herramientas/index', [HerramientasController::class,'indexReingresoHerramientas'])->name('admin.reingreso.herramientas.index');
+Route::get('/admin/inventario/reingreso/herramientas/tabla', [HerramientasController::class,'tablaReingresoHerramientas']);
+Route::post('/admin/reingreso/informacion',  [HerramientasController::class,'reingresoInformacion']);
+Route::post('/admin/reingreso/cantidad',  [HerramientasController::class,'reingresoCantidadHerramienta']);
+Route::post('/admin/descartar/cantidad',  [HerramientasController::class,'descartarCantidadHerramienta']);
+
+
+
 
 
 
