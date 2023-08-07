@@ -323,11 +323,15 @@ class ReportesController extends Controller
 
         foreach ($lista as $info) {
 
-            $tabla .= "<tr>
+            if($info->total > 0){
+
+                $tabla .= "<tr>
                 <td width='15%'>$info->codigo</td>
                 <td width='50%'>$info->nombre</td>
                 <td width='15%'>$info->total</td>
             <tr>";
+
+            }
         }
 
         $tabla .= "</tbody></table>";
