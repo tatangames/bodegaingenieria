@@ -118,64 +118,74 @@
 
                     </ul>
                 </li>
+
+
+
+
+
+
+
+
+                        <li class="nav-item">
+
+                            <a href="#" class="nav-link nav-">
+                                <i class="far fa-edit"></i>
+                                <p>
+                                    Herramientas
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.inventario.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Inventario</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.salida.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Salida Herramienta</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reingreso.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Reingreso Herramienta</p>
+                                    </a>
+                                </li>
+
+                                <hr>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.registro.herramientas.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Nueva Herramienta</p>
+                                    </a>
+                                </li>
+
+
+
+
+
+                            </ul>
+                        </li>
+
+
+
+
+
+
+
                 @endcan
 
 
 
 
-
-                @can('sidebar.reportes')
-
-                    <li class="nav-item">
-
-                        <a href="#" class="nav-link nav-">
-                            <i class="far fa-edit"></i>
-                            <p>
-                                Herramientas
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-
-
-                            <li class="nav-item">
-                                <a href="{{ route('admin.inventario.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Inventario</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('admin.salida.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Salida Herramienta</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('admin.reingreso.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Reingreso Herramienta</p>
-                                </a>
-                            </li>
-
-                            <hr>
-
-                            <li class="nav-item">
-                                <a href="{{ route('admin.registro.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Nueva Herramienta</p>
-                                </a>
-                            </li>
-
-
-
-
-
-                        </ul>
-                    </li>
-
-                @endcan
 
 
 
