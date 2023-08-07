@@ -124,8 +124,6 @@
 
 
 
-
-
                         <li class="nav-item">
 
                             <a href="#" class="nav-link nav-">
@@ -208,10 +206,25 @@
                                         <p>Entradas y Salidas</p>
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a href="{{ route('admin.reporte.inventario.index') }}" target="frameprincipal" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Inventario</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reporte.inventario.salidaproyecto.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Salida por Proyecto</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reporte.inventario.tengoporproyecto.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Inventario Proyecto</p>
                                     </a>
                                 </li>
 

@@ -25,55 +25,62 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="callout callout-info">
-                        <h5 style="font-weight: bold"><i class="fas fa-info"></i> Generar Reporte de Entradas y Salidas de Repuestos</h5>
+                        <h5 style="font-weight: bold"><i class="fas fa-info"></i> Salidas de Repuestos por Proyecto</h5>
                         <div class="card">
                             <form class="form-horizontal">
                                 <div class="card-body">
 
-                                    <div class="form-group row">
-                                        <div class="col-sm-3">
-                                            <div class="info-box shadow">
-                                                <div class="info-box-content">
-                                                    <div class="form-group">
-                                                        <label>Desde:</label>
-                                                        <input type="date" class="form-control" id="fecha-desde">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-sm-3">
-                                            <div class="info-box shadow">
-                                                <div class="info-box-content">
-                                                    <div class="form-group">
-                                                        <label>Hasta:</label>
-                                                        <input type="date" class="form-control" id="fecha-hasta">
-                                                    </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <div class="info-box shadow">
+                                            <div class="info-box-content">
+                                                <div class="form-group">
+                                                    <label>Desde:</label>
+                                                    <input type="date" class="form-control" id="fecha-desde">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <p style="font-weight: bold; font-size: 22px">Tipo de Reporte</p>
-
-                                    <div class="form-group row">
-                                        <div class="col-sm-7">
-                                            <div class="info-box shadow">
-                                                <div class="info-box-content">
-                                                    <label>Seleccionar</label>
-                                                    <select class="form-control" id="select-tipo" style="width: 35%">
-                                                        <option value="1">Entradas</option>
-                                                        <option value="2">Salidas</option>
-                                                    </select>
+                                    <div class="col-sm-3">
+                                        <div class="info-box shadow">
+                                            <div class="info-box-content">
+                                                <div class="form-group">
+                                                    <label>Hasta:</label>
+                                                    <input type="date" class="form-control" id="fecha-hasta">
                                                 </div>
-
-                                                <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
-                                                    <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
-                                                    Generar PDF
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label style="color:#191818">Proyectos</label>
+                                    <br>
+                                    <div>
+                                        <select class="form-control" id="select-proyecto">
+                                            @foreach($proyectos as $dd)
+                                                <option value="{{ $dd->id }}">{{ $dd->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <div class="col-sm-7">
+                                        <div class="info-box shadow">
+
+                                            <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
+                                                <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
+                                                Generar PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 </div>
                             </form>
@@ -106,7 +113,7 @@
             document.getElementById("divcc").style.display = "block";
         });
 
-        $('#select-equipo').select2({
+        $('#select-proyecto').select2({
             theme: "bootstrap-5",
             "language": {
                 "noResults": function(){
@@ -120,7 +127,7 @@
     <script>
 
         function generarPdf() {
-            var tipo = document.getElementById('select-tipo').value;
+            var idproy = document.getElementById('select-proyecto').value;
             var desde = document.getElementById('fecha-desde').value;
             var hasta = document.getElementById('fecha-hasta').value;
 
@@ -134,7 +141,12 @@
                 return;
             }
 
-            window.open("{{ URL::to('admin/reporte/registro') }}/" + tipo + "/" + desde + "/" + hasta);
+            if(idproy === ''){
+                toastr.error('Proyecto es requerido');
+                return;
+            }
+
+            window.open("{{ URL::to('admin/reporte/quehasalido/proyectos/pdf') }}/" + idproy+ "/" + desde + "/" + hasta);
         }
 
     </script>

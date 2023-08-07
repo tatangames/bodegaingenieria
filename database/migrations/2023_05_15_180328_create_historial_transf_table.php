@@ -11,6 +11,7 @@ class CreateHistorialTransfTable extends Migration
      *
      * @return void
      */
+
     public function up()
     {
         Schema::create('historial_transf', function (Blueprint $table) {

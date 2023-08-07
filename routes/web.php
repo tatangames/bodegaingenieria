@@ -105,7 +105,7 @@ Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'g
 
 
 
-// REPORTES DE ENTRADAS Y SALIDAS
+// REPORTES DE ENTRADAS Y SALIDAS DE REPUESTOS
 Route::get('/admin/entrada/reporte/vista', [ReportesController::class,'indexEntradaReporte'])->name('admin.entrada.reporte.index');
 Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController::class,'reportePdfEntradaSalida']);
 
@@ -113,6 +113,18 @@ Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController
 // REPORTES DE INVENTARIO
 Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
 Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteInventarioActual']);
+
+// que ha salido para x proyecto
+Route::get('/admin/reporte/inventario/quehasalido/proyecto', [ReportesController::class,'vistaQueHaSalidoProyecto'])->name('admin.reporte.inventario.salidaproyecto.index');
+Route::get('/admin/reporte/quehasalido/proyectos/pdf/{idproy}/{desde}/{hasta}', [ReportesController::class,'pdfQueHaSalidoProyectos']);
+
+// inventario que materiales tiene x proyecto ahorita
+Route::get('/admin/reporte/inventario/quetengopor/proyecto', [ReportesController::class,'vistaQueTengoPorProyecto'])->name('admin.reporte.inventario.tengoporproyecto.index');
+Route::get('/admin/reporte/quetengopor/proyectos/pdf/{idproy}', [ReportesController::class,'reporteQueTengoPorProyecto']);
+
+
+
+
 
 
 // REPORTE DE HERRAMIENTAS
