@@ -8,6 +8,7 @@
                             <thead>
                             <tr>
                                 <th style="width: 10%">Fecha</th>
+                                <th style="width: 10%">Código</th>
                                 <th style="width: 20%">Herramienta</th>
                                 <th style="width: 12%">Cantidad</th>
                                 <th style="width: 15%">Descripción</th>
@@ -21,6 +22,7 @@
                             @foreach($listado as $dato)
                                 <tr>
                                     <td>{{ $dato->fecha }}</td>
+                                    <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nomherra }}</td>
                                     <td>{{ $dato->cantidad }}</td>
                                     <td>{{ $dato->descripcion }}</td>

@@ -119,6 +119,7 @@ Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteI
 Route::get('/admin/reporte/herramienta/index', [ReportesController::class,'vistaReporteHerramientas'])->name('admin.reporte.herramientas.index');
 Route::get('/admin/pdf/herramientas/inventario/actual', [ReporteHerramientaController::class,'pdfHerramientasActuales']);
 Route::get('/admin/pdf/herramientas/salidas/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasSalidas']);
+Route::get('/admin/pdf/herramientas/reingreso/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasReingreso']);
 
 
 

@@ -63,6 +63,14 @@
                                 <input type="hidden" id="id-reingreso">
                             </div>
 
+
+                            <div class="form-group">
+                                <label>Fecha Salio Herramienta:</label>
+                                <input type="text" disabled class="form-control" autocomplete="off" id="fecha-salio">
+                            </div>
+
+
+
                             <div class="form-group">
                                 <label>Herramienta:</label>
                                 <input type="text" disabled class="form-control" autocomplete="off" id="nombre-reingreso">
@@ -235,7 +243,7 @@
                         $('#id-reingreso').val(id);
                         $('#nombre-reingreso').val(response.data.lista2.nombre);
                         $('#cantidad-inventario-reingreso').val(response.data.lista.cantidad);
-
+                        $('#fecha-salio').val(response.data.fechasalio);
 
 
                     }else{
@@ -246,9 +254,7 @@
                     closeLoading();
                     toastr.error('Información no encontrada');
                 });
-
         }
-
 
 
         function verificarReingreso(){

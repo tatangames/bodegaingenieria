@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Backend\Reportes;
 
 use App\Http\Controllers\Controller;
 use App\Models\Herramientas;
+use App\Models\HistoHerramientaReingreso;
+use App\Models\HistoHerramientaSalida;
+use App\Models\HistoHerramientaSalidaDetalle;
 use App\Models\UnidadMedida;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,7 +55,7 @@ class ReporteHerramientaController extends Controller
 
         $tabla .= "<tr>
                 <td width='15%' style='font-weight: bold'>Código</td>
-                <td width='50%' style='font-weight: bold'>Material</td>
+                <td width='50%' style='font-weight: bold'>Herramienta</td>
                 <td width='15%' style='font-weight: bold'>Cantidad</td>
             <tr>";
 
@@ -91,45 +94,37 @@ class ReporteHerramientaController extends Controller
         $hastaFormat = date("d-m-Y", strtotime($hasta));
 
 
-        // lista de entradas
-        $listaEntrada = HistorialEntradas::whereBetween('fecha', [$start, $end])
+
+        // lista de salidas
+        $listaSalida = HistoHerramientaSalida::whereBetween('fecha', [$start, $end])
             ->orderBy('fecha', 'ASC')
             ->get();
 
-        foreach ($listaEntrada as $ll){
+        foreach ($listaSalida as $ll){
 
             $ll->fecha = date("d-m-Y", strtotime($ll->fecha));
-
-            $infoProyecto = TipoProyecto::where('id', $ll->id_tipoproyecto)->first();
-
-            $ll->nombreproy = $infoProyecto->nombre;
 
             array_push($resultsBloque, $ll);
 
             // obtener detalle
-            $listaDetalle = DB::table('historial_entradas_deta AS ed')
-                ->join('materiales AS m', 'ed.id_material', '=', 'm.id')
-                ->select('m.nombre', 'm.codigo', 'ed.cantidad', 'm.id_medida')
-                ->where('ed.id_historial', $ll->id)
-                ->orderBy('m.id', 'ASC')
+            $listaDetalle = DB::table('histo_herramienta_salida_deta AS histo')
+                ->join('herramientas AS he', 'histo.id_herramienta', '=', 'he.id')
+                ->select('he.nombre', 'histo.cantidad AS cantisalida', 'he.codigo')
+                ->where('histo.id_herra_salida', $ll->id)
+                ->orderBy('histo.cantidad', 'ASC')
                 ->get();
 
             foreach ($listaDetalle as $dd){
-                if($info = UnidadMedida::where('id', $dd->id_medida)->first()){
-                    $dd->medida = $info->nombre;
-                }else{
-                    $dd->medida = "";
-                }
+
             }
 
             $resultsBloque[$index]->detalle = $listaDetalle;
             $index++;
         }
 
-
         $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
         //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Entradas');
+        $mpdf->SetTitle('Salidas');
 
         // mostrar errores
         $mpdf->showImageErrors = false;
@@ -139,30 +134,38 @@ class ReporteHerramientaController extends Controller
         $tabla = "<div class='content'>
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte de Salida de Herramientas<br>
-            Fecha: $desdeFormat  -  $hastaFormat</p>
+            Salidas de Herramientas<br>
+            Fecha: $desdeFormat  -  $hastaFormat </p>
             </div>";
 
-        foreach ($listaEntrada as $dd) {
+        foreach ($listaSalida as $dd) {
 
             $tabla .= "<table width='100%' id='tablaFor'>
-            <tbody>";
+                    <tbody>";
 
             $tabla .= "<tr>
-                    <td  width='20%'>Fecha</td>
-                     <td  width='45%'>Proyecto</td>
-                     <td  width='15%'>Descripción</td>
+                    <td  width='13%' style='font-weight: bold'>Fecha</td>
+                    <td  width='15%' style='font-weight: bold'>Descripción</td>
                 </tr>
                 ";
 
             $tabla .= "<tr>
-                    <td  width='20%'>$dd->fecha</td>
-                     <td  width='45%'>$dd->nombreproy</td>
-                     <td  width='15%'>$dd->descripcion</td>
+                    <td width='13%'>$dd->fecha</td>
+                    <td width='15%'>$dd->descripcion</td>
+                    ";
+
+
+            $tabla .= "<tr>
+                    <td  width='13%' style='font-weight: bold'>Quien Entrego</td>
+                    <td  width='15%' style='font-weight: bold'>Quien Recibio</td>
                 </tr>
                 ";
 
 
+            $tabla .= "<tr>
+                    <td width='13%'>$dd->quien_recibe</td>
+                    <td width='15%'>$dd->quien_entrega</td>
+                    ";
 
             $tabla .= "</tbody></table>";
 
@@ -170,25 +173,106 @@ class ReporteHerramientaController extends Controller
             <tbody>";
 
             $tabla .= "<tr>
-                    <td width='25%'>Repuesto</td>
-                    <td width='8%'>Medida</td>
-                    <td width='8%'>Cantidad</td>
+                    <td width='12%'>Código</td>
+                    <td width='20%'>Herramienta</td>
+                    <td width='14%'>Cantidad</td>
                 </tr>";
 
             foreach ($dd->detalle as $gg) {
                 $tabla .= "<tr>
-                    <td width='25%'>$gg->nombre</td>
-                    <td width='8%'>$gg->medida</td>
-                    <td width='8%'>$gg->cantidad</td>
-                </tr>";
+                        <td width='12%'>$gg->codigo</td>
+                        <td width='20%'>$gg->nombre</td>
+                        <td width='14%'>$gg->cantisalida</td>
+                    </tr>";
             }
 
             $tabla .= "</tbody></table>";
         }
 
 
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
+
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        $mpdf->WriteHTML($tabla,2);
+
+        $mpdf->Output();
+    }
+
+
+
+    public function pdfHerramientasReingreso($desde, $hasta){
+
+        $start = Carbon::parse($desde)->startOfDay();
+        $end = Carbon::parse($hasta)->endOfDay();
+
+
+
+        $desdeFormat = date("d-m-Y", strtotime($desde));
+        $hastaFormat = date("d-m-Y", strtotime($hasta));
+
+
+        // lista de salidas
+        $listaReingreso = HistoHerramientaReingreso::whereBetween('fecha', [$start, $end])
+            ->orderBy('fecha', 'ASC')
+            ->get();
+
+        foreach ($listaReingreso as $ll){
+
+            $ll->fechareingreso = date("d-m-Y", strtotime($ll->fecha));
+
+            $infoHerra = Herramientas::where('id', $ll->id_herramienta)->first();
+            $ll->nomherra = $infoHerra->nombre;
+            $ll->codiherra = $infoHerra->codigo;
+
+
+            $infoSalida = HistoHerramientaSalida::where('id', $ll->id_histo_herra_salida)->first();
+            $ll->fechasalida = date("d-m-Y", strtotime($infoSalida->fecha));
+
+
+        }
+
+
+
+        $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Reingreso');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Reingreso de Herramientas<br>
+            Fecha: $desdeFormat  -  $hastaFormat </p>
+            </div>";
+
         $tabla .= "<table width='100%' id='tablaFor'>
-            <tbody>";
+                    <tbody>";
+
+
+        $tabla .= "<tr>
+                        <td style='font-weight: bold' width='12%'>Salio</td>
+                        <td style='font-weight: bold' width='12%'>Reingreso</td>
+                        <td style='font-weight: bold' width='12%'>Código</td>
+                        <td style='font-weight: bold' width='18%'>Herramienta</td>
+                        <td style='font-weight: bold' width='20%'>Descripción</td>
+                    </tr>";
+
+        foreach ($listaReingreso as $dd) {
+
+
+            $tabla .= "<tr>
+                        <td width='12%'>$dd->fechasalida</td>
+                        <td width='12%'>$dd->fechareingreso</td>
+                        <td width='12%'>$dd->codiherra</td>
+                        <td width='18%'>$dd->nomherra</td>
+                        <td width='20%'>$dd->descripcion</td>
+                    </tr>";
+        }
 
         $tabla .= "</tbody></table>";
 
@@ -196,26 +280,20 @@ class ReporteHerramientaController extends Controller
         $mpdf->WriteHTML($stylesheet,1);
 
         $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
-        //$mpdf->WriteHTML($tabla,2);
-        $mpdf->WriteHTML($tabla, 2);
+        $mpdf->WriteHTML($tabla,2);
 
         $mpdf->Output();
 
 
 
-            $stylesheet = file_get_contents('css/cssregistro.css');
-            $mpdf->WriteHTML($stylesheet,1);
-
-            $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
-            $mpdf->WriteHTML($tabla,2);
-
-            $mpdf->Output();
-
-
-
-
 
     }
+
+
+
+
+
+
 
 
 

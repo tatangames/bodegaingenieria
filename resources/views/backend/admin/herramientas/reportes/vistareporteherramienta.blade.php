@@ -77,37 +77,8 @@
                                     <div class="form-group row">
                                         <div class="col-sm-7">
                                             <div class="info-box shadow">
-                                                <div class="info-box-content">
-                                                    <label>Tipo</label>
-                                                    <select class="form-control" id="select-tipo" style="width: 35%">
-                                                        <option value="1">Entradas</option>
-                                                        <option value="2">Salidas</option>
-                                                    </select>
-                                                </div>
 
-                                                <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
-                                                    <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
-                                                    Generar PDF
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <h6>Reporte de Nuevas Herramientas</h6>
-
-                                    <div class="form-group row">
-                                        <div class="col-sm-7">
-                                            <div class="info-box shadow">
-                                                <div class="info-box-content">
-                                                    <label>Tipo</label>
-                                                    <select class="form-control" id="select-tipo" style="width: 35%">
-                                                        <option value="1">Entradas</option>
-                                                        <option value="2">Salidas</option>
-                                                    </select>
-                                                </div>
-
-                                                <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
+                                                <button type="button" onclick="pdfReingresoHerramientas()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
                                                     <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
                                                     Generar PDF
                                                 </button>
@@ -176,9 +147,7 @@
     <script>
 
         function pdfInventarioActual(){
-
-
-            window.open("{{ URL::to('admin/pdf/inventario/herramientas/actual') }}");
+            window.open("{{ URL::to('admin/pdf/herramientas/inventario/actual') }}");
         }
 
         function pdfSalidaHerramientas() {
@@ -197,6 +166,26 @@
 
             window.open("{{ URL::to('admin/pdf/herramientas/salidas') }}/" + desde + "/" + hasta);
         }
+
+        function pdfReingresoHerramientas(){
+
+            var desde = document.getElementById('fecha-desde').value;
+            var hasta = document.getElementById('fecha-hasta').value;
+
+            if(desde === ''){
+                toastr.error('Fecha desde es requerido');
+                return;
+            }
+
+            if(hasta === ''){
+                toastr.error('Fecha hasta es requerido');
+                return;
+            }
+
+            window.open("{{ URL::to('admin/pdf/herramientas/reingreso') }}/" + desde + "/" + hasta);
+
+        }
+
 
     </script>
 

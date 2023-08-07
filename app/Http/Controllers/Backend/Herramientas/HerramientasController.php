@@ -382,7 +382,7 @@ class HerramientasController extends Controller
 
             $infoHerra = Herramientas::where('id', $dato->id_herramienta)->first();
             $dato->nomherra = $infoHerra->nombre;
-
+            $dato->codigo = $infoHerra->codigo;
 
             $infoHistorial = HistoHerramientaSalida::where('id', $dato->id_histo_herra_salida)->first();
 
@@ -390,7 +390,6 @@ class HerramientasController extends Controller
             $dato->quienrecibe = $infoHistorial->quien_recibe;
             $dato->quienentrega = $infoHistorial->quien_entrega;
         }
-
 
         return view('backend.admin.herramientas.reingreso.tablareingresoherramienta', compact('listado'));
     }
@@ -410,9 +409,12 @@ class HerramientasController extends Controller
         $info = HerramientaPendiente::where('id', $request->id)->first();
         $datoHerra = Herramientas::where('id', $info->id_herramienta)->first();
 
+        $histosal = HistoHerramientaSalida::where('id', $info->id_histo_herra_salida)->first();
+
+        $fechasalida = date("d-m-Y", strtotime($histosal->fecha));
 
 
-        return ['success' => 1, 'lista' => $info, 'lista2' => $datoHerra];
+        return ['success' => 1, 'lista' => $info, 'lista2' => $datoHerra, 'fechasalio' => $fechasalida];
     }
 
 
