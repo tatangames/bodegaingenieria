@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateHerramientaPendienteTable extends Migration
 {
     /**
-     * Run the migrations.
+     * ES LA HERRAMIENTA QUE ESTA AFUERA
      *
      * @return void
      */

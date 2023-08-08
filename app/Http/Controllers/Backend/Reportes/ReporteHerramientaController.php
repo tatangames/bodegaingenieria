@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Backend\Reportes;
 
 use App\Http\Controllers\Controller;
+use App\Models\HerramientaPendiente;
 use App\Models\Herramientas;
+use App\Models\HistoHerramientaDescartada;
 use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
@@ -32,10 +34,28 @@ class ReporteHerramientaController extends Controller
 
             $item->medida = $medida;
 
+
+            // buscar la misma herramienta para salida
+
+            $infoPendiente = HerramientaPendiente::where('id_herramienta', $item->id)->get();
+
+            $cantidadSalida = 0;
+
+            foreach ($infoPendiente as $dato){
+
+                $cantidadSalida = $cantidadSalida + $dato->cantidad;
+
+            }
+
+            $item->cantisalida = $cantidadSalida;
+
+            $item->totalherra = $cantidadSalida + $item->cantidad;
         }
 
-        $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+
+
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Inventario Actual');
 
         // mostrar errores
@@ -56,7 +76,9 @@ class ReporteHerramientaController extends Controller
         $tabla .= "<tr>
                 <td width='15%' style='font-weight: bold'>Código</td>
                 <td width='50%' style='font-weight: bold'>Herramienta</td>
-                <td width='15%' style='font-weight: bold'>Cantidad</td>
+                <td width='15%' style='font-weight: bold'>Inventariado</td>
+                <td width='15%' style='font-weight: bold'>Salida</td>
+                <td width='15%' style='font-weight: bold'>Total</td>
             <tr>";
 
         foreach ($lista as $info) {
@@ -65,6 +87,8 @@ class ReporteHerramientaController extends Controller
                 <td width='15%'>$info->codigo</td>
                 <td width='50%'>$info->nombre</td>
                 <td width='15%'>$info->cantidad</td>
+                <td width='15%'>$info->cantisalida</td>
+                 <td width='12%'>$info->totalherra</td>
             <tr>";
         }
 
@@ -122,8 +146,8 @@ class ReporteHerramientaController extends Controller
             $index++;
         }
 
-        $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Salidas');
 
         // mostrar errores
@@ -234,8 +258,8 @@ class ReporteHerramientaController extends Controller
 
 
 
-        $mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        //$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Reingreso');
 
         // mostrar errores
@@ -283,9 +307,77 @@ class ReporteHerramientaController extends Controller
         $mpdf->WriteHTML($tabla,2);
 
         $mpdf->Output();
+    }
 
 
+    public function pdfHerramientasDescartadas(){
 
+        // listado
+        $listado = HistoHerramientaDescartada::orderBy('cantidad', 'ASC')->get();
+
+        foreach ($listado as $dato){
+
+            $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
+
+
+            $infoHerra = Herramientas::where('id', $dato->id_herramienta)->first();
+            $dato->nomherra = $infoHerra->nombre;
+            $dato->codiherra = $infoHerra->codigo;
+
+
+            $infoMedida = UnidadMedida::where('id', $infoHerra->id_medida)->first();
+            $dato->herramedida = $infoMedida->nombre;
+        }
+
+
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Herramienta Descartada');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Herramientas Descartadas<br>
+            Unidad Eléctrica
+            </div>";
+
+        $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+
+        $tabla .= "<tr>
+                        <td style='font-weight: bold' width='12%'>Fecha</td>
+                        <td style='font-weight: bold' width='12%'>Código</td>
+                        <td style='font-weight: bold' width='12%'>Medida</td>
+                        <td style='font-weight: bold' width='18%'>Material</td>
+                        <td style='font-weight: bold' width='20%'>Descripción</td>
+                    </tr>";
+
+        foreach ($listado as $dd) {
+
+            $tabla .= "<tr>
+                        <td width='12%'>$dd->fecha</td>
+                        <td width='12%'>$dd->codiherra</td>
+                        <td width='12%'>$dd->herramedida</td>
+                        <td width='18%'>$dd->nomherra</td>
+                        <td width='20%'>$dd->descripcion</td>
+                    </tr>";
+        }
+
+        $tabla .= "</tbody></table>";
+
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
+
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        $mpdf->WriteHTML($tabla,2);
+
+        $mpdf->Output();
 
     }
 

@@ -9,6 +9,7 @@ use App\Models\HistorialEntradas;
 use App\Models\HistorialSalidas;
 use App\Models\HistorialSalidasDeta;
 use App\Models\HistorialTransferido;
+use App\Models\HistorialTransferidoDetalle;
 use App\Models\Materiales;
 use App\Models\TipoProyecto;
 use App\Models\UnidadMedida;
@@ -373,7 +374,7 @@ class ReportesController extends Controller
         }
 
         $proyectos = TipoProyecto::orderBy('nombre', 'ASC')
-            ->whereNotIn('id_tipoproyecto', $pilaIdTransfe)
+            ->whereNotIn('id', $pilaIdTransfe)
             ->get();
 
         return view('backend.admin.repuestos.reporte.vistaquehasalidoproyecto', compact('proyectos'));
@@ -496,7 +497,6 @@ class ReportesController extends Controller
     public function vistaQueTengoPorProyecto(){
 
         $terminados = HistorialTransferido::all();
-
         $pilaIdTransfe = array();
 
         foreach ($terminados as $data){
@@ -504,7 +504,7 @@ class ReportesController extends Controller
         }
 
         $proyectos = TipoProyecto::orderBy('nombre', 'ASC')
-            ->whereNotIn('id_tipoproyecto', $pilaIdTransfe)
+            ->whereNotIn('id', $pilaIdTransfe)
             ->get();
 
         return view('backend.admin.repuestos.reporte.vistaquetengoporproyecto', compact('proyectos'));
@@ -527,15 +527,152 @@ class ReportesController extends Controller
         }
 
 
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Inventario Actual');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Inventario de Proyecto <br>
+            </div>";
 
 
+        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
 
 
+        $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+        $tabla .= "<tr>
+                <td width='15%' style='font-weight: bold'>Código</td>
+                <td width='50%' style='font-weight: bold'>Material</td>
+                <td width='15%' style='font-weight: bold'>Cantidad</td>
+            <tr>";
+
+        foreach ($arrayInventario as $info) {
+
+            $tabla .= "<tr>
+                <td width='15%'>$info->codigoMate</td>
+                <td width='50%'>$info->nombreMate</td>
+                <td width='15%'>$info->cantidad</td>
+            <tr>";
+
+        }
+
+        $tabla .= "</tbody></table>";
 
 
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
 
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        $mpdf->WriteHTML($tabla,2);
+
+        $mpdf->Output();
     }
 
+
+
+    public function vistaProyectoCompletado(){
+
+        $transferido = HistorialTransferido::orderBy('fecha', 'ASC')->get();
+
+        foreach ($transferido as $dato){
+
+            $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
+
+            $infoProy = TipoProyecto::where('id', $dato->id_tipoproyecto)->first();
+
+            $dato->nomproy = $infoProy->nombre;
+        }
+
+        return view('backend.admin.repuestos.reporte.vistaproyectocompletado', compact('transferido'));
+    }
+
+
+
+    public function reporteProyectoTerminado($idtrans){
+
+
+        $infoTrans = HistorialTransferido::where('id', $idtrans)->first();
+
+        $infoProyecto = TipoProyecto::where('id', $infoTrans->id_tipoproyecto)->first();
+
+        $listado = HistorialTransferidoDetalle::where('id_historial_transf', $idtrans)->get();
+
+        foreach ($listado as $dato){
+
+            $infoMaterial = Materiales::where('id', $dato->id_material)->first();
+
+            $dato->nommaterial = $infoMaterial->nombre;
+            $dato->codmaterial = $infoMaterial->codigo;
+
+            $infoUnidad = UnidadMedida::where('id', $infoMaterial->id_medida)->first();
+            $dato->nomunidad = $infoUnidad->nombre;
+
+        }
+
+
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Transferido');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Reporte de Proyecto Completado<br>
+            </div>";
+
+
+        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
+
+        $tabla .= "<table width='100%' id='tablaFor'>
+            <tbody>";
+
+
+        $tabla .= "<tr>
+                    <td  width='14%' style='font-weight: bold'>Código</td>
+                    <td  width='14%' style='font-weight: bold'>Medida</td>
+                    <td  width='22%' style='font-weight: bold'>Material</td>
+                    <td  width='12%' style='font-weight: bold'>Cantidad</td>
+                </tr>
+                ";
+
+
+        foreach ($listado as $dd) {
+
+            $tabla .= "<tr>
+                     <td  width='14%'>$dd->codmaterial</td>
+                     <td  width='14%'>$dd->codmaterial</td>
+                     <td  width='22%'>$dd->nomunidad</td>
+                     <td  width='12%'>$dd->cantidad</td>
+                </tr>
+                ";
+        }
+
+
+        $tabla .= "</tbody></table>";
+
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
+
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        //$mpdf->WriteHTML($tabla,2);
+        $mpdf->WriteHTML($tabla, 2);
+
+        $mpdf->Output();
+    }
 
 
 

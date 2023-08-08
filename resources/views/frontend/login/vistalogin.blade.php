@@ -134,7 +134,7 @@
 
         //bodegaelectrica
 
-        axios.post('/login', formData, {
+        axios.post('/bodegaelectrica/login', formData, {
         })
             .then((response) => {
                 closeLoading();

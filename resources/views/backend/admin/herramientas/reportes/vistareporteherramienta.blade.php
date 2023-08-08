@@ -54,6 +54,8 @@
                                         </div>
                                     </div>
 
+
+
                                     <h6>Reporte de Salida de Herramientas</h6>
 
                                     <div class="form-group row">
@@ -86,6 +88,20 @@
                                         </div>
                                     </div>
 
+
+                                    <h6>Reporte de Herramientas Descartadas (No se toman Fechas)</h6>
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-7">
+                                            <div class="info-box shadow">
+
+                                                <button type="button" onclick="pdfHerramientasDescartadas()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
+                                                    <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
+                                                    Generar PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <h6>Reporte de Inventario Actual (No se toman Fechas)</h6>
 
@@ -184,6 +200,12 @@
 
             window.open("{{ URL::to('admin/pdf/herramientas/reingreso') }}/" + desde + "/" + hasta);
 
+        }
+
+
+        function pdfHerramientasDescartadas(){
+
+            window.open("{{ URL::to('admin/pdf/herramientas/descartadas') }}");
         }
 
 

@@ -122,6 +122,10 @@ Route::get('/admin/reporte/quehasalido/proyectos/pdf/{idproy}/{desde}/{hasta}', 
 Route::get('/admin/reporte/inventario/quetengopor/proyecto', [ReportesController::class,'vistaQueTengoPorProyecto'])->name('admin.reporte.inventario.tengoporproyecto.index');
 Route::get('/admin/reporte/quetengopor/proyectos/pdf/{idproy}', [ReportesController::class,'reporteQueTengoPorProyecto']);
 
+// ver los materiales que sobraron de un proyecto completado
+Route::get('/admin/reporte/inventario/sobranteterminado/proyecto', [ReportesController::class,'vistaProyectoCompletado'])->name('admin.reporte.inventario.proyectocompletado.index');
+Route::get('/admin/reporte/inventario/sobranteterminado/proy/{idtrans}', [ReportesController::class,'reporteProyectoTerminado']);
+
 
 
 
@@ -132,7 +136,7 @@ Route::get('/admin/reporte/herramienta/index', [ReportesController::class,'vista
 Route::get('/admin/pdf/herramientas/inventario/actual', [ReporteHerramientaController::class,'pdfHerramientasActuales']);
 Route::get('/admin/pdf/herramientas/salidas/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasSalidas']);
 Route::get('/admin/pdf/herramientas/reingreso/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasReingreso']);
-
+Route::get('/admin/pdf/herramientas/descartadas', [ReporteHerramientaController::class,'pdfHerramientasDescartadas']);
 
 
 
@@ -168,14 +172,3 @@ Route::post('/admin/descartar/cantidad',  [HerramientasController::class,'descar
 
 
 
-
-
-
-
-
-// INGRESO DE HERRAMIENTAS AL INVENTARIO
-//Route::get('/admin/inventario/herramientas/index', [HerramientasController::class,'indexHerramientas'])->name('admin.herramientas.index');
-//Route::get('/admin/inventario/herramientas/tabla/index', [HerramientasController::class,'tablaHerramientas']);
-//Route::post('/admin/inventario/nuevo', [RepuestosController::class, 'nuevoMaterial']);
-//Route::post('/admin/inventario/informacion', [RepuestosController::class, 'informacionMaterial']);
-//Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);
