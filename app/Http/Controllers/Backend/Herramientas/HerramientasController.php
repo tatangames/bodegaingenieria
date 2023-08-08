@@ -294,6 +294,7 @@ class HerramientasController extends Controller
         // descripcion
         // quienrecibe
         // quienentrega
+        // numerosalida
 
         $validator = Validator::make($request->all(), $rules);
         if ( $validator->fails()){
@@ -311,6 +312,7 @@ class HerramientasController extends Controller
             $r->descripcion = $request->descripcion;
             $r->quien_recibe = $request->quienrecibe;
             $r->quien_entrega = $request->quienentrega;
+            $r->num_salida = $request->numerosalida;
             $r->save();
 
             for ($i = 0; $i < count($request->salida); $i++) {

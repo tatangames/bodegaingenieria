@@ -84,6 +84,14 @@
                                 </div>
                             </div>
 
+
+                            <div style="margin-left: 15px; margin-right: 15px; margin-top: 15px;">
+                                <div class="form-group">
+                                    <label># de Salida (Opcional):</label>
+                                    <input type="text" class="form-control" autocomplete="off" maxlength="100" id="num-salida">
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -480,6 +488,9 @@
             var quienrecibe = document.getElementById('quien-recibe').value; // max 200
             var quienentrega = document.getElementById('quien-entrega').value; // max 200
 
+            var numerosalida = document.getElementById('num-salida').value; // max 100
+
+
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
             }
@@ -586,6 +597,8 @@
             formData.append('descripcion', descripc);
             formData.append('quienrecibe', quienrecibe);
             formData.append('quienentrega', quienentrega);
+            formData.append('numerosalida', numerosalida);
+
 
             axios.post(url+'/salida/herramienta/a/usuario', formData, {
             })
@@ -655,6 +668,7 @@
             document.getElementById('descripcion').value = '';
             document.getElementById('quien-recibe').value = '';
             document.getElementById('quien-entrega').value = '';
+            document.getElementById('num-salida').value = '';
 
             $("#matriz tbody tr").remove();
         }

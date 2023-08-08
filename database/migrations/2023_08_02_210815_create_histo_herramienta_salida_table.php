@@ -21,6 +21,9 @@ class CreateHistoHerramientaSalidaTable extends Migration
             $table->string('quien_recibe', 200);
             $table->string('quien_entrega', 200);
 
+            // # de salida de herramienta
+            $table->string('num_salida', 100)->nullable();
+
         });
     }
 

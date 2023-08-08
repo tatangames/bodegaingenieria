@@ -169,26 +169,27 @@ class ReporteHerramientaController extends Controller
 
             $tabla .= "<tr>
                     <td  width='13%' style='font-weight: bold'>Fecha</td>
-                    <td  width='15%' style='font-weight: bold'>Descripción</td>
+                    <td  width='15%' colspan='2' style='font-weight: bold'>Descripción</td>
                 </tr>
                 ";
 
             $tabla .= "<tr>
                     <td width='13%'>$dd->fecha</td>
-                    <td width='15%'>$dd->descripcion</td>
+                    <td width='15%' colspan='2'>$dd->descripcion</td>
                     ";
 
 
             $tabla .= "<tr>
                     <td  width='13%' style='font-weight: bold'>Quien Entrego</td>
                     <td  width='15%' style='font-weight: bold'>Quien Recibio</td>
+                     <td  width='15%' style='font-weight: bold'># de Salida</td>
                 </tr>
                 ";
-
 
             $tabla .= "<tr>
                     <td width='13%'>$dd->quien_recibe</td>
                     <td width='15%'>$dd->quien_entrega</td>
+                    <td width='15%'>$dd->num_salida</td>
                     ";
 
             $tabla .= "</tbody></table>";
@@ -197,9 +198,9 @@ class ReporteHerramientaController extends Controller
             <tbody>";
 
             $tabla .= "<tr>
-                    <td width='12%'>Código</td>
-                    <td width='20%'>Herramienta</td>
-                    <td width='14%'>Cantidad</td>
+                    <td width='12%' style='font-weight: bold'>Código</td>
+                    <td width='20%' style='font-weight: bold'>Herramienta</td>
+                    <td width='14%' style='font-weight: bold'>Cantidad</td>
                 </tr>";
 
             foreach ($dd->detalle as $gg) {
