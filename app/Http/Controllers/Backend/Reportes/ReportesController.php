@@ -315,7 +315,8 @@ class ReportesController extends Controller
             $tabla = "<div class='content'>
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Inventario<br>
+            Inventario de Repuestos<br>
+            Departamento Eléctrico
             </div>";
 
 
