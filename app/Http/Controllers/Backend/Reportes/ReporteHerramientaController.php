@@ -47,9 +47,13 @@ class ReporteHerramientaController extends Controller
 
             }
 
+            $item->inicialherra = $cantidadSalida + $item->cantidad;
+
             $item->cantisalida = $cantidadSalida;
 
-            $item->totalherra = $cantidadSalida + $item->cantidad;
+            $inicial = $cantidadSalida + $item->cantidad;
+
+            $item->actualherramienta = $inicial - $cantidadSalida;
         }
 
 
@@ -76,9 +80,9 @@ class ReporteHerramientaController extends Controller
         $tabla .= "<tr>
                 <td width='15%' style='font-weight: bold'>Código</td>
                 <td width='50%' style='font-weight: bold'>Herramienta</td>
-                <td width='15%' style='font-weight: bold'>Inventariado</td>
+                <td width='15%' style='font-weight: bold'>Inicial Fijo</td>
                 <td width='15%' style='font-weight: bold'>Salida</td>
-                <td width='15%' style='font-weight: bold'>Total</td>
+                <td width='15%' style='font-weight: bold'>En Bodega</td>
             <tr>";
 
         foreach ($lista as $info) {
@@ -86,9 +90,9 @@ class ReporteHerramientaController extends Controller
             $tabla .= "<tr>
                 <td width='15%'>$info->codigo</td>
                 <td width='50%'>$info->nombre</td>
-                <td width='15%'>$info->cantidad</td>
+                <td width='15%'>$info->inicialherra</td>
                 <td width='15%'>$info->cantisalida</td>
-                 <td width='12%'>$info->totalherra</td>
+                 <td width='12%'>$info->actualherramienta</td>
             <tr>";
         }
 
@@ -253,8 +257,6 @@ class ReporteHerramientaController extends Controller
 
             $infoSalida = HistoHerramientaSalida::where('id', $ll->id_histo_herra_salida)->first();
             $ll->fechasalida = date("d-m-Y", strtotime($infoSalida->fecha));
-
-
         }
 
 
@@ -280,24 +282,25 @@ class ReporteHerramientaController extends Controller
 
 
         $tabla .= "<tr>
-                        <td style='font-weight: bold' width='12%'>Salio</td>
-                        <td style='font-weight: bold' width='12%'>Reingreso</td>
-                        <td style='font-weight: bold' width='12%'>Código</td>
-                        <td style='font-weight: bold' width='18%'>Herramienta</td>
-                        <td style='font-weight: bold' width='20%'>Descripción</td>
+                        <td style='font-weight: bold' width='10%'>Salio</td>
+                        <td style='font-weight: bold' width='10%'>Reingreso</td>
+                        <td style='font-weight: bold' width='16%'>Herramienta</td>
+                        <td style='font-weight: bold' width='16%'>Descripción</td>
+                        <td style='font-weight: bold' width='16%'>Cantidad</td>
                     </tr>";
+
 
         foreach ($listaReingreso as $dd) {
 
-
             $tabla .= "<tr>
-                        <td width='12%'>$dd->fechasalida</td>
-                        <td width='12%'>$dd->fechareingreso</td>
-                        <td width='12%'>$dd->codiherra</td>
-                        <td width='18%'>$dd->nomherra</td>
-                        <td width='20%'>$dd->descripcion</td>
+                        <td width='10%'>$dd->fechasalida</td>
+                        <td width='10%'>$dd->fechareingreso</td>
+                        <td width='16%'>$dd->nomherra</td>
+                        <td width='16%'>$dd->descripcion</td>
+                        <td width='16%'>$dd->cantidad</td>
                     </tr>";
         }
+
 
         $tabla .= "</tbody></table>";
 

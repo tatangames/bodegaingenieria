@@ -365,16 +365,8 @@ class ReportesController extends Controller
 
     public function vistaQueHaSalidoProyecto(){
 
-        $terminados = HistorialTransferido::all();
-
-        $pilaIdTransfe = array();
-
-        foreach ($terminados as $data){
-            array_push($pilaIdTransfe, $data->id_tipoproyecto);
-        }
-
+        // necesito todos los proyectos, ya que solo es reporte
         $proyectos = TipoProyecto::orderBy('nombre', 'ASC')
-            ->whereNotIn('id', $pilaIdTransfe)
             ->get();
 
         return view('backend.admin.repuestos.reporte.vistaquehasalidoproyecto', compact('proyectos'));
@@ -382,7 +374,7 @@ class ReportesController extends Controller
 
 
 
-    public function pdfQueHaSalidoProyectos($idproy, $desde, $hasta){
+    public function pdfQueHaSalidoProyectos($idproy, $desde, $hasta, $tipo){
 
         $infoProyecto = TipoProyecto::where('id', $idproy)->first();
 
@@ -393,59 +385,62 @@ class ReportesController extends Controller
         $hastaFormat = date("d-m-Y", strtotime($hasta));
 
 
-
-        $pilaArray = array();
-
-        $arrayHistoSalida = HistorialSalidas::where('id_tipoproyecto', $idproy)
-            ->whereBetween('fecha', [$start, $end])
-            ->orderBy('fecha', 'ASC')
-            ->get();
+            // JUNTOS
+        if($tipo == 1){
 
 
-        foreach ($arrayHistoSalida as $data){
-            array_push($pilaArray, $data->id);
-        }
+            $pilaArray = array();
 
-        $dataArray = array();
+            $arrayHistoSalida = HistorialSalidas::where('id_tipoproyecto', $idproy)
+                ->whereBetween('fecha', [$start, $end])
+                ->orderBy('fecha', 'ASC')
+                ->get();
 
-        $arraySalidaDetalle = HistorialSalidasDeta::whereIn('id_historial_salidas', $pilaArray)->get();
 
-        $arrayMateriales = Materiales::all();
+            foreach ($arrayHistoSalida as $data){
+                array_push($pilaArray, $data->id);
+            }
 
-        foreach ($arrayMateriales as $data){
+            $dataArray = array();
 
-            $infoMedida = UnidadMedida::where('id', $data->id_medida)->first();
+            $arraySalidaDetalle = HistorialSalidasDeta::whereIn('id_historial_salidas', $pilaArray)->get();
 
-            $cantidad = 0;
+            $arrayMateriales = Materiales::all();
 
-            foreach ($arraySalidaDetalle as $item) {
+            foreach ($arrayMateriales as $data){
 
-                if($item->id_material == $data->id){
-                    $cantidad = $cantidad + $item->cantidad;
+                $infoMedida = UnidadMedida::where('id', $data->id_medida)->first();
+
+                $cantidad = 0;
+
+                foreach ($arraySalidaDetalle as $item) {
+
+                    if($item->id_material == $data->id){
+                        $cantidad = $cantidad + $item->cantidad;
+                    }
+                }
+
+                if($cantidad > 0){
+                    $dataArray[] = [
+                        'nombre' => $data->nombre,
+                        'codigo' => $data->codigo,
+                        'cantidad' => $cantidad,
+                        'medida' => $infoMedida->nombre
+                    ];
                 }
             }
 
-            if($cantidad > 0){
-                $dataArray[] = [
-                    'nombre' => $data->nombre,
-                    'codigo' => $data->codigo,
-                    'cantidad' => $cantidad,
-                    'medida' => $infoMedida->nombre
-                ];
-            }
-        }
 
+            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+            $mpdf->SetTitle('Inventario Actual');
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Inventario Actual');
+            // mostrar errores
+            $mpdf->showImageErrors = false;
 
-        // mostrar errores
-        $mpdf->showImageErrors = false;
+            $logoalcaldia = 'images/logo2.png';
 
-        $logoalcaldia = 'images/logo2.png';
-
-        $tabla = "<div class='content'>
+            $tabla = "<div class='content'>
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
             Reporte de Materiales Entregados <br>
@@ -453,42 +448,157 @@ class ReportesController extends Controller
             </div>";
 
 
-        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
+            $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
 
 
-        $tabla .= "<table width='100%' id='tablaFor'>
+            $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
 
-        $tabla .= "<tr>
+            $tabla .= "<tr>
                 <td width='15%' style='font-weight: bold'>Código</td>
                 <td width='50%' style='font-weight: bold'>Material</td>
                 <td width='15%' style='font-weight: bold'>Cantidad</td>
             <tr>";
 
-        foreach ($dataArray as $info) {
+            foreach ($dataArray as $info) {
 
-            $codigo = $info['codigo'];
-            $nombre = $info['nombre'];
-            $cantidad = $info['cantidad'];
+                $codigo = $info['codigo'];
+                $nombre = $info['nombre'];
+                $cantidad = $info['cantidad'];
 
-            $tabla .= "<tr>
+                $tabla .= "<tr>
                 <td width='15%'>$codigo</td>
                 <td width='50%'>$nombre</td>
                 <td width='15%'>$cantidad</td>
             <tr>";
 
+            }
+
+            $tabla .= "</tbody></table>";
+
+
+            $stylesheet = file_get_contents('css/cssregistro.css');
+            $mpdf->WriteHTML($stylesheet,1);
+
+            $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+            $mpdf->WriteHTML($tabla,2);
+
+            $mpdf->Output();
+
+
+        }else{
+            // SEPARADOS
+
+
+            $arrayHistoSalida = HistorialSalidas::where('id_tipoproyecto', $idproy)
+                ->whereBetween('fecha', [$start, $end])
+                ->orderBy('fecha', 'ASC')
+                ->get();
+
+            $resultsBloque = array();
+            $index = 0;
+
+
+            foreach ($arrayHistoSalida as $data){
+
+                array_push($resultsBloque, $data);
+
+                $data->fecha = date("d-m-Y", strtotime($data->fecha));
+
+                $arrayDetalle = HistorialSalidasDeta::where('id_historial_salidas', $data->id)->get();
+
+                foreach ($arrayDetalle as $deta){
+
+                    $infoMate = Materiales::where('id', $deta->id_material)->first();
+                    $infoMedida = UnidadMedida::where('id', $infoMate->id_medida)->first();
+
+                    $deta->nombremate = $infoMate->nombre;
+                    $deta->codigo = $infoMate->codigo;
+                    $deta->unimedida = $infoMedida->nombre;
+                }
+
+                $resultsBloque[$index]->detalle = $arrayDetalle;
+                $index++;
+            }
+
+
+            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+            $mpdf->SetTitle('Inventario Actual');
+
+            // mostrar errores
+            $mpdf->showImageErrors = false;
+
+            $logoalcaldia = 'images/logo2.png';
+
+            $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Reporte de Materiales Entregados <br>
+            Fecha: $desdeFormat  -  $hastaFormat
+            </div>";
+
+
+            $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
+
+
+            foreach ($arrayHistoSalida as $info) {
+
+
+                $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+                    $tabla .= "<tr>
+                        <td width='15%' style='font-weight: bold'>Fecha</td>
+                        <td width='50%' style='font-weight: bold'>Descripción</td>
+                    <tr>";
+
+                    $tabla .= "<tr>
+                        <td width='15%' style='font-weight: normal'>$info->fecha</td>
+                        <td width='50%' style='font-weight: normal'>$info->descripcion</td>
+                    <tr>";
+
+                $tabla .= "</tbody></table>";
+
+
+
+                $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+                    $tabla .= "<tr>
+                    <td width='12%' style='font-weight: bold'>Código</td>
+                    <td width='12%' style='font-weight: bold'>Medida</td>
+                    <td width='30%' style='font-weight: bold'>Material</td>
+                    <td width='12%' style='font-weight: bold'>Cantidad</td>
+                <tr>";
+
+
+                    foreach ($info->detalle as $data) {
+                                $tabla .= "<tr>
+                        <td width='12%' style='font-weight: normal'>$data->codigo</td>
+                        <td width='12%' style='font-weight: normal'>$data->nombremate</td>
+                        <td width='30%' style='font-weight: normal'>$data->unimedida</td>
+                        <td width='12%' style='font-weight: normal'>$data->cantidad</td>
+                    <tr>";
+
+                }
+
+                $tabla .= "</tbody></table>";
+
+            }
+
+
+            $stylesheet = file_get_contents('css/cssregistro.css');
+            $mpdf->WriteHTML($stylesheet,1);
+
+            $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+            $mpdf->WriteHTML($tabla,2);
+
+            $mpdf->Output();
         }
 
-        $tabla .= "</tbody></table>";
 
 
-        $stylesheet = file_get_contents('css/cssregistro.css');
-        $mpdf->WriteHTML($stylesheet,1);
-
-        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
-        $mpdf->WriteHTML($tabla,2);
-
-        $mpdf->Output();
     }
 
 

@@ -69,7 +69,20 @@
                                 </div>
 
 
-                                <div class="form-group row">
+                                <div class="form-group">
+                                    <label style="color:#191818">Tipo de Reporte</label>
+                                    <br>
+                                    <div>
+                                        <select class="form-control" id="select-tipo">
+                                                <option value="1">Juntos</option>
+                                                <option value="2">Separado</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                    <div class="form-group row">
                                     <div class="col-sm-7">
                                         <div class="info-box shadow">
 
@@ -130,6 +143,7 @@
             var idproy = document.getElementById('select-proyecto').value;
             var desde = document.getElementById('fecha-desde').value;
             var hasta = document.getElementById('fecha-hasta').value;
+            var tipo = document.getElementById('select-tipo').value;
 
             if(desde === ''){
                 toastr.error('Fecha desde es requerido');
@@ -146,7 +160,12 @@
                 return;
             }
 
-            window.open("{{ URL::to('admin/reporte/quehasalido/proyectos/pdf') }}/" + idproy+ "/" + desde + "/" + hasta);
+            if(tipo === ''){
+                toastr.error('Seleccionar Tipo');
+                return;
+            }
+
+            window.open("{{ URL::to('admin/reporte/quehasalido/proyectos/pdf') }}/" + idproy+ "/" + desde + "/" + hasta + "/" + tipo);
         }
 
     </script>
