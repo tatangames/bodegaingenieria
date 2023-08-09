@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\HerramientaPendiente;
 use App\Models\Herramientas;
 use App\Models\HistoHerramientaDescartada;
+use App\Models\HistoHerramientaRegistro;
+use App\Models\HistoHerramientaRegistroDeta;
 use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
@@ -323,11 +325,9 @@ class ReporteHerramientaController extends Controller
 
             $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
 
-
             $infoHerra = Herramientas::where('id', $dato->id_herramienta)->first();
             $dato->nomherra = $infoHerra->nombre;
             $dato->codiherra = $infoHerra->codigo;
-
 
             $infoMedida = UnidadMedida::where('id', $infoHerra->id_medida)->first();
             $dato->herramedida = $infoMedida->nombre;
@@ -386,6 +386,122 @@ class ReporteHerramientaController extends Controller
     }
 
 
+
+
+    public function pdfNuevasHerramientas($desde, $hasta){
+
+        $start = Carbon::parse($desde)->startOfDay();
+        $end = Carbon::parse($hasta)->endOfDay();
+
+
+
+        $desdeFormat = date("d-m-Y", strtotime($desde));
+        $hastaFormat = date("d-m-Y", strtotime($hasta));
+
+
+        // lista de ingresos nuevos
+        $listaIngreso = HistoHerramientaRegistro::whereBetween('fecha', [$start, $end])
+            ->orderBy('fecha', 'ASC')
+            ->get();
+
+        $resultsBloque = array();
+        $index = 0;
+
+        foreach ($listaIngreso as $dato){
+
+            array_push($resultsBloque, $dato);
+
+            $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
+
+            $arrayDetalle = HistoHerramientaRegistroDeta::where('id_herra_registro', $dato->id)->get();
+
+            foreach ($arrayDetalle as $deta){
+
+                $infoHerra = Herramientas::where('id', $deta->id_herramienta)->first();
+                $infoMedida = UnidadMedida::where('id', $infoHerra->id_medida)->first();
+
+                $deta->nombreherra = $infoHerra->nombre;
+                $deta->codigo = $infoHerra->codigo;
+                $deta->unimedida = $infoMedida->nombre;
+            }
+
+            $resultsBloque[$index]->detalle = $arrayDetalle;
+            $index++;
+        }
+
+
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Nueva Herramienta');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Ingreso de Herramientas<br>
+            Fecha: $desdeFormat  -  $hastaFormat </p>
+            </div>";
+
+
+
+        foreach ($listaIngreso as $info) {
+
+
+            $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+            $tabla .= "<tr>
+                        <td width='15%' style='font-weight: bold'>Fecha</td>
+                        <td width='50%' style='font-weight: bold'>Descripción</td>
+                    <tr>";
+
+            $tabla .= "<tr>
+                        <td width='15%' style='font-weight: normal'>$info->fecha</td>
+                        <td width='50%' style='font-weight: normal'>$info->descripcion</td>
+                    <tr>";
+
+            $tabla .= "</tbody></table>";
+
+
+
+            $tabla .= "<table width='100%' id='tablaFor'>
+                    <tbody>";
+
+            $tabla .= "<tr>
+                    <td width='12%' style='font-weight: bold'>Código</td>
+                    <td width='12%' style='font-weight: bold'>Medida</td>
+                    <td width='30%' style='font-weight: bold'>Herramienta</td>
+                    <td width='12%' style='font-weight: bold'>Cantidad</td>
+                <tr>";
+
+            foreach ($info->detalle as $data) {
+                $tabla .= "<tr>
+                        <td width='12%' style='font-weight: normal'>$data->codigo</td>
+                        <td width='12%' style='font-weight: normal'>$data->nombreherra</td>
+                        <td width='30%' style='font-weight: normal'>$data->unimedida</td>
+                        <td width='12%' style='font-weight: normal'>$data->cantidad</td>
+                    <tr>";
+
+            }
+
+            $tabla .= "</tbody></table>";
+
+        }
+
+
+
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
+
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        $mpdf->WriteHTML($tabla,2);
+
+        $mpdf->Output();
+    }
 
 
 

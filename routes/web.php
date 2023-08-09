@@ -137,6 +137,7 @@ Route::get('/admin/pdf/herramientas/inventario/actual', [ReporteHerramientaContr
 Route::get('/admin/pdf/herramientas/salidas/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasSalidas']);
 Route::get('/admin/pdf/herramientas/reingreso/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasReingreso']);
 Route::get('/admin/pdf/herramientas/descartadas', [ReporteHerramientaController::class,'pdfHerramientasDescartadas']);
+Route::get('/admin/pdf/herramientas/nuevosingresos/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfNuevasHerramientas']);
 
 
 

@@ -89,6 +89,21 @@
                                     </div>
 
 
+                                    <h6>Reporte de Ingreso de Nueva Herramienta</h6>
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-7">
+                                            <div class="info-box shadow">
+
+                                                <button type="button" onclick="pdfNuevasHerramientas()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
+                                                    <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
+                                                    Generar PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                     <h6>Reporte de Herramientas Descartadas (No se toman Fechas)</h6>
 
                                     <div class="form-group row">
@@ -207,6 +222,28 @@
 
             window.open("{{ URL::to('admin/pdf/herramientas/descartadas') }}");
         }
+
+
+
+        function pdfNuevasHerramientas(){
+
+            var desde = document.getElementById('fecha-desde').value;
+            var hasta = document.getElementById('fecha-hasta').value;
+
+            if(desde === ''){
+                toastr.error('Fecha desde es requerido');
+                return;
+            }
+
+            if(hasta === ''){
+                toastr.error('Fecha hasta es requerido');
+                return;
+            }
+
+            window.open("{{ URL::to('admin/pdf/herramientas/nuevosingresos') }}/" + desde + "/" + hasta);
+
+        }
+
 
 
     </script>
