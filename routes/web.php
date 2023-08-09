@@ -112,7 +112,7 @@ Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController
 
 // REPORTES DE INVENTARIO
 Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
-Route::get('/admin/reporte/inventario/pdf', [ReportesController::class,'reporteInventarioActual']);
+Route::get('/admin/reporte/inventario/pdf/{tipo}', [ReportesController::class,'reporteInventarioActual']);
 
 // que ha salido para x proyecto
 Route::get('/admin/reporte/inventario/quehasalido/proyecto', [ReportesController::class,'vistaQueHaSalidoProyecto'])->name('admin.reporte.inventario.salidaproyecto.index');

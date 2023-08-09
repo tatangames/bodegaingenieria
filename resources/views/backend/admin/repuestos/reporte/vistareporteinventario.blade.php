@@ -30,17 +30,25 @@
                             <form class="form-horizontal">
                                 <div class="card-body">
 
-                                    <div class="form-group row">
-                                        <div class="col-sm-7">
-                                            <div class="info-box shadow">
 
-                                                <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 10px; border-color: black; border-radius: 0.1px;">
-                                                    <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
-                                                    Generar PDF
-                                                </button>
-                                            </div>
+
+                                    <div class="form-group">
+                                        <label style="color:#191818">Tipo de Reporte</label>
+                                        <br>
+                                        <div>
+                                            <select class="form-control" id="select-tipo" style="max-width: 15%">
+                                                <option value="1">Juntos</option>
+                                                <option value="2">Separado</option>
+                                            </select>
                                         </div>
                                     </div>
+
+
+                                    <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 30px; border-color: black; border-radius: 0.1px;">
+                                        <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
+                                        Generar PDF
+                                    </button>
+
 
                                 </div>
                             </form>
@@ -88,7 +96,15 @@
 
         function generarPdf() {
 
-            window.open("{{ URL::to('admin/reporte/inventario/pdf') }}");
+
+            var tipo = document.getElementById('select-tipo').value;
+
+            if(tipo === ''){
+                toastr.error('Seleccionar Tipo');
+                return;
+            }
+
+            window.open("{{ URL::to('admin/reporte/inventario/pdf') }}/" + tipo);
         }
 
     </script>
