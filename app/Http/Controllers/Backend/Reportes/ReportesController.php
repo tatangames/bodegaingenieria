@@ -787,6 +787,7 @@ class ReportesController extends Controller
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
             Inventario de Proyecto <br>
+            Bodega Eléctrica <br>
             </div>";
 
 
