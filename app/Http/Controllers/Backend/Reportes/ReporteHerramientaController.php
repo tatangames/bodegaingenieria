@@ -58,13 +58,11 @@ class ReporteHerramientaController extends Controller
             $item->actualherramienta = $inicial - $cantidadSalida;
         }
 
-
-
         //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
         $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Inventario Actual');
 
-        // mostrar errores
+        // mostrar errores pdf
         $mpdf->showImageErrors = false;
 
         $logoalcaldia = 'images/logo2.png';
