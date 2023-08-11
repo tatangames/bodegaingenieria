@@ -73,6 +73,7 @@ class ReporteHerramientaController extends Controller
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
             Inventario de Herramientas<br>
+            Departamento de Ingeniería Eléctrica<br>
             </div>";
 
 
@@ -148,9 +149,7 @@ class ReporteHerramientaController extends Controller
                 ->orderBy('histo.cantidad', 'ASC')
                 ->get();
 
-            foreach ($listaDetalle as $dd){
 
-            }
 
             $resultsBloque[$index]->detalle = $listaDetalle;
             $index++;
@@ -168,7 +167,7 @@ class ReporteHerramientaController extends Controller
         $tabla = "<div class='content'>
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Salidas de Herramientas<br>
+            Salidas de Herramientas <br>
             Fecha: $desdeFormat  -  $hastaFormat </p>
             </div>";
 
