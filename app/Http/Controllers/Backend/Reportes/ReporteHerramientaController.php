@@ -457,6 +457,7 @@ class ReporteHerramientaController extends Controller
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
             Ingreso de Herramientas<br>
+            Departamento Eléctrico<br>
             Fecha: $desdeFormat  -  $hastaFormat </p>
             </div>";
 
@@ -486,17 +487,17 @@ class ReporteHerramientaController extends Controller
                     <tbody>";
 
             $tabla .= "<tr>
-                    <td width='12%' style='font-weight: bold'>Código</td>
-                    <td width='12%' style='font-weight: bold'>Medida</td>
-                    <td width='30%' style='font-weight: bold'>Herramienta</td>
+                    <td width='10%' style='font-weight: bold'>Código</td>
+                    <td width='15%' style='font-weight: bold'>Medida</td>
+                    <td width='25%' style='font-weight: bold'>Herramienta</td>
                     <td width='12%' style='font-weight: bold'>Cantidad</td>
                 <tr>";
 
             foreach ($info->detalle as $data) {
                 $tabla .= "<tr>
-                        <td width='12%' style='font-weight: normal'>$data->codigo</td>
-                        <td width='12%' style='font-weight: normal'>$data->nombreherra</td>
-                        <td width='30%' style='font-weight: normal'>$data->unimedida</td>
+                        <td width='10%' style='font-weight: normal'>$data->codigo</td>
+                        <td width='15%' style='font-weight: normal'>$data->nombreherra</td>
+                        <td width='25%' style='font-weight: normal'>$data->unimedida</td>
                         <td width='12%' style='font-weight: normal'>$data->cantidad</td>
                     <tr>";
 
