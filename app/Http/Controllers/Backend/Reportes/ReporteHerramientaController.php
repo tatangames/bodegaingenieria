@@ -203,8 +203,8 @@ class ReporteHerramientaController extends Controller
                 ";
 
             $tabla .= "<tr>
-                    <td width='13%'>$dd->nomrecibe</td>
-                    <td width='15%'>$dd->nomentrega</td>
+                    <td width='13%'>$dd->nomentrega</td>
+                    <td width='15%'>$dd->nomrecibe</td>
                     <td width='15%'>$dd->num_salida</td>
                     ";
 
