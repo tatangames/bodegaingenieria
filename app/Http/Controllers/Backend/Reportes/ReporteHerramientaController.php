@@ -11,6 +11,8 @@ use App\Models\HistoHerramientaRegistroDeta;
 use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
+use App\Models\QuienEntrega;
+use App\Models\QuienRecibe;
 use App\Models\UnidadMedida;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -137,6 +139,12 @@ class ReporteHerramientaController extends Controller
 
             $ll->fecha = date("d-m-Y", strtotime($ll->fecha));
 
+            $infoEntrego = QuienEntrega::where('id', $ll->quien_entrega)->first();
+            $infoRecibe = QuienRecibe::where('id', $ll->quien_recibe)->first();
+
+            $ll->nomrecibe = $infoRecibe->nombre;
+            $ll->nomentrega = $infoEntrego->nombre;
+
             array_push($resultsBloque, $ll);
 
             // obtener detalle
@@ -166,6 +174,7 @@ class ReporteHerramientaController extends Controller
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
             Salidas de Herramientas <br>
+            Departamento Eléctrico <br>
             Fecha: $desdeFormat  -  $hastaFormat </p>
             </div>";
 
@@ -194,8 +203,8 @@ class ReporteHerramientaController extends Controller
                 ";
 
             $tabla .= "<tr>
-                    <td width='13%'>$dd->quien_recibe</td>
-                    <td width='15%'>$dd->quien_entrega</td>
+                    <td width='13%'>$dd->nomrecibe</td>
+                    <td width='15%'>$dd->nomentrega</td>
                     <td width='15%'>$dd->num_salida</td>
                     ";
 
