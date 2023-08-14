@@ -70,19 +70,28 @@
                         </div>
                         <div class="card-body">
 
-                            <div style="margin-left: 15px; margin-right: 15px; margin-top: 15px;">
+
+
                                 <div class="form-group">
                                     <label>Quien Entrega:</label>
-                                    <input type="text" class="form-control" maxlength="200" id="quien-entrega">
+                                    <br>
+                                    <select width="100%"  class="form-control" id="select-entrega">
+                                        @foreach($arrayEntrega as $sel)
+                                            <option value="{{ $sel->id }}">{{ $sel->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
 
-                            <div style="margin-left: 15px; margin-right: 15px; margin-top: 15px;">
+
                                 <div class="form-group">
                                     <label>Quien Recibe:</label>
-                                    <input type="text" class="form-control" autocomplete="off" maxlength="200" id="quien-recibe">
+                                    <br>
+                                    <select width="100%"  class="form-control" id="select-recibe">
+                                        @foreach($arrayRecibe as $sel)
+                                            <option value="{{ $sel->id }}">{{ $sel->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
 
 
                             <div style="margin-left: 15px; margin-right: 15px; margin-top: 15px;">
@@ -91,6 +100,7 @@
                                     <input type="text" class="form-control" autocomplete="off" maxlength="100" id="num-salida">
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -231,14 +241,7 @@
                 });
             });
 
-            $('#select-equipo').select2({
-                theme: "bootstrap-5",
-                "language": {
-                    "noResults": function(){
-                        return "Busqueda no encontrada";
-                    }
-                },
-            });
+
         });
     </script>
 
@@ -485,24 +488,14 @@
 
             var fecha = document.getElementById('fecha').value;
             var descripc = document.getElementById('descripcion').value; // max 800
-            var quienrecibe = document.getElementById('quien-recibe').value; // max 200
-            var quienentrega = document.getElementById('quien-entrega').value; // max 200
+            var quienrecibe = document.getElementById('select-recibe').value;
+            var quienentrega = document.getElementById('select-entrega').value;
 
             var numerosalida = document.getElementById('num-salida').value; // max 100
 
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
-            }
-
-            if(quienrecibe === ''){
-                toastr.error('Quien Recibe requerido');
-                return;
-            }
-
-            if(quienrecibe.length > 200){
-                toastr.error('Quien Recibe máximo 200 caracteres');
-                return;
             }
 
 
@@ -666,8 +659,6 @@
 
         function limpiar(){
             document.getElementById('descripcion').value = '';
-            document.getElementById('quien-recibe').value = '';
-            document.getElementById('quien-entrega').value = '';
             document.getElementById('num-salida').value = '';
 
             $("#matriz tbody tr").remove();

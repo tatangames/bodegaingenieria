@@ -11,6 +11,8 @@ use App\Models\HistoHerramientaRegistroDeta;
 use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
+use App\Models\QuienEntrega;
+use App\Models\QuienRecibe;
 use App\Models\UnidadMedida;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -246,7 +248,10 @@ class HerramientasController extends Controller
 
     public function indexSalidaHerramientas(){
 
-        return view('backend.admin.herramientas.salidausuario.vistasalidausuario');
+        $arrayRecibe = QuienRecibe::orderby('nombre')->get();
+        $arrayEntrega = QuienEntrega::orderby('nombre')->get();
+
+        return view('backend.admin.herramientas.salidausuario.vistasalidausuario', compact('arrayRecibe', 'arrayEntrega'));
     }
 
 
