@@ -428,11 +428,15 @@ class ReporteHerramientaController extends Controller
             foreach ($arrayDetalle as $deta){
 
                 $infoHerra = Herramientas::where('id', $deta->id_herramienta)->first();
-                $infoMedida = UnidadMedida::where('id', $infoHerra->id_medida)->first();
+
+                $nommedida = "";
+                if($infoMedida = UnidadMedida::where('id', $infoHerra->id_medida)->first()){
+                    $nommedida = $infoMedida->nombre;
+                }
 
                 $deta->nombreherra = $infoHerra->nombre;
                 $deta->codigo = $infoHerra->codigo;
-                $deta->unimedida = $infoMedida->nombre;
+                $deta->unimedida = $nommedida;
             }
 
             $resultsBloque[$index]->detalle = $arrayDetalle;
