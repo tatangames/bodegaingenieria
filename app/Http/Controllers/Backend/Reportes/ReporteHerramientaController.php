@@ -469,15 +469,16 @@ class ReporteHerramientaController extends Controller
             $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
 
-            $tabla .= "<tr>
-                        <td width='15%' style='font-weight: bold'>Fecha</td>
-                        <td width='50%' style='font-weight: bold'>Descripción</td>
-                    <tr>";
+                $tabla .= "<tr>
+                            <td width='15%' style='font-weight: bold'>Fecha</td>
+                            <td width='30%' style='font-weight: bold'>Descripción</td>
+                        <tr>";
 
-            $tabla .= "<tr>
-                        <td width='15%' style='font-weight: normal'>$info->fecha</td>
-                        <td width='50%' style='font-weight: normal'>$info->descripcion</td>
-                    <tr>";
+                $tabla .= "<tr>
+                            <td width='15%' style='font-weight: normal'>$info->fecha</td>
+                            <td width='30%' style='font-weight: normal'>$info->descripcion</td>
+                        <tr>";
+
 
             $tabla .= "</tbody></table>";
 
@@ -495,10 +496,10 @@ class ReporteHerramientaController extends Controller
 
             foreach ($info->detalle as $data) {
                 $tabla .= "<tr>
-                        <td width='10%' style='font-weight: normal'>$data->codigo</td>
-                        <td width='15%' style='font-weight: normal'>$data->unimedida</td>
-                        <td width='25%' style='font-weight: normal'>$data->nombreherra</td>
-                        <td width='12%' style='font-weight: normal'>$data->cantidad</td>
+                        <td style='font-weight: normal'>$data->codigo</td>
+                        <td style='font-weight: normal'>$data->unimedida</td>
+                        <td style='font-weight: normal'>$data->nombreherra</td>
+                        <td style='font-weight: normal'>$data->cantidad</td>
                     <tr>";
 
             }
