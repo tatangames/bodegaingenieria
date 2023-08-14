@@ -70,8 +70,6 @@
                         </div>
                         <div class="card-body">
 
-
-
                                 <div class="form-group">
                                     <label>Quien Entrega:</label>
                                     <br>
