@@ -95,7 +95,7 @@ class ReporteHerramientaController extends Controller
                 <td width='50%'>$info->nombre</td>
                 <td width='15%'>$info->inicialherra</td>
                 <td width='15%'>$info->cantisalida</td>
-                 <td width='12%'>$info->actualherramienta</td>
+                <td width='12%'>$info->actualherramienta</td>
             <tr>";
             }
 

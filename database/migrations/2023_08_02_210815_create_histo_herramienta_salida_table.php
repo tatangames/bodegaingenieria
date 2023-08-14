@@ -18,12 +18,17 @@ class CreateHistoHerramientaSalidaTable extends Migration
 
             $table->date('fecha');
             $table->string('descripcion', 800)->nullable();
-            $table->string('quien_recibe', 200);
-            $table->string('quien_entrega', 200);
+
+
+            $table->bigInteger('quien_recibe')->unsigned();
+            $table->bigInteger('quien_entrega')->unsigned();
 
             // # de salida de herramienta
             $table->string('num_salida', 100)->nullable();
 
+
+            $table->foreign('quien_recibe')->references('id')->on('quienrecibe');
+            $table->foreign('quien_entrega')->references('id')->on('quienentrega');
         });
     }
 

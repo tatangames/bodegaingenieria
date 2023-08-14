@@ -13,6 +13,8 @@ use App\Http\Controllers\Backend\Repuestos\SalidasController;
 use App\Http\Controllers\Backend\Reportes\ReportesController;
 use App\Http\Controllers\Backend\Herramientas\HerramientasController;
 use App\Http\Controllers\Backend\Reportes\ReporteHerramientaController;
+use App\Http\Controllers\Backend\Configuracion\ConfiguracionController;
+use App\Http\Controllers\Backend\Historial\HistorialController;
 
 
 Route::get('/', [LoginController::class,'index'])->name('login');
@@ -102,6 +104,51 @@ Route::post('/admin/repuesto/cantidad/bloque', [SalidasController::class,'bloque
 // TRANSFERENCIAS
 Route::get('/admin/transferecias/a/huesera', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
 Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'geenrarSalidaTransferencia']);
+
+
+
+
+// CONFIGURACION
+
+// registrar quien recibe
+Route::get('/admin/registrar/quienrecibe/index', [ConfiguracionController::class,'indexVistaRegistroQuienRecibe'])->name('admin.registrar.quienrecibe.index');
+Route::get('/admin/registrar/quienrecibe/tabla', [ConfiguracionController::class,'tablaRegistroQuienRecibe']);
+Route::post('/admin/registrar/nombre/quienrecibe',  [ConfiguracionController::class,'registrarNombreQuienRecibe']);
+Route::post('/admin/informacion/quienrecibe',  [ConfiguracionController::class,'informacionQuienRecibe']);
+Route::post('/admin/actualizar/nombre/quienrecibe',  [ConfiguracionController::class,'actualizarNombreQuienRecibe']);
+
+
+// registrar quien entrega
+Route::get('/admin/registrar/quienentrega/index', [ConfiguracionController::class,'indexVistaRegistroQuienEntrega'])->name('admin.registrar.quienentrega.index');
+Route::get('/admin/registrar/quienentrega/tabla', [ConfiguracionController::class,'tablaRegistroQuienEntrega']);
+Route::post('/admin/registrar/nombre/quienentrega',  [ConfiguracionController::class,'registrarNombreQuienEntrega']);
+Route::post('/admin/informacion/quienentrega',  [ConfiguracionController::class,'informacionQuienEntrega']);
+Route::post('/admin/actualizar/nombre/quienentrega',  [ConfiguracionController::class,'actualizarNombreQuienEntrega']);
+
+
+
+// HISTORIAL
+
+// listado historial de herramientas para Salida
+Route::get('/admin/historial/salida/herramienta/index', [HistorialController::class,'indexHistorialHerramientaSalida'])->name('admin.historial.salidas.herramientas');
+Route::get('/admin/historial/salida/herramienta/tabla', [HistorialController::class,'tablaHistorialHerramientaSalida']);
+Route::post('/admin/historial/salida/herramienta/informacion',  [HistorialController::class,'informacionHistorialSalidaHerramienta']);
+Route::post('/admin/historial/salida/herramienta/actualizar',  [HistorialController::class,'actualizarHistorialSalidaHerramienta']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
