@@ -183,6 +183,14 @@
 
 
                         <li class="nav-item">
+                            <a href="{{ route('admin.historial.salidas.repuestos') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Salida Repuestos</p>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
                             <a href="{{ route('admin.historial.salidas.herramientas') }}" target="frameprincipal" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Salida Herramientas</p>

@@ -23,7 +23,7 @@
 
     <section class="content-header">
         <div class="row">
-            <h1 style="margin-left: 5px">Historial de Salidas de Herramientas</h1>
+            <h1 style="margin-left: 5px">Historial de Salidas de Repuestos</h1>
         </div>
 
     </section>
@@ -73,34 +73,9 @@
                                         <input type="date" class="form-control" id="fecha-editar">
                                     </div>
 
-
-
                                     <div class="form-group">
                                         <label>Descripción</label>
                                         <input type="text" autocomplete="off" maxlength="800" class="form-control" id="descripcion-editar" placeholder="Descripción">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label># de Salida</label>
-                                        <input type="text" autocomplete="off" maxlength="100" class="form-control" id="numero-salida" placeholder="# de Salida">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label style="color:#191818">Quien Recibe</label>
-                                        <br>
-                                        <div>
-                                            <select class="form-control" id="select-quienrecibe">
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label style="color:#191818">Quien Entrega</label>
-                                        <br>
-                                        <div>
-                                            <select class="form-control" id="select-quienentrega">
-                                            </select>
-                                        </div>
                                     </div>
 
 
@@ -135,18 +110,11 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            var ruta = "{{ URL::to('/admin/historial/salida/herramienta/tabla') }}";
+            var ruta = "{{ URL::to('/admin/historial/salida/repuestos/tabla') }}";
             $('#tablaDatatable').load(ruta);
 
 
-            $('#select-unidad-editar').select2({
-                theme: "bootstrap-5",
-                "language": {
-                    "noResults": function(){
-                        return "Busqueda no encontrada";
-                    }
-                },
-            });
+
 
             document.getElementById("divcontenedor").style.display = "block";
         });
@@ -155,7 +123,7 @@
     <script>
 
         function recargar(){
-            var ruta = "{{ url('/admin/historial/salida/herramienta/tabla') }}";
+            var ruta = "{{ url('/admin/historial/salida/repuestos/tabla') }}";
             $('#tablaDatatable').load(ruta);
         }
 
@@ -171,7 +139,7 @@
             openLoading();
             document.getElementById("formulario-editar").reset();
 
-            axios.post(url+'/historial/salida/herramienta/informacion',{
+            axios.post(url+'/historial/salida/repuestos/informacion',{
                 'id': id
             })
                 .then((response) => {
@@ -182,28 +150,6 @@
 
                         $('#fecha-editar').val(response.data.info.fecha);
                         $('#descripcion-editar').val(response.data.info.descripcion);
-                        $('#numero-salida').val(response.data.info.num_salida);
-
-
-                        document.getElementById("select-quienentrega").options.length = 0;
-                        document.getElementById("select-quienrecibe").options.length = 0;
-
-
-                        $.each(response.data.arrayrecibe, function( key, val ){
-                            if(response.data.info.quien_recibe === val.id){
-                                $('#select-quienrecibe').append('<option value="' +val.id +'" selected="selected">'+val.nombre+'</option>');
-                            }else{
-                                $('#select-quienrecibe').append('<option value="' +val.id +'">'+val.nombre+'</option>');
-                            }
-                        });
-
-                        $.each(response.data.arrayentrega, function( key, val ){
-                            if(response.data.info.quien_entrega === val.id){
-                                $('#select-quienentrega').append('<option value="' +val.id +'" selected="selected">'+val.nombre+'</option>');
-                            }else{
-                                $('#select-quienentrega').append('<option value="' +val.id +'">'+val.nombre+'</option>');
-                            }
-                        });
 
 
                         $('#modalEditar').modal('show');
@@ -225,38 +171,15 @@
             var id = document.getElementById('id-editar').value;
             var fecha = document.getElementById('fecha-editar').value;
             var descripcion = document.getElementById('descripcion-editar').value;
-            var recibo = document.getElementById('numero-salida').value;
-
-            var idrecibe = document.getElementById('select-quienrecibe').value;
-            var identrega = document.getElementById('select-quienentrega').value;
-
-            if(fecha === ''){
-                toastr.error('Fecha es requerido');
-                return;
-            }
-
-            if(idrecibe === ''){
-                toastr.error('Quien Recibe es requerido');
-                return;
-            }
-
-            if(identrega === ''){
-                toastr.error('Quien Entrega es requerido');
-                return;
-            }
-
 
             openLoading();
             var formData = new FormData();
             formData.append('id', id);
             formData.append('fecha', fecha);
             formData.append('descripcion', descripcion);
-            formData.append('recibo', recibo);
-            formData.append('identrega', identrega);
-            formData.append('idrecibe', idrecibe);
 
 
-            axios.post(url+'/historial/salida/herramienta/actualizar', formData, {
+            axios.post(url+'/historial/salida/repuestos/actualizar', formData, {
             })
                 .then((response) => {
                     closeLoading();
@@ -277,9 +200,9 @@
         }
 
 
-
         function detalleHistorial(id){
-            window.location.href="{{ url('/admin/historial/salida/herramientas/detalle') }}/" + id;
+
+            window.location.href="{{ url('/admin/historial/salida/repuestos/detalle') }}/" + id;
         }
 
 

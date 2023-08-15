@@ -9,9 +9,7 @@
                             <tr>
                                 <th style="width: 12%">Fecha</th>
                                 <th style="width: 20%">Descripción</th>
-                                <th style="width: 15%">Quien Recibe</th>
-                                <th style="width: 15%">Quien Entrega</th>
-                                <th style="width: 15%"># Salida</th>
+                                <th style="width: 15%">Proyecto</th>
                                 <th style="width: 10%">Opciones</th>
                             </tr>
                             </thead>
@@ -21,9 +19,7 @@
                                 <tr>
                                     <td>{{ $dato->fecha }}</td>
                                     <td>{{ $dato->descripcion }}</td>
-                                    <td>{{ $dato->nomrecibe }}</td>
-                                    <td>{{ $dato->nomentrega }}</td>
-                                    <td>{{ $dato->num_salida }}</td>
+                                    <td>{{ $dato->nomproy }}</td>
                                     <td>
 
                                         <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">

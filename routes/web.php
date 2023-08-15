@@ -135,6 +135,18 @@ Route::get('/admin/historial/salida/herramienta/tabla', [HistorialController::cl
 Route::post('/admin/historial/salida/herramienta/informacion',  [HistorialController::class,'informacionHistorialSalidaHerramienta']);
 Route::post('/admin/historial/salida/herramienta/actualizar',  [HistorialController::class,'actualizarHistorialSalidaHerramienta']);
 
+Route::get('/admin/historial/salida/herramientas/detalle/{id}', [HistorialController::class,'detalleIndexHistorialSalidasHerramientas']);
+Route::get('/admin/historial/salida/herramientas/detalletabla/{id}', [HistorialController::class,'detalleTablaHistorialSalidasHerramientas']);
+
+
+// listado historial de repuestos para salida
+Route::get('/admin/historial/salida/repuestos/index', [HistorialController::class,'indexHistorialRepuestosSalida'])->name('admin.historial.salidas.repuestos');
+Route::get('/admin/historial/salida/repuestos/tabla', [HistorialController::class,'tablaHistorialRepuestosSalida']);
+Route::post('/admin/historial/salida/repuestos/informacion',  [HistorialController::class,'informacionHistorialSalidaRepuesto']);
+Route::post('/admin/historial/salida/repuestos/actualizar',  [HistorialController::class,'actualizarHistorialSalidaRepuesto']);
+
+Route::get('/admin/historial/salida/repuestos/detalle/{id}', [HistorialController::class,'detalleIndexHistorialSalidas']);
+Route::get('/admin/historial/salida/repuestos/detalletabla/{id}', [HistorialController::class,'detalleTablaHistorialSalidas']);
 
 
 

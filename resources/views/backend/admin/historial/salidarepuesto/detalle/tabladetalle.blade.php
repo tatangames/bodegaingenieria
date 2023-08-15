@@ -7,36 +7,19 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 12%">Fecha</th>
-                                <th style="width: 20%">Descripción</th>
-                                <th style="width: 15%">Quien Recibe</th>
-                                <th style="width: 15%">Quien Entrega</th>
-                                <th style="width: 15%"># Salida</th>
-                                <th style="width: 10%">Opciones</th>
+                                <th style="width: 12%">Código</th>
+                                <th style="width: 20%">Repuesto</th>
+                                <th style="width: 15%">Cantidad</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @foreach($lista as $dato)
                                 <tr>
-                                    <td>{{ $dato->fecha }}</td>
-                                    <td>{{ $dato->descripcion }}</td>
-                                    <td>{{ $dato->nomrecibe }}</td>
-                                    <td>{{ $dato->nomentrega }}</td>
-                                    <td>{{ $dato->num_salida }}</td>
-                                    <td>
+                                    <td>{{ $dato->codmaterial }}</td>
+                                    <td>{{ $dato->nommaterial }}</td>
+                                    <td>{{ $dato->cantidad }}</td>
 
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-edit" title="Editar"></i>&nbsp; Editar
-                                        </button>
-
-                                        <br><br>
-
-                                        <button type="button" class="btn btn-success btn-xs" onclick="detalleHistorial({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Detalle"></i>&nbsp; Detalle
-                                        </button>
-
-                                    </td>
                                 </tr>
                             @endforeach
 
