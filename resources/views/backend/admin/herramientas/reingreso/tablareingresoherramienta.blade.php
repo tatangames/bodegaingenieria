@@ -12,8 +12,8 @@
                                 <th style="width: 20%">Herramienta</th>
                                 <th style="width: 12%">Cantidad</th>
                                 <th style="width: 15%">Descripción</th>
-                                <th style="width: 10%">Entrego</th>
-                                <th style="width: 10%">Recibio</th>
+                                <th style="width: 10%">Cantidad Entregada</th>
+                                <th style="width: 10%">Devuelto a Bodega</th>
                                 <th style="width: 10%">Opciones</th>
                             </tr>
                             </thead>

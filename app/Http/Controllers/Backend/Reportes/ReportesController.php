@@ -773,6 +773,10 @@ class ReportesController extends Controller
             $dato->codigoMate = $infoMate->codigo;
         }
 
+        $fechahoy = Carbon::parse(Carbon::now());
+        $fechaFormat = date("d-m-Y", strtotime($fechahoy));
+
+
 
         //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
         $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
@@ -790,6 +794,7 @@ class ReportesController extends Controller
             Departamento de Ingeniería Eléctrica <br>
             </div>";
 
+        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Fecha: $fechaFormat <p>";
 
         $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
 
