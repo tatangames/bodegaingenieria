@@ -10,10 +10,9 @@
                                 <th style="width: 10%">Fecha</th>
                                 <th style="width: 10%">Código</th>
                                 <th style="width: 20%">Herramienta</th>
-                                <th style="width: 12%">Cantidad</th>
                                 <th style="width: 15%">Descripción</th>
-                                <th style="width: 10%">Cantidad Entregada</th>
-                                <th style="width: 10%">Devuelto a Bodega</th>
+                                <th style="width: 12%">Cantidad Entregada</th>
+
                                 <th style="width: 10%">Opciones</th>
                             </tr>
                             </thead>
@@ -24,10 +23,10 @@
                                     <td>{{ $dato->fecha }}</td>
                                     <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nomherra }}</td>
-                                    <td>{{ $dato->cantidad }}</td>
                                     <td>{{ $dato->descripcion }}</td>
-                                    <td>{{ $dato->quienentrega }}</td>
-                                    <td>{{ $dato->quienrecibe }}</td>
+                                    <td>{{ $dato->cantidad }}</td>
+
+
                                     <td>
 
                                         <button type="button" class="btn btn-success btn-xs" onclick="modalReingreso({{ $dato->id }})">
