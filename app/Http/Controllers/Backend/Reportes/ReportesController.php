@@ -928,6 +928,187 @@ class ReportesController extends Controller
     }
 
 
+    public function vistaSalidaPorMaterial(){
+
+        $arrayMateriales = Materiales::orderBy('nombre', 'ASC')->get();
+
+        return view('backend.admin.repuestos.reporte.vistasalidapormaterial', compact('arrayMateriales'));
+    }
+
+
+
+
+    public function pdfReporteMaterialesSalidas($desde, $hasta, $materiales){
+
+        $porciones = explode("-", $materiales);
+
+        // Filtrar todos el historial entradas salidas, obtener su id
+
+        $arrayIdSalidas = HistorialSalidasDeta::whereIn('id_material', $porciones)->get();
+
+        $pilaIdSalidas = array();
+
+
+        $start = Carbon::parse($desde)->startOfDay();
+        $end = Carbon::parse($hasta)->endOfDay();
+
+        $resultsBloque = array();
+        $index = 0;
+
+        $desdeFormat = date("d-m-Y", strtotime($desde));
+        $hastaFormat = date("d-m-Y", strtotime($hasta));
+
+        foreach ($arrayIdSalidas as $dato){
+            array_push($pilaIdSalidas, $dato->id_historial_salidas);
+        }
+
+        // todos los historial salidas donde por lo menos existe el material para reporte
+        $arraySalidas = HistorialSalidas::whereIn('id', $pilaIdSalidas)
+            ->whereBetween('fecha', [$start, $end])
+            ->orderBy('fecha', 'ASC')
+            ->get();
+
+        $pilaIdSalidasFormat = array();
+        foreach ($arraySalidas as $dato){
+            array_push($pilaIdSalidasFormat, $dato->id);
+        }
+
+
+        foreach ($arraySalidas as $infoFila){
+            array_push($resultsBloque, $infoFila);
+
+            $infoFila->fechaFormat = date("d-m-Y", strtotime($infoFila->fecha));
+
+            $infoTipoProy = TipoProyecto::where('id', $infoFila->id_tipoproyecto)->first();
+            $infoFila->nombreProy = $infoTipoProy->nombre;
+
+            $arrayDetalle = DB::table('historial_salidas_deta AS deta')
+                ->join('materiales AS ma', 'ma.id', '=', 'deta.id_material')
+                ->select('ma.nombre', 'deta.id_material', 'deta.id_historial_salidas', 'deta.cantidad')
+                ->where('deta.id_historial_salidas', $infoFila->id)
+                ->whereIn('deta.id_material', $porciones)
+                ->orderBy('ma.nombre', 'ASC')
+                ->get();
+
+            $resultsBloque[$index]->detalle = $arrayDetalle;
+            $index++;
+        }
+
+
+        // CONTEO INDIVIDUAL
+        $arrayMaterial = Materiales::whereIn('id', $porciones)->get();
+
+        $dataArray = array();
+
+        foreach ($arrayMaterial as $dato){
+
+            $conteoDetalle = HistorialSalidasDeta::whereIn('id_historial_salidas', $pilaIdSalidasFormat)
+                ->where('id_material', $dato->id)
+                ->sum('cantidad');
+
+            $conteoDetalle = number_format((float)$conteoDetalle, 2, '.', ',');
+
+            $dataArray[] = [
+                'nombre' => $dato->nombre,
+                'cantidadtotal' => $conteoDetalle,
+            ];
+        }
+
+
+        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->SetTitle('Salida Por Materiales');
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/logo2.png';
+
+        $tabla = "<div class='content'>
+            <img id='logo' src='$logoalcaldia'>
+            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Reporte Salida de Materiales <br>
+            Fecha: $desdeFormat  -  $hastaFormat
+            </div>";
+
+
+        foreach ($arraySalidas as $info) {
+
+            $tabla .= "<table width='100%' id='tablaFor'>
+                        <tbody>";
+
+                $tabla .= "<tr>
+                        <td width='15%' style='font-weight: bold'>Fecha</td>
+                        <td width='50%' style='font-weight: bold'>Proyecto</td>
+                        <td width='15%' style='font-weight: bold'>Descripción</td>
+                    <tr>";
+
+                $tabla .= "<tr>
+                        <td width='15%'>$info->fechaFormat</td>
+                        <td width='50%'>$info->nombreProy</td>
+                        <td width='15%'>$info->descripcion</td>
+                    <tr>";
+
+            $tabla .= "</tbody></table>";
+
+
+            $tabla .= "<table width='100%' id='tablaFor'>
+                        <tbody>";
+
+                $tabla .= "<tr>
+                        <td width='15%' style='font-weight: bold'>Material</td>
+                        <td width='10%' style='font-weight: bold'>Cantidad</td>
+                    <tr>";
+
+                foreach ($info->detalle as $dato) {
+                    $tabla .= "<tr>
+                        <td width='15%'>$dato->nombre</td>
+                        <td width='10%'>$dato->cantidad</td>
+                    <tr>";
+                }
+
+            $tabla .= "</tbody></table>";
+        }
+
+
+
+
+        $tabla .= "<p style='font-weight: bold; margin-top: 30px'>MATERIALES ENTREGADOS</p>";
+
+        $tabla .= "<table width='100%' id='tablaFor'>
+                        <tbody>";
+
+        $tabla .= "<tr>
+                        <td width='50%' style='font-weight: bold'>Material</td>
+                        <td width='15%' style='font-weight: bold'>Cantidad Total</td>
+                    <tr>";
+
+        foreach ($dataArray as $info){
+
+            $infoNombre = $info['nombre'];
+            $infoConteo = $info['cantidadtotal'];
+
+            $tabla .= "<tr>
+                        <td width='50%'>$infoNombre</td>
+                        <td width='15%'>$infoConteo</td>
+                    <tr>";
+
+        }
+
+        $tabla .= "</tbody></table>";
+
+
+
+
+
+        $stylesheet = file_get_contents('css/cssregistro.css');
+        $mpdf->WriteHTML($stylesheet,1);
+
+        $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
+        $mpdf->WriteHTML($tabla,2);
+
+        $mpdf->Output();
+    }
 
 
 

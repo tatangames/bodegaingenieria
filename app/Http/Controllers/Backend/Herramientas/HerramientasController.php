@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend\Herramientas;
 
 use App\Http\Controllers\Controller;
+use App\Models\Entradas;
 use App\Models\HerramientaPendiente;
 use App\Models\Herramientas;
 use App\Models\HistoHerramientaDescartada;
@@ -11,8 +12,12 @@ use App\Models\HistoHerramientaRegistroDeta;
 use App\Models\HistoHerramientaReingreso;
 use App\Models\HistoHerramientaSalida;
 use App\Models\HistoHerramientaSalidaDetalle;
+use App\Models\HistorialEntradas;
+use App\Models\HistorialSalidas;
+use App\Models\HistorialSalidasDeta;
 use App\Models\QuienEntrega;
 use App\Models\QuienRecibe;
+use App\Models\TipoProyecto;
 use App\Models\UnidadMedida;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -578,8 +583,6 @@ class HerramientasController extends Controller
        }
 
    }
-
-
 
 
 

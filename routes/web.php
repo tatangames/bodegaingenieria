@@ -231,4 +231,9 @@ Route::post('/admin/reingreso/cantidad',  [HerramientasController::class,'reingr
 Route::post('/admin/descartar/cantidad',  [HerramientasController::class,'descartarCantidadHerramienta']);
 
 
+// REPORTE SALIDA POR MATERIAL
+Route::get('/admin/reporte/salida/pormaterial/index', [ReportesController::class,'vistaSalidaPorMaterial'])->name('admin.reporte.salida.material.index');
+Route::get('/admin/pdf/salida/pormaterial/proyecto/{desde}/{hasta}/{materiales}', [ReportesController::class,'pdfReporteMaterialesSalidas']);
+
+
 

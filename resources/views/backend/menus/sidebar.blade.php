@@ -295,6 +295,14 @@
                                 </li>
 
 
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reporte.salida.material.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Salida Material</p>
+                                    </a>
+                                </li>
+
+
                                 <hr>
 
                                 <li class="nav-item">
