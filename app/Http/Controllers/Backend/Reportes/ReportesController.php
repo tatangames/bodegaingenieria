@@ -884,6 +884,7 @@ class ReportesController extends Controller
         $tabla = "<div class='content'>
             <img id='logo' src='$logoalcaldia'>
             <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
+            Repuestos de Bodega Eléctrica <br>
             Reporte de Proyecto Completado<br>
             </div>";
 
@@ -907,8 +908,8 @@ class ReportesController extends Controller
 
             $tabla .= "<tr>
                      <td  width='14%'>$dd->codmaterial</td>
-                     <td  width='14%'>$dd->codmaterial</td>
-                     <td  width='22%'>$dd->nomunidad</td>
+                     <td  width='14%'>$dd->nomunidad</td>
+                     <td  width='22%'>$dd->nommaterial</td>
                      <td  width='12%'>$dd->cantidad</td>
                 </tr>
                 ";
