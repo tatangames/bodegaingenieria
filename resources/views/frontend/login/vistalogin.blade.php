@@ -134,7 +134,7 @@
 
         // alcaelectrica
 
-        axios.post('/alcaelectrica/login', formData, {
+        axios.post('/alcaelectrica.com/login', formData, {
         })
             .then((response) => {
                 closeLoading();
