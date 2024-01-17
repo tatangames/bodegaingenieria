@@ -534,6 +534,7 @@ class ReportesController extends Controller
                 ->get();
 
 
+
             foreach ($arrayHistoSalida as $data){
                 array_push($pilaArray, $data->id);
             }
@@ -566,6 +567,11 @@ class ReportesController extends Controller
                     ];
                 }
             }
+
+            usort($dataArray, function ($a, $b) {
+                return strcmp($a['nombre'], $b['nombre']);
+            });
+
 
 
             //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
@@ -605,7 +611,7 @@ class ReportesController extends Controller
 
                 $tabla .= "<tr>
                 <td width='15%'>$codigo</td>
-                <td width='50%'>$nombre</td>
+                <td width='50%' style='text-align: left !important;'>$nombre</td>
                 <td width='15%'>$cantidad</td>
             <tr>";
 

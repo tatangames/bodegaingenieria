@@ -132,9 +132,9 @@
         formData.append('usuario', usuario);
         formData.append('password', password);
 
-        //bodegaelectrica
+        // alcaelectrica
 
-        axios.post('/bodegaelectrica/login', formData, {
+        axios.post('/alcaelectrica/login', formData, {
         })
             .then((response) => {
                 closeLoading();
