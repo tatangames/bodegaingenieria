@@ -15,8 +15,8 @@
     <link href="{{ asset('css/toastr.min.css') }}" type="text/css" rel="stylesheet" />
     @yield('content-admin-css')
 
-    <!--  /bodegaelectrica.com/admin -->
+    <!--  /alcaelectrica.com/admin -->
 
-    <script type="text/javascript"> var url = "/alcaelectrica.com/admin"; </script>
+    <script type="text/javascript"> var url = "/alcaelectrica/admin"; </script>
 </head>
 <body class="hold-transition sidebar-mini">

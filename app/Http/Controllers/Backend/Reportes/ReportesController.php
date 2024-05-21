@@ -44,6 +44,8 @@ class ReportesController extends Controller
         $desdeFormat = date("d-m-Y", strtotime($desde));
         $hastaFormat = date("d-m-Y", strtotime($hasta));
 
+
+
         // entrada
         if($tipo == 1) {
 
@@ -784,6 +786,7 @@ class ReportesController extends Controller
 
 
 
+
         //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
         $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         $mpdf->SetTitle('Inventario Actual');
@@ -816,12 +819,13 @@ class ReportesController extends Controller
 
         foreach ($arrayInventario as $info) {
 
-            $tabla .= "<tr>
+            if($info->cantidad > 0){
+                $tabla .= "<tr>
                 <td width='15%'>$info->codigoMate</td>
                 <td width='50%'>$info->nombreMate</td>
                 <td width='15%'>$info->cantidad</td>
             <tr>";
-
+            }
         }
 
         $tabla .= "</tbody></table>";
