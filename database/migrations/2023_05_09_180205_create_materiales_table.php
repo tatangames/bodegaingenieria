@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateMaterialesTable extends Migration
 {
     /**
-     * Run the migrations.
+     * LISTADO DE MATERIALES
      *
      * @return void
      */

@@ -4,16 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQuienentregaTable extends Migration
+class CreateQuienrecibeTable extends Migration
 {
     /**
-     * Run the migrations.
+     * PERSONA QUE RECIBE LOS MATERIALES
      *
      * @return void
      */
     public function up()
     {
-        Schema::create('quienentrega', function (Blueprint $table) {
+        Schema::create('quienrecibe', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 100);
         });
@@ -26,6 +26,6 @@ class CreateQuienentregaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('quienentrega');
+        Schema::dropIfExists('quienrecibe');
     }
 }

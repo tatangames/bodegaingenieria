@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HistorialEntradasDeta extends Model
+class CierreProyecto extends Model
 {
     use HasFactory;
-    protected $table = 'historial_entradas_deta';
+    protected $table = 'cierre_proyecto';
     public $timestamps = false;
 }

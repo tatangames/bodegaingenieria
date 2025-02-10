@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HistoHerramientaSalidaDetalle extends Model
+class Anios extends Model
 {
     use HasFactory;
-    protected $table = 'histo_herramienta_salida_deta';
+    protected $table = 'anio';
     public $timestamps = false;
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateHistorialTransfDetaTable extends Migration
+class CreateEntradasDetalleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,19 @@ class CreateHistorialTransfDetaTable extends Migration
      */
     public function up()
     {
-        Schema::create('historial_transf_deta', function (Blueprint $table) {
+        Schema::create('entradas_detalle', function (Blueprint $table) {
             $table->id();
+
+            $table->bigInteger('id_entradas')->unsigned();
             $table->bigInteger('id_material')->unsigned();
-            $table->bigInteger('id_historial_transf')->unsigned();
 
-            $table->decimal('cantidad', 10, 2);
+            $table->integer('cantidad');
 
+            // SE IRA SUMANDO LA CANTIDAD ENTREGADA
+            $table->integer('cantidad_entregada');
+
+            $table->foreign('id_entradas')->references('id')->on('entradas');
             $table->foreign('id_material')->references('id')->on('materiales');
-            $table->foreign('id_historial_transf')->references('id')->on('historial_transf');
         });
     }
 
@@ -32,6 +36,6 @@ class CreateHistorialTransfDetaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('historial_transf_deta');
+        Schema::dropIfExists('entradas_detalle');
     }
 }

@@ -15,13 +15,13 @@ class CreateEntradasTable extends Migration
     {
         Schema::create('entradas', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_material')->unsigned();
+
+            // PROYECTO A CUAL ENTRARA
             $table->bigInteger('id_tipoproyecto')->unsigned();
+            $table->date('fecha');
 
-            // la entradas puede ser decimales
-            $table->decimal('cantidad', 10, 2);
+            $table->string('descripcion', 800)->nullable();
 
-            $table->foreign('id_material')->references('id')->on('materiales');
             $table->foreign('id_tipoproyecto')->references('id')->on('tipoproyecto');
         });
     }

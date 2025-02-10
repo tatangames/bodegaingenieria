@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HistoHerramientaDescartada extends Model
+class EntradasDetalle extends Model
 {
     use HasFactory;
-    protected $table = 'histo_herramienta_descartada';
+    protected $table = 'entradas_detalle';
     public $timestamps = false;
 }

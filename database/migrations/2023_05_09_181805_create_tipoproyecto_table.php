@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateTipoproyectoTable extends Migration
 {
     /**
-     * Run the migrations.
+     * LISTADO DE PROYECTOS
      *
      * @return void
      */
@@ -15,9 +15,12 @@ class CreateTipoproyectoTable extends Migration
     {
         Schema::create('tipoproyecto', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('id_anio')->unsigned();
+
+            $table->string('codigo', 100)->nullable();
             $table->string('nombre', 800);
 
-            $table->boolean('transferido');
+            $table->foreign('id_anio')->references('id')->on('anio');
         });
     }
 
