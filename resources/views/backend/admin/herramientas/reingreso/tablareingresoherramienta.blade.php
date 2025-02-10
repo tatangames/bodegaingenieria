@@ -11,7 +11,7 @@
                                 <th style="width: 10%">Código</th>
                                 <th style="width: 20%">Herramienta</th>
                                 <th style="width: 15%">Descripción</th>
-                                <th style="width: 12%">Cantidad Entregada</th>
+                                <th style="width: 8%">Cantidad Entregada</th>
 
                                 <th style="width: 10%">Opciones</th>
                             </tr>
@@ -20,15 +20,13 @@
 
                             @foreach($listado as $dato)
                                 <tr>
-                                    <td>{{ $dato->fecha }}</td>
+                                    <td>{{ $dato->fechaFormat }}</td>
                                     <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nomherra }}</td>
                                     <td>{{ $dato->descripcion }}</td>
                                     <td>{{ $dato->cantidad }}</td>
 
-
                                     <td>
-
                                         <button type="button" class="btn btn-success btn-xs" onclick="modalReingreso({{ $dato->id }})">
                                             <i class="fas fa-edit" title="Reingreso"></i>&nbsp; Reingreso
                                         </button>
@@ -58,12 +56,13 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'asc']],
             "searching": true,
             "ordering": true,
             "info": true,
             "autoWidth": false,
             "pagingType": "full_numbers",
-            "lengthMenu": [[10, 25, 50, 100, 150, -1], [10, 25, 50, 100, 150, "Todo"]],
+            "lengthMenu": [[500, -1], [500, "Todo"]],
             "language": {
 
                 "sProcessing": "Procesando...",

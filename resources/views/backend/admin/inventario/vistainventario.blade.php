@@ -36,7 +36,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-success">
+            <div class="card card-gray-dark">
                 <div class="card-header">
                     <h3 class="card-title">Listado Catálogo de Materiales</h3>
                 </div>
@@ -178,6 +178,9 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
+
+            openLoading()
+
             var ruta = "{{ URL::to('/admin/inventario/tabla/index') }}";
             $('#tablaDatatable').load(ruta);
 

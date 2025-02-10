@@ -390,7 +390,7 @@ class HerramientasController extends Controller
 
         foreach ($listado as $dato){
 
-            //$dato->fecha = date("d-m-Y", strtotime($dato->fecha));
+            $dato->fechaFormat = date("d-m-Y", strtotime($dato->fecha));
 
             $infoHerra = Herramientas::where('id', $dato->id_herramienta)->first();
             $dato->nomherra = $infoHerra->nombre;

@@ -54,8 +54,6 @@
                                         </div>
                                     </div>
 
-
-
                                     <h6>Reporte de Salida de Herramientas</h6>
 
                                     <div class="form-group row">
@@ -195,6 +193,15 @@
                 return;
             }
 
+            var fechaDesde = new Date(desde);
+            var fechaHasta = new Date(hasta);
+
+            if (fechaDesde > fechaHasta) {
+                toastr.error('Fecha desde no puede ser mayor que fecha hasta');
+                return;
+            }
+
+
             window.open("{{ URL::to('admin/pdf/herramientas/salidas') }}/" + desde + "/" + hasta);
         }
 
@@ -210,6 +217,14 @@
 
             if(hasta === ''){
                 toastr.error('Fecha hasta es requerido');
+                return;
+            }
+
+            var fechaDesde = new Date(desde);
+            var fechaHasta = new Date(hasta);
+
+            if (fechaDesde > fechaHasta) {
+                toastr.error('Fecha desde no puede ser mayor que fecha hasta');
                 return;
             }
 
@@ -237,6 +252,14 @@
 
             if(hasta === ''){
                 toastr.error('Fecha hasta es requerido');
+                return;
+            }
+
+            var fechaDesde = new Date(desde);
+            var fechaHasta = new Date(hasta);
+
+            if (fechaDesde > fechaHasta) {
+                toastr.error('Fecha desde no puede ser mayor que fecha hasta');
                 return;
             }
 

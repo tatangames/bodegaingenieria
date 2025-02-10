@@ -12,7 +12,7 @@
                                 <th style="width: 15%">Quien Recibe</th>
                                 <th style="width: 15%">Quien Entrega</th>
                                 <th style="width: 15%"># Salida</th>
-                                <th style="width: 10%">Opciones</th>
+                                <th style="width: 8%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>

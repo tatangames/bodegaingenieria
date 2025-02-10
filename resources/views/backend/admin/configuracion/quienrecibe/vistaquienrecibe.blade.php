@@ -38,7 +38,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-success">
+            <div class="card card-gray-dark">
                 <div class="card-header">
                     <h3 class="card-title">Listado</h3>
                 </div>

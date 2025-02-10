@@ -32,7 +32,7 @@
 
                 <div class="col-md-6">
 
-                    <div class="card card-primary">
+                    <div class="card card-gray-dark">
                         <div class="card-header">
                             <h3 class="card-title">Información</h3>
                         </div>
@@ -64,7 +64,7 @@
 
 
                 <div class="col-md-6">
-                    <div class="card card-danger">
+                    <div class="card card-dark">
                         <div class="card-header">
                             <h3 class="card-title">Datos de Salida</h3>
                         </div>
@@ -172,7 +172,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-primary">
+            <div class="card card-gray-dark">
                 <div class="card-header">
                     <h3 class="card-title">Información de Ingreso</h3>
                 </div>
@@ -239,6 +239,15 @@
                 });
             });
 
+
+            $('#select-recibe').select2({
+                theme: "bootstrap-5",
+                "language": {
+                    "noResults": function(){
+                        return "Busqueda no encontrada";
+                    }
+                },
+            });
 
         });
     </script>

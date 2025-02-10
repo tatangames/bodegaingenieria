@@ -7,11 +7,11 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 15%">Código</th>
+                                <th style="width: 4%">Código</th>
                                 <th style="width: 20%">Nombre</th>
-                                <th style="width: 10%">Medida</th>
-                                <th style="width: 10%">Cantidad</th>
-                                <th style="width: 10%">Opciones</th>
+                                <th style="width: 7%">Medida</th>
+                                <th style="width: 7%">Cantidad</th>
+                                <th style="width: 7%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -36,6 +36,12 @@
                                 </tr>
                             @endforeach
 
+                            <script>
+                                setTimeout(function () {
+                                    closeLoading();
+                                }, 500);
+                            </script>
+
                             </tbody>
                         </table>
                     </div>
@@ -56,7 +62,7 @@
             "info": true,
             "autoWidth": false,
             "pagingType": "full_numbers",
-            "lengthMenu": [[10, 25, 50, 100, 150, -1], [10, 25, 50, 100, 150, "Todo"]],
+            "lengthMenu": [[500, -1], [500, "Todo"]],
             "language": {
 
                 "sProcessing": "Procesando...",

@@ -30,16 +30,16 @@
         <div class="container-fluid">
             <div class="row">
 
-                <div class="col-md-6">
+                <div class="col-md-9">
 
-                    <div class="card card-primary">
+                    <div class="card card-gray-dark">
                         <div class="card-header">
                             <h3 class="card-title">Información</h3>
                         </div>
 
                         <div class="card-body">
 
-                            <div class="card-body">
+                            <div class="card-body col-md-6">
                                 <div class="row">
                                     <label>Fecha de Transferencia:</label>
                                     <input style="width: 35%; margin-left: 25px;" type="date" class="form-control" id="fecha">

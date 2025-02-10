@@ -36,7 +36,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-success">
+            <div class="card card-gray-dark">
                 <div class="card-header">
                     <h3 class="card-title">Listado de Proyectos</h3>
                 </div>
@@ -53,7 +53,7 @@
     </section>
 
     <div class="modal fade" id="modalAgregar">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Nuevo Proyecto</h4>
@@ -87,7 +87,7 @@
 
     <!-- modal editar -->
     <div class="modal fade" id="modalEditar">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Editar Proyecto</h4>

@@ -134,6 +134,15 @@
                 return;
             }
 
+            // Convertir las fechas a formato Date para compararlas
+            var fechaDesde = new Date(desde);
+            var fechaHasta = new Date(hasta);
+
+            if (fechaDesde > fechaHasta) {
+                toastr.error('Fecha desde no puede ser mayor que fecha hasta');
+                return;
+            }
+
             window.open("{{ URL::to('admin/reporte/registro') }}/" + tipo + "/" + desde + "/" + hasta);
         }
 

@@ -30,8 +30,6 @@
                             <form class="form-horizontal">
                                 <div class="card-body">
 
-
-
                                     <div class="form-group">
                                         <label style="color:#191818">Tipo de Reporte</label>
                                         <br>
@@ -43,12 +41,10 @@
                                         </div>
                                     </div>
 
-
-                                    <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 30px; border-color: black; border-radius: 0.1px;">
+                                    <button type="button" onclick="generarPdf()" class="btn" style="margin-left: 0px; border-color: black; border-radius: 0.1px;">
                                         <img src="{{ asset('images/logopdf.png') }}" width="55px" height="55px">
                                         Generar PDF
                                     </button>
-
 
                                 </div>
                             </form>
@@ -95,8 +91,6 @@
     <script>
 
         function generarPdf() {
-
-
             var tipo = document.getElementById('select-tipo').value;
 
             if(tipo === ''){

@@ -60,21 +60,43 @@ class ReporteHerramientaController extends Controller
             $item->actualherramienta = $inicial - $cantidadSalida;
         }
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+
         $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
         $mpdf->SetTitle('Inventario Actual');
 
-        // mostrar errores pdf
-        $mpdf->showImageErrors = false;
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Inventario de Herramientas<br>
-            Departamento de Ingeniería Eléctrica<br>
-            </div>";
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>INVENTARIO DE HERRAMIENTAS</h1>
+                </div>
+              ";
 
 
         $tabla .= "<table width='100%' id='tablaFor'>
@@ -100,11 +122,9 @@ class ReporteHerramientaController extends Controller
                 <td width='12%'>$info->actualherramienta</td>
             <tr>";
             }
-
         }
 
         $tabla .= "</tbody></table>";
-
 
         $stylesheet = file_get_contents('css/cssregistro.css');
         $mpdf->WriteHTML($stylesheet,1);
@@ -161,22 +181,44 @@ class ReporteHerramientaController extends Controller
             $index++;
         }
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Salidas');
 
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         // mostrar errores
         $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Salidas');
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Salidas de Herramientas <br>
-            Departamento Eléctrico <br>
-            Fecha: $desdeFormat  -  $hastaFormat </p>
-            </div>";
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>SALIDAS DE HERRAMIENTAS</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
+
 
         foreach ($listaSalida as $dd) {
 
@@ -246,9 +288,6 @@ class ReporteHerramientaController extends Controller
 
         $start = Carbon::parse($desde)->startOfDay();
         $end = Carbon::parse($hasta)->endOfDay();
-
-
-
         $desdeFormat = date("d-m-Y", strtotime($desde));
         $hastaFormat = date("d-m-Y", strtotime($hasta));
 
@@ -273,21 +312,46 @@ class ReporteHerramientaController extends Controller
 
 
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Reingreso');
 
+
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         // mostrar errores
         $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Reingreso');
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reingreso de Herramientas<br>
-            Fecha: $desdeFormat  -  $hastaFormat </p>
-            </div>";
+
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REINGRESO DE HERRAMIENTAS</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
+
 
         $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
@@ -344,21 +408,47 @@ class ReporteHerramientaController extends Controller
         }
 
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Herramienta Descartada');
 
+
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         // mostrar errores
         $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Herramienta Descartada');
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Herramientas Descartadas<br>
-            Unidad Eléctrica
-            </div>";
+
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>HERRAMIENTAS DESCARTADAS</h1>
+                </div>
+              ";
+
+
+
 
         $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
@@ -444,22 +534,47 @@ class ReporteHerramientaController extends Controller
         }
 
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Nueva Herramienta');
 
+
+
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
         // mostrar errores
         $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Nueva Herramienta');
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Ingreso de Herramientas<br>
-            Departamento Eléctrico<br>
-            Fecha: $desdeFormat  -  $hastaFormat </p>
-            </div>";
+
+
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>INGRESO DE HERRAMIENTAS</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
 
 
 
@@ -479,10 +594,7 @@ class ReporteHerramientaController extends Controller
                             <td width='30%' style='font-weight: normal'>$info->descripcion</td>
                         <tr>";
 
-
             $tabla .= "</tbody></table>";
-
-
 
             $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
@@ -505,9 +617,7 @@ class ReporteHerramientaController extends Controller
             }
 
             $tabla .= "</tbody></table>";
-
         }
-
 
 
         $stylesheet = file_get_contents('css/cssregistro.css');

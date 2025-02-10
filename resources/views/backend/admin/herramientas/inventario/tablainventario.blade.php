@@ -7,7 +7,7 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 15%">Código</th>
+                                <th style="width: 10%">Código</th>
                                 <th style="width: 20%">Nombre</th>
                                 <th style="width: 10%">Medida</th>
                                 <th style="width: 10%">Cantidad</th>

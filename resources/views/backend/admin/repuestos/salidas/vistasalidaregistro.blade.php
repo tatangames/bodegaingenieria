@@ -32,7 +32,7 @@
 
                 <div class="col-md-6">
 
-                    <div class="card card-primary">
+                    <div class="card card-gray-dark">
                         <div class="card-header">
                             <h3 class="card-title">Información</h3>
                         </div>
@@ -141,7 +141,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-primary">
+            <div class="card card-gray-dark">
                 <div class="card-header">
                     <h3 class="card-title">Información de Ingreso</h3>
                 </div>

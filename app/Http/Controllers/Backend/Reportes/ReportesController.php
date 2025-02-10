@@ -45,9 +45,19 @@ class ReportesController extends Controller
         $hastaFormat = date("d-m-Y", strtotime($hasta));
 
 
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
 
         // entrada
         if($tipo == 1) {
+
+            $mpdf->SetTitle('Entradas');
 
             // lista de entradas
             $listaEntrada = HistorialEntradas::whereBetween('fecha', [$start, $end])
@@ -84,22 +94,36 @@ class ReportesController extends Controller
                 $index++;
             }
 
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Entradas');
+            $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE ENTRADAS</h1>
+                </div>
+                <div style='text-align: center; margin-top: 10px;'>
+                <p style='font-size: 14px; margin: 0; color: #000;'>Fecha: $desdeFormat  -  $hastaFormat</p>
+                </div>
+              ";
 
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte de Entradas<br>
-            Fecha: $desdeFormat  -  $hastaFormat</p>
-            </div>";
 
             foreach ($listaEntrada as $dd) {
 
@@ -119,7 +143,6 @@ class ReportesController extends Controller
                      <td  width='15%'>$dd->descripcion</td>
                 </tr>
                 ";
-
 
 
                 $tabla .= "</tbody></table>";
@@ -144,7 +167,6 @@ class ReportesController extends Controller
                 $tabla .= "</tbody></table>";
             }
 
-
             $tabla .= "<table width='100%' id='tablaFor'>
             <tbody>";
 
@@ -154,22 +176,17 @@ class ReportesController extends Controller
             $mpdf->WriteHTML($stylesheet,1);
 
             $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
-            //$mpdf->WriteHTML($tabla,2);
-            $mpdf->WriteHTML($tabla, 2);
-
+            $mpdf->WriteHTML($tabla,2);
             $mpdf->Output();
-
         }else {
             // salida
 
-
+            $mpdf->SetTitle('Salidas');
 
             // lista de salidas
             $listaSalida = HistorialSalidas::whereBetween('fecha', [$start, $end])
                 ->orderBy('fecha', 'ASC')
                 ->get();
-
-
 
             foreach ($listaSalida as $ll){
 
@@ -201,27 +218,40 @@ class ReportesController extends Controller
                 $index++;
             }
 
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Salidas');
 
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte de Salidas Repuestos<br>
-            Fecha: $desdeFormat  -  $hastaFormat </p>
-            </div>";
+            $tabla .= "
+                    <div style='text-align: center; margin-top: 20px;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE SALIDAS</h1>
+                    </div>
+                    <div style='text-align: center; margin-top: 10px;'>
+                    <p style='font-size: 14px; margin: 0; color: #000;'>Fecha: $desdeFormat  -  $hastaFormat</p>
+                </div>
+              ";
 
             foreach ($listaSalida as $dd) {
 
-                $tabla .= "<table width='100%' id='tablaFor'>
-                    <tbody>";
+                $tabla .= "<table width='100%' id='tablaFor'><tbody>";
 
                 $tabla .= "<tr>
                      <td  width='20%'>Fecha</td>
@@ -238,9 +268,7 @@ class ReportesController extends Controller
                 ";
 
 
-
                 $tabla .= "</tbody></table>";
-
                 $tabla .= "<table width='100%' id='tablaFor' style='margin-top: 20px'>
             <tbody>";
 
@@ -261,8 +289,6 @@ class ReportesController extends Controller
                 $tabla .= "</tbody></table>";
             }
 
-
-
             $stylesheet = file_get_contents('css/cssregistro.css');
             $mpdf->WriteHTML($stylesheet,1);
 
@@ -271,14 +297,23 @@ class ReportesController extends Controller
 
             $mpdf->Output();
         }
-
     }
 
     public function reporteInventarioActual($tipo){
 
 
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+
         // JUNTOS
         if($tipo == 1){
+
+            $mpdf->SetTitle('Inventario Actual');
 
             $lista = Materiales::orderBy('nombre', 'ASC')->get();
 
@@ -305,21 +340,32 @@ class ReportesController extends Controller
                 $item->total = $sumatoria;
             }
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Inventario Actual');
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Inventario de Repuestos<br>
-            Departamento Eléctrico
-            </div>";
+            $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>INVENTARIO DE RESPUESTOS</h1>
+                </div>
+              ";
 
 
             $tabla .= "<table width='100%' id='tablaFor'>
@@ -334,18 +380,15 @@ class ReportesController extends Controller
             foreach ($lista as $info) {
 
                 if($info->total > 0){
-
                     $tabla .= "<tr>
-                <td width='15%'>$info->codigo</td>
-                <td width='50%'>$info->nombre</td>
-                <td width='15%'>$info->total</td>
-            <tr>";
-
+                        <td width='15%'>$info->codigo</td>
+                        <td width='50%'>$info->nombre</td>
+                        <td width='15%'>$info->total</td>
+                    <tr>";
                 }
             }
 
             $tabla .= "</tbody></table>";
-
 
             $stylesheet = file_get_contents('css/cssregistro.css');
             $mpdf->WriteHTML($stylesheet,1);
@@ -358,6 +401,8 @@ class ReportesController extends Controller
         }else{
          // SEPARADOS
 
+            $mpdf->SetTitle('Inventario Repuestos');
+
             $listaProyPrimero = TipoProyecto::orderBy('nombre')
                 ->where('transferido', 0)
                 ->get();
@@ -367,70 +412,66 @@ class ReportesController extends Controller
 
             $pilaArrayId = array();
 
-
             // VERIFICAR QUE HAYA MATERIALES EN UN PROYECTO AL MENOS
             foreach ($listaProyPrimero as $infodata){
-
                 $arrayEntradas = Entradas::where('id_tipoproyecto', $infodata->id)->get();
-
                 foreach ($arrayEntradas as $info){
-
                     if($info->cantidad > 0){
                         // si entra aqui, si hay 1 material en inventario
                         array_push($pilaArrayId, $infodata->id);
-
                         break;
                     }
-
                 }
-
             }
-
 
             $listaProy = TipoProyecto::orderBy('nombre')
                 ->whereIn('id', $pilaArrayId)
                 ->get();
 
-
             foreach ($listaProy as $dato){
 
                 array_push($resultsBloque, $dato);
-
                 $arrayEntradas = Entradas::where('id_tipoproyecto', $dato->id)->get();
 
-
                 foreach ($arrayEntradas as $info){
-
                     $infoMate = Materiales::where('id', $info->id_material)->first();
-
                     $infoMedida = UnidadMedida::where('id', $infoMate->id_medida)->first();
-
                     $info->nombremate = $infoMate->nombre;
                     $info->codigomate = $infoMate->codigo;
                     $info->unimedida = $infoMedida->nombre;
                 }
 
-
                 $resultsBloque[$index]->detalle = $arrayEntradas;
                 $index++;
             }
 
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Inventario Repuestos');
+            $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>INVENTARIO DE RESPUESTOS</h1>
+                </div>
+              ";
 
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Inventario de Repuestos<br>
-            Departamento Eléctrico
-            </div>";
 
             foreach ($listaProy as $dd) {
 
@@ -467,37 +508,23 @@ class ReportesController extends Controller
                     </tr>";
                 }
 
-
                 $tabla .= "</tbody></table>";
             }
 
-
             $stylesheet = file_get_contents('css/cssregistro.css');
             $mpdf->WriteHTML($stylesheet,1);
-
             $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
             $mpdf->WriteHTML($tabla,2);
-
             $mpdf->Output();
-
         }
-
-
-
-
-
-
     }
 
 
 
 
     public function vistaReporteHerramientas(){
-
         return view('backend.admin.herramientas.reportes.vistareporteherramienta');
     }
-
-
 
 
     //*****************************
@@ -515,27 +542,30 @@ class ReportesController extends Controller
 
     public function pdfQueHaSalidoProyectos($idproy, $desde, $hasta, $tipo){
 
-        $infoProyecto = TipoProyecto::where('id', $idproy)->first();
 
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        // mostrar errores
+        $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+
+
+        $infoProyecto = TipoProyecto::where('id', $idproy)->first();
         $start = Carbon::parse($desde)->startOfDay();
         $end = Carbon::parse($hasta)->endOfDay();
-
         $desdeFormat = date("d-m-Y", strtotime($desde));
         $hastaFormat = date("d-m-Y", strtotime($hasta));
-
 
             // JUNTOS
         if($tipo == 1){
 
-
+            $mpdf->SetTitle('Inventario Actual');
             $pilaArray = array();
 
             $arrayHistoSalida = HistorialSalidas::where('id_tipoproyecto', $idproy)
                 ->whereBetween('fecha', [$start, $end])
                 ->orderBy('fecha', 'ASC')
                 ->get();
-
-
 
             foreach ($arrayHistoSalida as $data){
                 array_push($pilaArray, $data->id);
@@ -575,22 +605,33 @@ class ReportesController extends Controller
             });
 
 
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Inventario Actual');
-
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte de Materiales Entregados <br>
-            Fecha: $desdeFormat  -  $hastaFormat
-            </div>";
+            $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE MATERIALES ENTREGADOS</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
 
 
             $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
@@ -612,28 +653,24 @@ class ReportesController extends Controller
                 $cantidad = $info['cantidad'];
 
                 $tabla .= "<tr>
-                <td width='15%'>$codigo</td>
-                <td width='50%' style='text-align: left !important;'>$nombre</td>
-                <td width='15%'>$cantidad</td>
-            <tr>";
-
+                    <td width='15%'>$codigo</td>
+                    <td width='50%' style='text-align: left !important;'>$nombre</td>
+                    <td width='15%'>$cantidad</td>
+                <tr>";
             }
 
             $tabla .= "</tbody></table>";
-
 
             $stylesheet = file_get_contents('css/cssregistro.css');
             $mpdf->WriteHTML($stylesheet,1);
 
             $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
             $mpdf->WriteHTML($tabla,2);
-
             $mpdf->Output();
-
-
         }else{
-            // SEPARADOS
 
+            // SEPARADOS
+            $mpdf->SetTitle('Inventario Actual');
 
             $arrayHistoSalida = HistorialSalidas::where('id_tipoproyecto', $idproy)
                 ->whereBetween('fecha', [$start, $end])
@@ -667,29 +704,38 @@ class ReportesController extends Controller
             }
 
 
-            //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-            $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-            $mpdf->SetTitle('Inventario Actual');
+            $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-            // mostrar errores
-            $mpdf->showImageErrors = false;
-
-            $logoalcaldia = 'images/logo2.png';
-
-            $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte de Materiales Entregados <br>
-            Fecha: $desdeFormat  -  $hastaFormat
-            </div>";
+            $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE MATERIALES ENTREGADOS</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
 
 
             $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
 
-
             foreach ($arrayHistoSalida as $info) {
-
-
                 $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
 
@@ -704,8 +750,6 @@ class ReportesController extends Controller
                     <tr>";
 
                 $tabla .= "</tbody></table>";
-
-
 
                 $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
@@ -725,13 +769,10 @@ class ReportesController extends Controller
                         <td width='30%' style='font-weight: normal'>$data->nombremate</td>
                         <td width='12%' style='font-weight: normal'>$data->cantidad</td>
                     <tr>";
-
                 }
 
                 $tabla .= "</tbody></table>";
-
             }
-
 
             $stylesheet = file_get_contents('css/cssregistro.css');
             $mpdf->WriteHTML($stylesheet,1);
@@ -741,12 +782,7 @@ class ReportesController extends Controller
 
             $mpdf->Output();
         }
-
-
-
     }
-
-
 
 
     public function vistaQueTengoPorProyecto(){
@@ -769,8 +805,13 @@ class ReportesController extends Controller
 
     public function reporteQueTengoPorProyecto($idproy){
 
-        $infoProyecto = TipoProyecto::where('id', $idproy)->first();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
 
+
+        $infoProyecto = TipoProyecto::where('id', $idproy)->first();
         $arrayInventario = Entradas::where('id_tipoproyecto', $idproy)->get();
 
         foreach ($arrayInventario as $dato){
@@ -786,27 +827,36 @@ class ReportesController extends Controller
 
 
 
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Inventario Actual');
-
-        // mostrar errores
-        $mpdf->showImageErrors = false;
-
-        $logoalcaldia = 'images/logo2.png';
-
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Inventario de Proyecto <br>
-            Departamento de Ingeniería Eléctrica <br>
-            </div>";
-
-        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Fecha: $fechaFormat <p>";
-
-        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
-
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>INVENTARIO ACTUAL</h1>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $fechaFormat</h2>
+                </div>
+                 <div style='text-align: left; margin-top: 20px;'>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Proyecto: $infoProyecto->nombre</h2>
+                </div>
+              ";
 
         $tabla .= "<table width='100%' id='tablaFor'>
                     <tbody>";
@@ -830,7 +880,6 @@ class ReportesController extends Controller
 
         $tabla .= "</tbody></table>";
 
-
         $stylesheet = file_get_contents('css/cssregistro.css');
         $mpdf->WriteHTML($stylesheet,1);
 
@@ -847,11 +896,8 @@ class ReportesController extends Controller
         $transferido = HistorialTransferido::orderBy('fecha', 'ASC')->get();
 
         foreach ($transferido as $dato){
-
             $dato->fecha = date("d-m-Y", strtotime($dato->fecha));
-
             $infoProy = TipoProyecto::where('id', $dato->id_tipoproyecto)->first();
-
             $dato->nomproy = $infoProy->nombre;
         }
 
@@ -859,51 +905,61 @@ class ReportesController extends Controller
     }
 
 
-
     public function reporteProyectoTerminado($idtrans){
 
 
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
+        $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Transferido');
+
         $infoTrans = HistorialTransferido::where('id', $idtrans)->first();
-
         $infoProyecto = TipoProyecto::where('id', $infoTrans->id_tipoproyecto)->first();
-
         $listado = HistorialTransferidoDetalle::where('id_historial_transf', $idtrans)->get();
 
         foreach ($listado as $dato){
-
             $infoMaterial = Materiales::where('id', $dato->id_material)->first();
-
             $dato->nommaterial = $infoMaterial->nombre;
             $dato->codmaterial = $infoMaterial->codigo;
-
             $infoUnidad = UnidadMedida::where('id', $infoMaterial->id_medida)->first();
             $dato->nomunidad = $infoUnidad->nombre;
-
         }
 
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Transferido');
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
 
-        // mostrar errores
-        $mpdf->showImageErrors = false;
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE PROYECTO COMPLETADO</h1>
+                </div>
+                 <div style='text-align: left; margin-top: 20px;'>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Proyecto: $infoProyecto->nombre</h2>
+                </div>
+              ";
 
-        $logoalcaldia = 'images/logo2.png';
-
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Repuestos de Bodega Eléctrica <br>
-            Reporte de Proyecto Completado<br>
-            </div>";
-
-
-        $tabla .= "<p style='font-weight: bold; font-size: 15px'> Proyecto: $infoProyecto->nombre <p>";
 
         $tabla .= "<table width='100%' id='tablaFor'>
             <tbody>";
-
 
         $tabla .= "<tr>
                     <td  width='14%' style='font-weight: bold'>Código</td>
@@ -912,7 +968,6 @@ class ReportesController extends Controller
                     <td  width='12%' style='font-weight: bold'>Cantidad</td>
                 </tr>
                 ";
-
 
         foreach ($listado as $dd) {
 
@@ -925,16 +980,12 @@ class ReportesController extends Controller
                 ";
         }
 
-
         $tabla .= "</tbody></table>";
 
         $stylesheet = file_get_contents('css/cssregistro.css');
         $mpdf->WriteHTML($stylesheet,1);
-
         $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
-        //$mpdf->WriteHTML($tabla,2);
         $mpdf->WriteHTML($tabla, 2);
-
         $mpdf->Output();
     }
 
@@ -952,13 +1003,9 @@ class ReportesController extends Controller
     public function pdfReporteMaterialesSalidas($desde, $hasta, $materiales){
 
         $porciones = explode("-", $materiales);
-
         // Filtrar todos el historial entradas salidas, obtener su id
-
         $arrayIdSalidas = HistorialSalidasDeta::whereIn('id_material', $porciones)->get();
-
         $pilaIdSalidas = array();
-
 
         $start = Carbon::parse($desde)->startOfDay();
         $end = Carbon::parse($hasta)->endOfDay();
@@ -1026,22 +1073,46 @@ class ReportesController extends Controller
         }
 
 
-        //$mpdf = new \Mpdf\Mpdf(['format' => 'LETTER']);
+
         $mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir(), 'format' => 'LETTER']);
-        $mpdf->SetTitle('Salida Por Materiales');
-
-        // mostrar errores
         $mpdf->showImageErrors = false;
+        $logoalcaldia = 'images/gobiernologo.jpg';
+        $logosantaana = 'images/logo.png';
+        $mpdf->SetTitle('Salida por Materiales');
 
-        $logoalcaldia = 'images/logo2.png';
 
-        $tabla = "<div class='content'>
-            <img id='logo' src='$logoalcaldia'>
-            <p id='titulo'>ALCALDÍA MUNICIPAL DE METAPÁN <br>
-            Reporte Salida de Materiales <br>
-            Fecha: $desdeFormat  -  $hastaFormat
-            </div>";
 
+
+        $tabla = "
+            <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                    <!-- Logo izquierdo -->
+                    <td style='width: 15%; text-align: left;'>
+                        <img src='$logosantaana' alt='Santa Ana Norte' style='max-width: 100px; height: auto;'>
+                    </td>
+                    <!-- Texto centrado -->
+                    <td style='width: 60%; text-align: center;'>
+                        <h1 style='font-size: 16px; margin: 0; color: #003366; text-transform: uppercase;'>ALCALDÍA MUNICIPAL DE SANTA ANA NORTE</h1>
+                        <h2 style='font-size: 14px; margin: 0; color: #003366; text-transform: uppercase;'>UNIDAD ELÉCTRICA</h2>
+                    </td>
+                    <!-- Logo derecho -->
+                    <td style='width: 10%; text-align: right;'>
+                        <img src='$logoalcaldia' alt='Gobierno de El Salvador' style='max-width: 60px; height: auto;'>
+                    </td>
+                </tr>
+            </table>
+            <hr style='border: none; border-top: 2px solid #003366; margin: 0;'>
+            ";
+
+
+        $tabla .= "
+                <div style='text-align: center; margin-top: 20px;'>
+                    <h1 style='font-size: 16px; margin: 0; color: #000;'>REPORTE DE SALIDA DE MATERIAL</h1>
+                </div>
+                 <div style='text-align: left; margin-top: 20px;'>
+                    <h2 style='font-size: 16px; margin: 0; color: #000;'> Fecha: $desdeFormat  -  $hastaFormat</h2>
+                </div>
+              ";
 
         foreach ($arraySalidas as $info) {
 
@@ -1083,7 +1154,6 @@ class ReportesController extends Controller
 
 
 
-
         $tabla .= "<p style='font-weight: bold; margin-top: 30px'>MATERIALES ENTREGADOS</p>";
 
         $tabla .= "<table width='100%' id='tablaFor'>
@@ -1109,15 +1179,10 @@ class ReportesController extends Controller
         $tabla .= "</tbody></table>";
 
 
-
-
-
         $stylesheet = file_get_contents('css/cssregistro.css');
         $mpdf->WriteHTML($stylesheet,1);
-
         $mpdf->setFooter("Página: " . '{PAGENO}' . "/" . '{nb}');
         $mpdf->WriteHTML($tabla,2);
-
         $mpdf->Output();
     }
 

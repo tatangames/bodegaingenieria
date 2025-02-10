@@ -10,7 +10,7 @@
                                 <th style="width: 12%">Fecha</th>
                                 <th style="width: 20%">Descripción</th>
                                 <th style="width: 15%">Proyecto</th>
-                                <th style="width: 10%">Opciones</th>
+                                <th style="width: 6%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>

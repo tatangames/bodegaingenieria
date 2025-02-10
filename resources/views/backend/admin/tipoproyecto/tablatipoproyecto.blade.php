@@ -7,8 +7,8 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th>Proyecto</th>
-                                <th>Opciones</th>
+                                <th style="width: 60%">Proyecto</th>
+                                <th style="width: 8%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -44,7 +44,7 @@
             "info": true,
             "autoWidth": false,
             "pagingType": "full_numbers",
-            "lengthMenu": [[10, 25, 50, 100, 150, -1], [10, 25, 50, 100, 150, "Todo"]],
+            "lengthMenu": [[500, -1], [500, "Todo"]],
             "language": {
 
                 "sProcessing": "Procesando...",
