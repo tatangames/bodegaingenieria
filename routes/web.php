@@ -6,13 +6,9 @@ use App\Http\Controllers\Backend\Perfil\PerfilController;
 use App\Http\Controllers\Backend\Roles\RolesController;
 use App\Http\Controllers\Controles\ControlController;
 use App\Http\Controllers\Backend\Roles\PermisoController;
-use App\Http\Controllers\Backend\UnidadMedida\UnidadMedidaController;
 use App\Http\Controllers\Backend\Repuestos\RepuestosController;
-use App\Http\Controllers\Backend\Proyectos\TipoProyectoController;
 use App\Http\Controllers\Backend\Repuestos\SalidasController;
 use App\Http\Controllers\Backend\Reportes\ReportesController;
-use App\Http\Controllers\Backend\Herramientas\HerramientasController;
-use App\Http\Controllers\Backend\Reportes\ReporteHerramientaController;
 use App\Http\Controllers\Backend\Configuracion\ConfiguracionController;
 use App\Http\Controllers\Backend\Historial\HistorialController;
 
@@ -54,49 +50,78 @@ Route::post('/admin/editar-perfil/actualizar', [PerfilController::class, 'editar
 Route::get('sin-permisos', [ControlController::class,'indexSinPermiso'])->name('no.permisos.index');
 
 
-// registro unidad de medida
-Route::get('/admin/unidadmedida/index', [UnidadMedidaController::class,'index'])->name('admin.unidadmedida.index');
-Route::get('/admin/unidadmedida/tabla/index', [UnidadMedidaController::class,'tablaUnidadMedida']);
-Route::post('/admin/unidadmedida/nuevo', [UnidadMedidaController::class, 'nuevaUnidadMedida']);
-Route::post('/admin/unidadmedida/informacion', [UnidadMedidaController::class, 'informacionUnidadMedida']);
-Route::post('/admin/unidadmedida/editar', [UnidadMedidaController::class, 'editarUnidadMedida']);
 
-// registro de repuestos para tener un inventario
-Route::get('/admin/inventario/index', [RepuestosController::class,'index'])->name('admin.materiales.index');
-Route::get('/admin/inventario/tabla/index', [RepuestosController::class,'tablaMateriales']);
-Route::post('/admin/inventario/nuevo', [RepuestosController::class, 'nuevoMaterial']);
-Route::post('/admin/inventario/informacion', [RepuestosController::class, 'informacionMaterial']);
-Route::post('/admin/inventario/editar', [RepuestosController::class, 'editarMaterial']);
-Route::post('/admin/informacion/herramienta/descartar', [RepuestosController::class, 'infoHerramientaDescartar']);
-Route::post('/admin/descartar/herramienta/inventario', [RepuestosController::class, 'descartarHerramientaInventario']);
+// --- AÑO ---
+Route::get('/admin/anio/index', [ConfiguracionController::class,'indexAnio'])->name('admin.anio.index');
+Route::get('/admin/anio/tabla', [ConfiguracionController::class,'tablaAnio']);
+Route::post('/admin/anio/nuevo', [ConfiguracionController::class, 'nuevoAnio']);
+Route::post('/admin/anio/informacion', [ConfiguracionController::class, 'informacionAnio']);
+Route::post('/admin/anio/editar', [ConfiguracionController::class, 'editarAnio']);
+
+
+// --- UNIDAD DE MEDIDA ---
+Route::get('/admin/unidadmedida/index', [ConfiguracionController::class,'indexUnidadMedida'])->name('admin.unidadmedida.index');
+Route::get('/admin/unidadmedida/tabla/index', [ConfiguracionController::class,'tablaUnidadMedida']);
+Route::post('/admin/unidadmedida/nuevo', [ConfiguracionController::class, 'nuevaUnidadMedida']);
+Route::post('/admin/unidadmedida/informacion', [ConfiguracionController::class, 'informacionUnidadMedida']);
+Route::post('/admin/unidadmedida/editar', [ConfiguracionController::class, 'editarUnidadMedida']);
+
+
+// --- PERSONA QUE RECIBE EL MATERIAL ---
+Route::get('/admin/registrar/quienrecibe/index', [ConfiguracionController::class,'indexVistaRegistroQuienRecibe'])->name('admin.registrar.quienrecibe.index');
+Route::get('/admin/registrar/quienrecibe/tabla', [ConfiguracionController::class,'tablaRegistroQuienRecibe']);
+Route::post('/admin/registrar/nombre/quienrecibe',  [ConfiguracionController::class,'registrarNombreQuienRecibe']);
+Route::post('/admin/informacion/quienrecibe',  [ConfiguracionController::class,'informacionQuienRecibe']);
+Route::post('/admin/actualizar/nombre/quienrecibe',  [ConfiguracionController::class,'actualizarNombreQuienRecibe']);
+
+// --- REGISTRO DE MATERIAL ----
+Route::get('/admin/inventario/index', [ConfiguracionController::class,'indexMateriales'])->name('admin.materiales.index');
+Route::get('/admin/inventario/tabla/index', [ConfiguracionController::class,'tablaMateriales']);
+Route::post('/admin/inventario/nuevo', [ConfiguracionController::class, 'nuevoMaterial']);
+Route::post('/admin/inventario/informacion', [ConfiguracionController::class, 'informacionMaterial']);
+Route::post('/admin/inventario/editar', [ConfiguracionController::class, 'editarMaterial']);
+
+// - Detalle
+Route::get('/admin/detalle/material/cantidad/{id}', [RepuestosController::class,'vistaDetalleMaterial']);
+Route::get('/admin/detalle/materialtabla/cantidad/{id}', [RepuestosController::class,'tablaDetalleMaterial']);
+
+
+
+// --- LISTA DE PROYECTOS ---
+Route::get('/admin/proyecto/index', [ConfiguracionController::class,'indexProyectos'])->name('admin.tiposproyecto.index');
+Route::get('/admin/proyecto/tabla/index/{idanio}', [ConfiguracionController::class,'tablaProyectos']);
+Route::post('/admin/proyecto/nuevo', [ConfiguracionController::class, 'nuevoProyecto']);
+Route::post('/admin/proyecto/informacion', [ConfiguracionController::class, 'informacionProyecto']);
+Route::post('/admin/proyecto/editar', [ConfiguracionController::class, 'editarProyecto']);
+
+
+// --- REGISTRO DE NUEVOS ENTRADAS DE MATERIAL ---
+Route::get('/admin/registro/entrada', [RepuestosController::class,'indexRegistroEntrada'])->name('admin.entrada.registro.index');
+Route::post('/admin/buscar/material/global',  [RepuestosController::class,'buscadorMaterialGlobal']);
+Route::post('/admin/entrada/guardar',  [RepuestosController::class,'guardarEntrada']);
+
+
+// --- SALIDAS DE MATERIAL ---
+Route::get('/admin/registro/salida', [SalidasController::class,'indexRegistroSalida'])->name('admin.salida.registro.index');
+Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
+Route::post('/admin/buscar/material/proyecto/disponibilidad', [SalidasController::class, 'infoBodegaMaterialDetalleFila']);
+
+
+
+
 
 
 
 
 // detalle repuestos
-Route::get('/admin/detalle/material/cantidad/{id}', [RepuestosController::class,'vistaDetalleMaterial']);
-Route::get('/admin/detalle/materialtabla/cantidad/{id}', [RepuestosController::class,'tablaDetalleMaterial']);
 
 
 // registro de un proyecto
-Route::get('/admin/proyecto/index', [TipoProyectoController::class,'index'])->name('admin.tiposproyecto.index');
-Route::get('/admin/proyecto/tabla/index', [TipoProyectoController::class,'tablaProyectos']);
-Route::post('/admin/proyecto/nuevo', [TipoProyectoController::class, 'nuevoProyecto']);
-Route::post('/admin/proyecto/informacion', [TipoProyectoController::class, 'informacionProyecto']);
-Route::post('/admin/proyecto/editar', [TipoProyectoController::class, 'editarProyecto']);
-
-
-// registrar entrada para repuestos
-Route::get('/admin/registro/entrada', [RepuestosController::class,'indexRegistroEntrada'])->name('admin.entrada.registro.index');
-Route::post('/admin/buscar/material',  [RepuestosController::class,'buscadorMaterial']);
-Route::post('/admin/entrada/guardar',  [RepuestosController::class,'guardarEntrada']);
 
 
 // registrar salida de repuestos
-Route::get('/admin/registro/salida', [SalidasController::class,'indexRegistroSalida'])->name('admin.salida.registro.index');
 Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalida']);
 
-Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
 
 Route::post('/admin/repuesto/cantidad/bloque', [SalidasController::class,'bloqueCantidades']);
 
@@ -108,22 +133,9 @@ Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'g
 
 
 
-// CONFIGURACION
-
 // registrar quien recibe
-Route::get('/admin/registrar/quienrecibe/index', [ConfiguracionController::class,'indexVistaRegistroQuienRecibe'])->name('admin.registrar.quienrecibe.index');
-Route::get('/admin/registrar/quienrecibe/tabla', [ConfiguracionController::class,'tablaRegistroQuienRecibe']);
-Route::post('/admin/registrar/nombre/quienrecibe',  [ConfiguracionController::class,'registrarNombreQuienRecibe']);
-Route::post('/admin/informacion/quienrecibe',  [ConfiguracionController::class,'informacionQuienRecibe']);
-Route::post('/admin/actualizar/nombre/quienrecibe',  [ConfiguracionController::class,'actualizarNombreQuienRecibe']);
 
 
-// registrar quien entrega
-Route::get('/admin/registrar/quienentrega/index', [ConfiguracionController::class,'indexVistaRegistroQuienEntrega'])->name('admin.registrar.quienentrega.index');
-Route::get('/admin/registrar/quienentrega/tabla', [ConfiguracionController::class,'tablaRegistroQuienEntrega']);
-Route::post('/admin/registrar/nombre/quienentrega',  [ConfiguracionController::class,'registrarNombreQuienEntrega']);
-Route::post('/admin/informacion/quienentrega',  [ConfiguracionController::class,'informacionQuienEntrega']);
-Route::post('/admin/actualizar/nombre/quienentrega',  [ConfiguracionController::class,'actualizarNombreQuienEntrega']);
 
 
 
@@ -190,50 +202,7 @@ Route::get('/admin/reporte/inventario/sobranteterminado/proy/{idtrans}', [Report
 
 
 
-// REPORTE DE HERRAMIENTAS
-Route::get('/admin/reporte/herramienta/index', [ReportesController::class,'vistaReporteHerramientas'])->name('admin.reporte.herramientas.index');
-Route::get('/admin/pdf/herramientas/inventario/actual', [ReporteHerramientaController::class,'pdfHerramientasActuales']);
-Route::get('/admin/pdf/herramientas/salidas/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasSalidas']);
-Route::get('/admin/pdf/herramientas/reingreso/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfHerramientasReingreso']);
-Route::get('/admin/pdf/herramientas/descartadas', [ReporteHerramientaController::class,'pdfHerramientasDescartadas']);
-Route::get('/admin/pdf/herramientas/nuevosingresos/{desde}/{hasta}', [ReporteHerramientaController::class,'pdfNuevasHerramientas']);
 
-
-
-
-
-
-// *** HERRAMIENTAS ***
-
-Route::get('/admin/inventario/herramientas/index', [HerramientasController::class,'indexInventarioHerramientas'])->name('admin.inventario.herramientas.index');
-Route::get('/admin/inventario/herramientas/tabla', [HerramientasController::class,'tablaInventarioHerramientas']);
-Route::post('/admin/inventario/herramientas/nuevo', [HerramientasController::class, 'nuevaHerramienta']);
-Route::post('/admin/inventario/herramientas/informacion', [HerramientasController::class, 'informacionHerramienta']);
-Route::post('/admin/inventario/herramienta/editar', [HerramientasController::class, 'editarMaterial']);
-
-
-// REGISTRO DE NUEVAS HERRAMIENTAS
-Route::get('/admin/registro/herramientas/index', [HerramientasController::class,'indexRegistroHerramientas'])->name('admin.registro.herramientas.index');
-Route::post('/admin/buscar/herramienta',  [HerramientasController::class,'buscadorHerramienta']);
-Route::post('/admin/entrada/herramienta/guardar',  [HerramientasController::class,'guardarEntradaHerramienta']);
-
-// SALIDA DE UNA HERRAMIENTA A UN USUARIO
-Route::get('/admin/salidas/herramientas/index', [HerramientasController::class,'indexSalidaHerramientas'])->name('admin.salida.herramientas.index');
-Route::get('/admin/herramienta/cantidad/bloque/{id}', [HerramientasController::class,'bloqueCantidadHerramienta']);
-Route::post('/admin/salida/herramienta/a/usuario',  [HerramientasController::class,'salidaHerramientaUsuario']);
-
-
-// REINGRESO DE HERRAMIENTA
-Route::get('/admin/inventario/reingreso/herramientas/index', [HerramientasController::class,'indexReingresoHerramientas'])->name('admin.reingreso.herramientas.index');
-Route::get('/admin/inventario/reingreso/herramientas/tabla', [HerramientasController::class,'tablaReingresoHerramientas']);
-Route::post('/admin/reingreso/informacion',  [HerramientasController::class,'reingresoInformacion']);
-Route::post('/admin/reingreso/cantidad',  [HerramientasController::class,'reingresoCantidadHerramienta']);
-Route::post('/admin/descartar/cantidad',  [HerramientasController::class,'descartarCantidadHerramienta']);
-
-
-// REPORTE SALIDA POR MATERIAL
-Route::get('/admin/reporte/salida/pormaterial/index', [ReportesController::class,'vistaSalidaPorMaterial'])->name('admin.reporte.salida.material.index');
-Route::get('/admin/pdf/salida/pormaterial/proyecto/{desde}/{hasta}/{materiales}', [ReportesController::class,'pdfReporteMaterialesSalidas']);
 
 
 

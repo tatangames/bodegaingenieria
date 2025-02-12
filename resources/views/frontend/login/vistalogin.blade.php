@@ -78,7 +78,7 @@
                                 <img src="{{ asset('images/logosantaananorte.png') }}" class=" p-2">
                             </div>
                             <h3 class="mb-2 text-center pt-5"><strong>&nbsp;</strong></h3>
-                            <p class="text-center lead" style="font-weight: bold">BODEGA DE REPUESTOS ELÉCTRICOS</p>
+                            <p class="text-center lead" style="font-weight: bold">BODEGA INGENIERÍA</p>
                             <form>
                                 <label style="margin-top: 10px" class="font-500">Usuario</label>
                                 <input class="form-control form-control-lg mb-3" id="usuario" autocomplete="off" type="text">

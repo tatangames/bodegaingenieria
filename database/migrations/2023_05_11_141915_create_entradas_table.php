@@ -15,14 +15,13 @@ class CreateEntradasTable extends Migration
     {
         Schema::create('entradas', function (Blueprint $table) {
             $table->id();
-
-            // PROYECTO A CUAL ENTRARA
+            $table->bigInteger('id_usuario')->unsigned();
             $table->bigInteger('id_tipoproyecto')->unsigned();
             $table->date('fecha');
-
             $table->string('descripcion', 800)->nullable();
 
             $table->foreign('id_tipoproyecto')->references('id')->on('tipoproyecto');
+            $table->foreign('id_usuario')->references('id')->on('usuario');
         });
     }
 

@@ -15,7 +15,7 @@ class CreateAnioTable extends Migration
     {
         Schema::create('anio', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+            $table->string('nombre', 4);
         });
     }
 

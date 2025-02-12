@@ -23,13 +23,13 @@
 
     <section class="content-header">
         <div class="row">
-            <h1 style="margin-left: 5px">Registrar Usuario Quien Recibe Herramienta</h1>
+            <h1 style="margin-left: 5px">Registrar Usuario Quien Recibe</h1>
         </div>
         <br>
         <div class="row">
             <button type="button" style="margin-left: 15px" onclick="modalAgregar()" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus-square"></i>
-                Registrar Usuario
+                Registrar
             </button>
         </div>
 
@@ -69,7 +69,7 @@
 
                             <div class="form-group">
                                 <label>Nombre:</label>
-                                <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-nuevo" placeholder="Quien Recibe">
+                                <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-nuevo">
                             </div>
 
                         </div>
@@ -77,7 +77,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarGuardar()">Guardar</button>
+                    <button type="button" class="btn btn-primary" onclick="nuevoRegistro()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
 
                                     <div class="form-group">
                                         <label>Nombre:</label>
-                                        <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-editar" placeholder="Nombre">
+                                        <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-editar">
                                     </div>
 
                                 </div>
@@ -115,7 +115,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarEditar()">Actualizar</button>
+                    <button type="button" class="btn btn-primary" onclick="editar()">Actualizar</button>
                 </div>
             </div>
         </div>
@@ -142,16 +142,6 @@
             var ruta = "{{ URL::to('/admin/registrar/quienrecibe/tabla') }}";
             $('#tablaDatatable').load(ruta);
 
-
-            $('#select-unidad-editar').select2({
-                theme: "bootstrap-5",
-                "language": {
-                    "noResults": function(){
-                        return "Busqueda no encontrada";
-                    }
-                },
-            });
-
             document.getElementById("divcontenedor").style.display = "block";
         });
     </script>
@@ -165,42 +155,7 @@
 
         function modalAgregar(){
             document.getElementById("formulario-nuevo").reset();
-
             $('#modalAgregar').modal({backdrop: 'static', keyboard: false})
-        }
-
-        function verificarGuardar(){
-            Swal.fire({
-                title: 'Guardar Registro?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    nuevoRegistro();
-                }
-            })
-        }
-
-        function verificarEditar(){
-            Swal.fire({
-                title: 'Actualizar?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    editar();
-                }
-            })
         }
 
         function nuevoRegistro(){
@@ -216,7 +171,6 @@
                 toastr.error('Nombre máximo 100 caracteres');
                 return;
             }
-
 
             openLoading();
             var formData = new FormData();
@@ -256,8 +210,6 @@
 
                         $('#id-editar').val(id);
                         $('#nombre-editar').val(response.data.info.nombre);
-
-
                     }else{
                         toastr.error('Información no encontrada');
                     }
@@ -268,9 +220,7 @@
                 });
         }
 
-
         function editar(){
-
             var id = document.getElementById('id-editar').value;
             var nombre = document.getElementById('nombre-editar').value;
 
@@ -283,7 +233,6 @@
                 toastr.error('Nombre máximo 100 caracteres');
                 return;
             }
-
 
             openLoading();
             var formData = new FormData();
@@ -299,7 +248,6 @@
                         $('#modalEditar').modal('hide');
                         recargar();
                     }
-
                     else {
                         toastr.error('Error al registrar');
                     }
@@ -309,15 +257,6 @@
                     closeLoading();
                 });
         }
-
-
-
-
-
-
-
-
-
     </script>
 
 

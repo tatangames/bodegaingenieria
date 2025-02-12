@@ -16,10 +16,9 @@ class CreateSalidasDetalleTable extends Migration
         Schema::create('salidas_detalle', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('id_salida')->unsigned();
-
             $table->bigInteger('id_entrada_detalle')->unsigned();
-            // la entradas puede ser decimales
-            $table->decimal('cantidad', 10, 2);
+
+            $table->integer('cantidad_salida');
 
             $table->foreign('id_salida')->references('id')->on('salidas');
             $table->foreign('id_entrada_detalle')->references('id')->on('entradas_detalle');

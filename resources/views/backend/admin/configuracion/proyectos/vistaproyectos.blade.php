@@ -41,6 +41,27 @@
                     <h3 class="card-title">Listado de Proyectos</h3>
                 </div>
                 <div class="card-body">
+
+                    <div class="row d-flex align-items-center">
+                        <div class="form-group col-md-3">
+                            <label style="color: #686868">Año Proyecto</label>
+                            <div>
+                                <select id="select-anio-buscador" class="form-control">
+                                    @foreach($arrayAnio as $item)
+                                        <option value="{{$item->id}}">{{$item->nombre}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <button type="button" onclick="buscarListado()" class="btn btn-success btn-sm">
+                                <i class="fas fa-search"></i>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div id="tablaDatatable">
@@ -66,6 +87,22 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
+
+
+                                    <div class="form-group col-md-3">
+                                        <label>Año</label>
+                                        <br>
+                                        <select class="form-control" id="select-anio-nuevo">
+                                            @foreach($arrayAnio as $item)
+                                                <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label>Código</label>
+                                        <input type="text" maxlength="100" class="form-control" id="codigo-nuevo" autocomplete="off">
+                                    </div>
 
                                     <div class="form-group">
                                         <label>Nombre</label>
@@ -106,8 +143,20 @@
                                         <input type="hidden" id="id-editar">
                                     </div>
 
+                                    <div class="form-group col-md-3">
+                                        <label>Año</label>
+                                        <br>
+                                        <select class="form-control" id="select-anio-editar">
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label>Código</label>
+                                        <input type="text" maxlength="100" class="form-control" id="codigo-editar" autocomplete="off">
+                                    </div>
+
                                     <div class="form-group">
-                                        <label>Nombre de Proyecto</label>
+                                        <label>Nombre</label>
                                         <input type="text" maxlength="800" class="form-control" id="nombre-editar" autocomplete="off">
                                     </div>
 
@@ -139,20 +188,43 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-            var ruta = "{{ URL::to('/admin/proyecto/tabla/index') }}";
-            $('#tablaDatatable').load(ruta);
+
+
+            var id = @json($primerId);
+
+            if (id != null) {
+                openLoading()
+                var ruta = "{{ URL::to('/admin/proyecto/tabla/index') }}/" + id;
+                $('#tablaDatatable').load(ruta);
+            }
 
             document.getElementById("divcontenedor").style.display = "block";
-
         });
     </script>
 
     <script>
 
-        function recargar(){
-            var ruta = "{{ url('/admin/proyecto/tabla/index') }}";
+        function buscarListado(){
+            var idAnio = document.getElementById('select-anio-buscador').value;
+
+            if(idAnio === ''){
+                toastr.error('Año es requerida');
+                return;
+            }
+            openLoading()
+            var ruta = "{{ URL::to('/admin/proyecto/tabla/index') }}/" + idAnio;
             $('#tablaDatatable').load(ruta);
         }
+
+
+        function recargar(){
+            var idAnio = document.getElementById('select-anio-buscador').value;
+
+            openLoading()
+            var ruta = "{{ URL::to('/admin/proyecto/tabla/index') }}/" + idAnio;
+            $('#tablaDatatable').load(ruta);
+        }
+
 
         function modalAgregar(){
             document.getElementById("formulario-nuevo").reset();
@@ -160,39 +232,38 @@
         }
 
         function nuevo(){
+            var anio = document.getElementById('select-anio-nuevo').value;
             var nombre = document.getElementById('nombre-nuevo').value;
+            var codigo = document.getElementById('codigo-nuevo').value;
 
             if(nombre === ''){
                 toastr.error('Nombre es requerido');
                 return;
             }
 
-            if(nombre.length > 800){
-                toastr.error('Nombre máximo 800 caracteres');
-                return;
-            }
-
             openLoading();
             var formData = new FormData();
             formData.append('nombre', nombre);
+            formData.append('anio', anio);
+            formData.append('codigo', codigo);
 
             axios.post(url+'/proyecto/nuevo', formData, {
             })
-                .then((response) => {
-                    closeLoading();
-                    if(response.data.success === 1){
-                        toastr.success('Registrado correctamente');
-                        $('#modalAgregar').modal('hide');
-                        recargar();
-                    }
-                    else {
-                        toastr.error('Error al registrar');
-                    }
-                })
-                .catch((error) => {
+            .then((response) => {
+                closeLoading();
+                if(response.data.success === 1){
+                    toastr.success('Registrado correctamente');
+                    $('#modalAgregar').modal('hide');
+                    recargar();
+                }
+                else {
                     toastr.error('Error al registrar');
-                    closeLoading();
-                });
+                }
+            })
+            .catch((error) => {
+                toastr.error('Error al registrar');
+                closeLoading();
+            });
         }
 
         function informacion(id){
@@ -208,7 +279,17 @@
                         $('#modalEditar').modal('show');
                         $('#id-editar').val(response.data.info.id);
                         $('#nombre-editar').val(response.data.info.nombre);
+                        $('#codigo-editar').val(response.data.info.codigo);
 
+                        document.getElementById("select-anio-editar").options.length = 0;
+
+                        $.each(response.data.arrayAnio, function( key, val ){
+                            if(response.data.info.id_anio == val.id){
+                                $('#select-anio-editar').append('<option value="' +val.id +'" selected="selected">'+ val.nombre +'</option>');
+                            }else{
+                                $('#select-anio-editar').append('<option value="' +val.id +'">'+ val.nombre +'</option>');
+                            }
+                        });
                     }else{
                         toastr.error('Información no encontrada');
                     }
@@ -221,22 +302,21 @@
 
         function editar(){
             var id = document.getElementById('id-editar').value;
+            var anio = document.getElementById('select-anio-editar').value;
             var nombre = document.getElementById('nombre-editar').value;
+            var codigo = document.getElementById('codigo-editar').value;
 
             if(nombre === ''){
                 toastr.error('Nombre es requerido');
                 return;
             }
 
-            if(nombre.length > 800){
-                toastr.error('Nombre máximo 800 caracteres');
-                return;
-            }
-
             openLoading();
             var formData = new FormData();
             formData.append('id', id);
+            formData.append('anio', anio);
             formData.append('nombre', nombre);
+            formData.append('codigo', codigo);
 
             axios.post(url+'/proyecto/editar', formData, {
             })
@@ -251,7 +331,6 @@
                     else {
                         toastr.error('Error al actualizar');
                     }
-
                 })
                 .catch((error) => {
                     toastr.error('Error al actualizar');

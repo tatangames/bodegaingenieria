@@ -7,22 +7,40 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 60%">Proyecto</th>
-                                <th style="width: 8%">Opciones</th>
+                                <th style="width: 4%">Código</th>
+                                <th style="width: 20%">Nombre</th>
+                                <th style="width: 7%">Medida</th>
+                                <th style="width: 7%">Cantidad Actual</th>
+                                <th style="width: 7%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @foreach($lista as $dato)
                                 <tr>
+                                    <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nombre }}</td>
+                                    <td>{{ $dato->medida }}</td>
+                                    <td>{{ $dato->cantidadGlobal }}</td>
                                     <td>
+
                                         <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Editar"></i>&nbsp; Editar
+                                            <i class="fas fa-edit" title="Editar"></i>&nbsp; Editar
+                                        </button>
+
+
+                                        <button type="button" class="btn btn-success btn-xs" onclick="infoDetalle({{ $dato->id }})">
+                                            <i class="fas fa-eye" title="Detalle"></i>&nbsp; Detalle
                                         </button>
                                     </td>
                                 </tr>
                             @endforeach
+
+                            <script>
+                                setTimeout(function () {
+                                    closeLoading();
+                                }, 500);
+                            </script>
 
                             </tbody>
                         </table>

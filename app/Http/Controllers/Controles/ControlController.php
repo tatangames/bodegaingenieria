@@ -23,11 +23,7 @@ class ControlController extends Controller
 
         // Inventario
         else  if($user->hasRole('inventario')){
-            $ruta = 'admin.unidadmedida.index';
-        }
-
-        else  if($user->hasRole('auditora')){
-            $ruta = 'admin.entrada.reporte.index';
+            $ruta = 'admin.materiales.index';
         }
 
         else{

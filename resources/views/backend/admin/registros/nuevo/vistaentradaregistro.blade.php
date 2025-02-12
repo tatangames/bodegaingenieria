@@ -13,6 +13,16 @@
         /*Ajustar tablas*/
         table-layout:fixed;
     }
+
+    .cursor-pointer:hover {
+        cursor: pointer;
+        color: #401fd2;
+        font-weight: bold;
+    }
+
+    *:focus {
+        outline: none;
+    }
 </style>
 
 <div id="divcontenedor" style="display: none">
@@ -20,11 +30,10 @@
     <section class="content-header">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h2>Registro de Herramienta</h2>
+                <h2>Registro de Entradas</h2>
             </div>
         </div>
     </section>
-
 
     <section class="content">
         <div class="container-fluid">
@@ -34,7 +43,7 @@
 
                     <div class="card card-gray-dark">
                         <div class="card-header">
-                            <h3 class="card-title">Información</h3>
+                            <h3 class="card-title">Información de Ingreso</h3>
                         </div>
 
                         <div class="card-body">
@@ -42,7 +51,19 @@
                             <div class="card-body">
                                 <div class="row">
                                     <label>Fecha:</label>
-                                    <input style="width: 35%; margin-left: 25px;" type="date" class="form-control" id="fecha">
+                                    <input style="width: 25%; margin-left: 25px;" type="date" class="form-control" id="fecha">
+                                </div>
+                            </div>
+
+                            <div style="margin-left: 15px; margin-right: 15px; margin-top: 15px;">
+                                <div class="form-group">
+                                    <label>Asignar Proyecto (No saldran los Finalizados):</label>
+                                    <select id="select-tipoproyecto" class="form-control">
+                                        <option value="">Seleccionar Proyecto</option>
+                                        @foreach($arrayProyectos as $item)
+                                            <option value="{{$item->id}}">{{ $item->nombreCodigo }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
@@ -55,10 +76,9 @@
 
                             <div class="form-group" style="float: right">
                                 <br>
-                                <button type="button" id="botonaddmaterial" onclick="abrirModal()" class="btn btn-primary btn-sm float-right" style="margin-top:10px; margin-right: 15px;">
-                                    <i class="fas fa-plus" title="Agregar Repuesto"></i> Agregar Herramienta</button>
+                                <button type="button" onclick="abrirModal()" class="btn btn-primary btn-sm float-right" style="margin-top:10px; margin-right: 15px;">
+                                    <i class="fas fa-plus" title="Agregar Material"></i> Agregar Material</button>
                             </div>
-
                         </div>
 
                     </div>
@@ -73,7 +93,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Agregar Cantidad de Herramienta</h4>
+                    <h4 class="modal-title">Agregar Repuesto</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -85,7 +105,7 @@
 
                             <div class="form-group">
                                 <label class="control-label">Repuesto</label>
-                                <p>La búsqueda regresa Herramienta - Medida - Código</p>
+                                <p>La busqueda regresa Material - Medida - Código</p>
                                 <table class="table" id="matriz-busqueda" data-toggle="table">
                                     <tbody>
                                     <tr>
@@ -101,7 +121,7 @@
                             <div class="form-group" >
                                 <label class="control-label">Cantidad</label>
                                 <div class="col-md-6">
-                                    <input id="cantidad" class='form-control' autocomplete="off" placeholder="0">
+                                    <input id="cantidad" min="0" max="1000000"  class='form-control' autocomplete="off" placeholder="0">
                                 </div>
                             </div>
 
@@ -198,14 +218,20 @@
                 },
             });
 
-
+            document.querySelector('#botonaddmaterial').disabled = true;
         });
     </script>
 
     <script>
 
-        function abrirModal(){
+        document.getElementById('cantidad').addEventListener('keypress', function (event) {
+            // Permitir solo números (códigos de teclas 48-57) y teclas de control como "Backspace"
+            if (event.key < '0' || event.key > '9') {
+                event.preventDefault();
+            }
+        });
 
+        function abrirModal(){
             document.getElementById("formulario-repuesto").reset();
             $('#modalRepuesto').css('overflow-y', 'auto');
             $('#modalRepuesto').modal({backdrop: 'static', keyboard: false})
@@ -221,7 +247,7 @@
                 return;
             }
 
-            var reglaNumeroDosDecimal = /^([0-9]+\.?[0-9]{0,2})$/;
+            var reglaNumeroEntero = /^[0-9]\d*$/;
 
             //*************
 
@@ -230,8 +256,8 @@
                 return;
             }
 
-            if(!cantidad.match(reglaNumeroDosDecimal)) {
-                toastr.error('Cantidad debe ser número Decimal (2 decimales) y no Negativo');
+            if(!cantidad.match(reglaNumeroEntero)) {
+                toastr.error('Cantidad debe ser número entero y no Negativo');
                 return;
             }
 
@@ -319,7 +345,7 @@
                     $(e).attr('data-info', 0);
                 }
 
-                axios.post(url+'/buscar/herramienta', {
+                axios.post(url+'/buscar/material/global', {
                     'query' : texto
                 })
                     .then((response) => {
@@ -372,28 +398,26 @@
 
             var fecha = document.getElementById('fecha').value;
             var descripc = document.getElementById('descripcion').value; // max 800
+            var tipoproyecto = document.getElementById('select-tipoproyecto').value;
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
                 return;
             }
 
-            if(descripc.length > 800){
-                toastr.error('descripción máximo 800 caracteres');
+            if(tipoproyecto === ''){
+                toastr.error('Seleccionar Proyecto');
                 return;
             }
 
             var reglaNumeroEntero = /^[0-9]\d*$/;
-
             var nRegistro = $('#matriz > tbody >tr').length;
-            let formData = new FormData();
 
             if (nRegistro <= 0){
                 toastr.error('Registro Entrada son requeridos');
                 return;
             }
 
-            var descripcion = $("input[name='descripcionArray[]']").map(function(){return $(this).val();}).get();
             var descripcionAtributo = $("input[name='descripcionArray[]']").map(function(){return $(this).attr("data-info");}).get();
             var cantidad = $("input[name='cantidadArray[]']").map(function(){return $(this).val();}).get();
 
@@ -417,7 +441,7 @@
 
                 if (!datoCantidad.match(reglaNumeroEntero)) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad debe ser entero y no negativo');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad debe ser Entero y no negativo');
                     return;
                 }
 
@@ -427,6 +451,7 @@
                     return;
                 }
 
+                // Máximo 1 millón
                 if (datoCantidad > 1000000) {
                     colorRojoTabla(a);
                     toastr.error('Fila #' + (a + 1) + ' Cantidad máximo 1 millón');
@@ -434,42 +459,33 @@
                 }
             }
 
-            for(var b = 0; b < descripcion.length; b++){
-
-                var datoDescripcion = descripcion[b];
-
-                if(datoDescripcion === ''){
-                    colorRojoTabla(b);
-                    toastr.error('Fila #' + (b+1) + ' la descripción es requerida');
-                    return;
-                }
-
-                if(datoDescripcion.length > 300){
-                    colorRojoTabla(b);
-                    toastr.error('Fila #' + (b+1) + ' la descripción tiene más de 300 caracteres');
-                }
-            }
 
             //*******************
+
+            let formData = new FormData();
+            const contenedorArray = [];
 
             // como tienen la misma cantidad de filas, podemos recorrer
             // todas las filas de una vez
             for(var p = 0; p < cantidad.length; p++){
 
-                formData.append('cantidad[]', cantidad[p]);
-                formData.append('datainfo[]', descripcionAtributo[p]);
+                let idMaterial = descripcionAtributo[p];
+                let infoCantidad = cantidad[p];
+
+                contenedorArray.push({ idMaterial, infoCantidad });
             }
 
             openLoading();
 
             formData.append('fecha', fecha);
             formData.append('descripcion', descripc);
+            formData.append('tipoproyecto', tipoproyecto);
+            formData.append('contenedorArray', JSON.stringify(contenedorArray));
 
-            axios.post(url+'/entrada/herramienta/guardar', formData, {
+            axios.post(url+'/entrada/guardar', formData, {
             })
                 .then((response) => {
                     closeLoading();
-
                     if(response.data.success === 1){
                         toastr.success('Registrado correctamente');
                         limpiar();
@@ -494,11 +510,8 @@
 
         function limpiar(){
             document.getElementById('descripcion').value = '';
-
             $("#matriz tbody tr").remove();
         }
-
-
 
 
 

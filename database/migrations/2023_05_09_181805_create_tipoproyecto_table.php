@@ -20,6 +20,9 @@ class CreateTipoproyectoTable extends Migration
             $table->string('codigo', 100)->nullable();
             $table->string('nombre', 800);
 
+            // PROYECTOS FINALIZADO
+            $table->boolean('cerrado');
+
             $table->foreign('id_anio')->references('id')->on('anio');
         });
     }

@@ -522,9 +522,6 @@ class ReportesController extends Controller
 
 
 
-    public function vistaReporteHerramientas(){
-        return view('backend.admin.herramientas.reportes.vistareporteherramienta');
-    }
 
 
     //*****************************

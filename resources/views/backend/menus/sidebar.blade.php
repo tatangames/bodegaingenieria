@@ -41,46 +41,21 @@
                 @endcan
 
 
-                @can('sidebar.inventario')
+
                 <li class="nav-item">
-
-                    <a href="#" class="nav-link nav-">
-                        <i class="far fa-edit"></i>
-                        <p>
-                            Inventario
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                    <a href="{{ route('admin.materiales.index') }}" target="frameprincipal" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Inventario</p>
                     </a>
-
-                    <ul class="nav nav-treeview">
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.unidadmedida.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Unidad de Medida</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.materiales.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Inventario</p>
-                            </a>
-                        </li>
-
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.tiposproyecto.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Lista de Proyectos</p>
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
 
 
-
+                <li class="nav-item">
+                    <a href="{{ route('admin.tiposproyecto.index') }}" target="frameprincipal" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Lista de Proyectos</p>
+                    </a>
+                </li>
 
 
                 <li class="nav-item">
@@ -88,7 +63,7 @@
                     <a href="#" class="nav-link nav-">
                         <i class="far fa-edit"></i>
                         <p>
-                            Registro Repuestos
+                            Registros
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
@@ -115,59 +90,8 @@
                                 <p>Cierre de Proyecto</p>
                             </a>
                         </li>
-
                     </ul>
                 </li>
-
-
-
-
-                <li class="nav-item">
-
-                    <a href="#" class="nav-link nav-">
-                        <i class="far fa-edit"></i>
-                        <p>
-                            Herramientas
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.inventario.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Inventario</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.salida.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Salida Herramienta</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.reingreso.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Reingreso Herramienta</p>
-                            </a>
-                        </li>
-
-                        <hr>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.registro.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Nueva Herramienta</p>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-
-
 
 
                 <li class="nav-item">
@@ -219,6 +143,13 @@
 
 
                         <li class="nav-item">
+                            <a href="{{ route('admin.anio.index') }}" target="frameprincipal" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Año</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a href="{{ route('admin.registrar.quienrecibe.index') }}" target="frameprincipal" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Quien Recibe</p>
@@ -226,9 +157,9 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('admin.registrar.quienentrega.index') }}" target="frameprincipal" class="nav-link">
+                            <a href="{{ route('admin.unidadmedida.index') }}" target="frameprincipal" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Quien Entrega</p>
+                                <p>Unidad de Medida</p>
                             </a>
                         </li>
 
@@ -238,16 +169,12 @@
 
 
 
-                @endcan
 
 
 
 
 
 
-
-
-                    @can('sidebar.reportes')
 
                         <li class="nav-item">
 
@@ -295,29 +222,12 @@
                                 </li>
 
 
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.reporte.salida.material.index') }}" target="frameprincipal" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Salida Material</p>
-                                    </a>
-                                </li>
-
-
-                                <hr>
-
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.reporte.herramientas.index') }}" target="frameprincipal" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Herramientas</p>
-                                    </a>
-                                </li>
 
 
 
                             </ul>
                         </li>
 
-                    @endcan
 
 
 

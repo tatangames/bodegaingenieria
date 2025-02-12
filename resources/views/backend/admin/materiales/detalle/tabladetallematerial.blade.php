@@ -7,41 +7,20 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 4%">Código</th>
-                                <th style="width: 20%">Nombre</th>
-                                <th style="width: 7%">Medida</th>
-                                <th style="width: 7%">Cantidad</th>
-                                <th style="width: 7%">Opciones</th>
+                                <th style="width: 3%">Fecha Ingreso</th>
+                                <th style="width: 40%">Proyecto</th>
+                                <th style="width: 4%">Cantidad Actual</th>
                             </tr>
                             </thead>
                             <tbody>
 
-                            @foreach($lista as $dato)
+                            @foreach($listado as $dato)
                                 <tr>
-                                    <td>{{ $dato->codigo }}</td>
-                                    <td>{{ $dato->nombre }}</td>
-                                    <td>{{ $dato->medida }}</td>
-                                    <td>{{ $dato->total }}</td>
-                                    <td>
-
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-edit" title="Editar"></i>&nbsp; Editar
-                                        </button>
-
-
-                                        <button type="button" class="btn btn-success btn-xs" onclick="infoDetalle({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Detalle"></i>&nbsp; Detalle
-                                        </button>
-                                    </td>
+                                    <td>{{ $dato->fechaFormat }}</td>
+                                    <td>{{ $dato->nombreProyecto }}</td>
+                                    <td>{{ $dato->cantidadDisponible }}</td>
                                 </tr>
                             @endforeach
-
-                            <script>
-                                setTimeout(function () {
-                                    closeLoading();
-                                }, 500);
-                            </script>
-
                             </tbody>
                         </table>
                     </div>
@@ -57,6 +36,7 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'asc']],
             "searching": true,
             "ordering": true,
             "info": true,

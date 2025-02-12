@@ -24,11 +24,11 @@
 
     <section class="content-header">
         <div class="row">
-            <h1 style="margin-left: 5px">Inventario</h1>
+            <h1 style="margin-left: 5px">Materiales</h1>
 
                 <button type="button" style="margin-left: 15px" onclick="modalAgregar()" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus-square"></i>
-                    Registrar Material
+                    Registrar
                 </button>
 
         </div>
@@ -67,7 +67,7 @@
 
                             <div class="form-group">
                                 <label>Nombre:</label>
-                                <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresIngreso();" onkeyup="contarcaracteresIngreso();" maxlength="300" id="nombre-nuevo" placeholder="Nombre del material">
+                                <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresIngreso();" onkeyup="contarcaracteresIngreso();" maxlength="300" id="nombre-nuevo">
                                 <div id="res-caracter-nuevo" style="float: right">0/300</div>
                             </div>
 
@@ -85,8 +85,8 @@
                                     <label>Unidad de Medida:</label>
                                     <br>
                                     <select width="70%"  class="form-control" id="select-unidad-nuevo">
-                                        <option value="" selected>Seleccione una opción (Opcional)...</option>
-                                        @foreach($lUnidad as $sel)
+                                        <option value="" selected>Seleccione una opción</option>
+                                        @foreach($arrayUnidades as $sel)
                                             <option value="{{ $sel->id }}">{{ $sel->nombre }}</option>
                                         @endforeach
                                     </select>
@@ -127,7 +127,7 @@
 
                                     <div class="form-group">
                                         <label>Nombre:</label>
-                                        <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresEditar();" onkeyup="contarcaracteresEditar();" maxlength="300" id="nombre-editar" placeholder="Nombre del material">
+                                        <input type="text" class="form-control" autocomplete="off" onpaste="contarcaracteresEditar();" onkeyup="contarcaracteresEditar();" maxlength="300" id="nombre-editar" >
                                         <div id="res-caracter-editar" style="float: right">0/300</div>
                                     </div>
 
@@ -217,9 +217,7 @@
             document.getElementById("formulario-nuevo").reset();
             document.getElementById('res-caracter-nuevo').innerHTML = '0/300 ';
 
-            $('#select-codigo-nuevo').prop('selectedIndex', 0).change();
             $('#select-unidad-nuevo').prop('selectedIndex', 0).change();
-            $('#select-clasi-nuevo').prop('selectedIndex', 0).change();
 
             $('#modalAgregar').modal({backdrop: 'static', keyboard: false})
         }
@@ -262,25 +260,16 @@
 
             var nombre = document.getElementById('nombre-nuevo').value;
             var codigo = document.getElementById('codigo-nuevo').value;
-            var unidad = document.getElementById('select-unidad-nuevo').value; // nullable
+            var unidad = document.getElementById('select-unidad-nuevo').value;
 
             if(nombre === ''){
                 toastr.error('Nombre es requerido');
                 return;
             }
 
-            if(nombre.length > 300){
-                toastr.error('Nombre máximo 300 caracteres');
-                return;
-            }
-
-            if(codigo === ''){
-
-            }else{
-                if(codigo.length > 100){
-                    toastr.error('Código máximo 100 caracteres');
-                    return;
-                }
+            if(unidad === ''){
+                toastr.error('Unidad Medida es requerido');
+                return
             }
 
             openLoading();
@@ -327,7 +316,6 @@
                         contarcaracteresEditar();
 
                         document.getElementById("select-unidad-editar").options.length = 0;
-                        $('#select-unidad-editar').append('<option value="" selected="selected">Seleccione una opción...</option>');
 
                         // unidad de medida
                         $.each(response.data.unidad, function( key, val ){
@@ -360,18 +348,9 @@
                 return;
             }
 
-            if(nombre.length > 300){
-                toastr.error('Nombre máximo 300 caracteres');
-                return;
-            }
-
-            if(codigo === ''){
-
-            }else{
-                if(codigo.length > 100){
-                    toastr.error('Código máximo 100 caracteres');
-                    return;
-                }
+            if(unidad === ''){
+                toastr.error('Unidad Medida es requerido');
+                return
             }
 
             openLoading();
@@ -390,7 +369,6 @@
                         $('#modalEditar').modal('hide');
                         recargar();
                     }
-
                     else {
                         toastr.error('Error al registrar');
                     }

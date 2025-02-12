@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateEntradasDetalleTable extends Migration
 {
     /**
-     * Run the migrations.
+     * ENTRADAS DETALLE
      *
      * @return void
      */
@@ -15,11 +15,12 @@ class CreateEntradasDetalleTable extends Migration
     {
         Schema::create('entradas_detalle', function (Blueprint $table) {
             $table->id();
-
             $table->bigInteger('id_entradas')->unsigned();
             $table->bigInteger('id_material')->unsigned();
-
             $table->integer('cantidad');
+
+            // solo es un nombre copia de respaldo
+            $table->string('nombre_copia', 300);
 
             // SE IRA SUMANDO LA CANTIDAD ENTREGADA
             $table->integer('cantidad_entregada');

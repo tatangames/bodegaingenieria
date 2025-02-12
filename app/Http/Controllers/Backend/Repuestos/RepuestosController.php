@@ -26,223 +26,57 @@ class RepuestosController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-        $lUnidad = UnidadMedida::orderBy('nombre', 'ASC')->get();
-        return view('backend.admin.inventario.vistainventario', compact('lUnidad'));
-    }
-
-    public function tablaMateriales(){
-
-        $lista = Materiales::orderBy('nombre', 'ASC')->get();
-
-        foreach ($lista as $item) {
-            $medida = '';
-            if($dataUnidad = UnidadMedida::where('id', $item->id_medida)->first()){
-                $medida = $dataUnidad->nombre;
-            }
-
-            $item->medida = $medida;
-
-            // OBTENER CANTIDAD DE CADA MATERIAL, SUMANDO DE TODOS LOS PROYECTOS
-            // EN VISTA DETALLE SE MOSTRARA DE QUE PROYECTO SON CADA UNO
-
-            $arrayEntradas = Entradas::where('id_material', $item->id)->get();
-
-            $sumatoria = 0;
-            foreach ($arrayEntradas as $data){
-
-                // SIEMPRE SUMARA TODOS, YA QUE PARA SACAR CANTIDAD LLEGARA HASTA 0
-                $sumatoria += $data->cantidad;
-            }
-
-            $item->total = $sumatoria;
-        }
-
-        return view('backend.admin.inventario.tablainventario', compact('lista'));
-    }
-
-    public function nuevoMaterial(Request $request){
-
-        $regla = array(
-            'nombre' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        $dato = new Materiales();
-        $dato->id_medida = $request->unidad;
-        $dato->nombre = $request->nombre;
-        $dato->codigo = $request->codigo;
-
-        if($dato->save()){
-            return ['success' => 1];
-        }else{
-            return ['success' => 2];
-        }
-    }
-
-    public function informacionMaterial(Request $request){
-        $regla = array(
-            'id' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        if($lista = Materiales::where('id', $request->id)->first()){
-
-            $arrayUnidad = UnidadMedida::orderBy('nombre', 'ASC')->get();
-
-            return ['success' => 1, 'material' => $lista, 'unidad' => $arrayUnidad];
-        }else{
-            return ['success' => 2];
-        }
-    }
-
-    public function editarMaterial(Request $request){
-
-        $regla = array(
-            'nombre' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        Materiales::where('id', $request->id)->update([
-            'id_medida' => $request->unidad,
-            'nombre' => $request->nombre,
-            'codigo' => $request->codigo
-        ]);
-
-        return ['success' => 1];
-    }
 
 
-    public function infoHerramientaDescartar(Request $request){
-
-        $regla = array(
-            'id' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        $info = Herramientas::where('id', $request->id)->first();
-
-
-        return ['success' => 1, 'info' => $info];
-    }
-
-
-    public function descartarHerramientaInventario(Request $request){
-
-
-        $rules = array(
-            'id' => 'required',
-            'cantidad' => 'required',
-            'descripcion' => 'required'
-        );
-
-        $validator = Validator::make($request->all(), $rules);
-        if ( $validator->fails()){
-            return ['success' => 0];
-        }
-
-        DB::beginTransaction();
-
-
-        try {
-
-            $infoHerra = Herramientas::where('id', $request->id)->first();
-
-            if($request->cantidad > $infoHerra->cantidad){
-
-                // cantidad a descartar es mayor a la del inventario
-                return ['success' => 1];
-            }
-
-
-            //**************************
-            // RESTAR CANTIDAD A HERRAMIENTAS
-
-            $restado = $infoHerra->cantidad - $request->cantidad;
-            $fechaCarbon = Carbon::parse(Carbon::now());
-
-            Herramientas::where('id', $request->id)->update([
-                'cantidad' => $restado
-            ]);
-
-
-            // guardar historial del descartado
-            $datoDescarto = new HistoHerramientaDescartada();
-            $datoDescarto->id_histo_herra_salida = null;
-            $datoDescarto->id_herramienta = $infoHerra->id;
-            $datoDescarto->fecha = $fechaCarbon;
-            $datoDescarto->cantidad = $request->cantidad;
-            $datoDescarto->descripcion = $request->descripcion;
-            $datoDescarto->save();
-
-
-            DB::commit();
-            return ['success' => 2];
-
-        }catch(\Throwable $e){
-            Log::info('err ' . $e);
-            DB::rollback();
-            return ['success' => 99];
-        }
-
-    }
-
-
-
-    //*******************************************************************
+    //************** REGISTRO DE INGRESO DE MATERIALES  *****************************
 
     public function indexRegistroEntrada(){
+        $arrayProyectos = TipoProyecto::where('cerrado', 0)
+            ->orderBy('nombre')
+            ->get();
 
-        $tipoproyecto = TipoProyecto::orderBy('nombre')->get();
+        foreach ($arrayProyectos as $item) {
+            if($item->codigo != null){
+                $item->nombreCodigo = "(" . $item->codigo . ") " . $item->nombre;
+            }else{
+                $item->nombreCodigo = $item->nombre;
+            }
+        }
 
-        return view('backend.admin.repuestos.registros.vistaentradaregistro', compact('tipoproyecto'));
+        return view('backend.admin.registros.nuevo.vistaentradaregistro', compact('arrayProyectos'));
     }
 
 
-    public function buscadorMaterial(Request $request){
+    public function buscadorMaterialGlobal(Request $request){
 
         if($request->get('query')){
             $query = $request->get('query');
-            $data = Materiales::where('nombre', 'LIKE', "%{$query}%")
+            $arrayMateriales = Materiales::where('nombre', 'LIKE', "%{$query}%")
                 ->orWhere('codigo', 'LIKE', "%{$query}%")
                 ->get();
 
-            foreach ($data as $dd){
-                if($info = UnidadMedida::where('id', $dd->id_medida)->first()){
-                    $dd->medida = "- " . $info->nombre;
-                }else{
-                    $dd->medida = "";
-                }
 
-                if($dd->codigo != null){
-                    $dd->code = "- " . $dd->codigo;
-                }else{
-                    $dd->code = "";
-                }
-            }
-
-            $output = '<ul class="dropdown-menu" style="display:block; position:relative;">';
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative; overflow: auto; ">';
             $tiene = true;
-            foreach($data as $row){
+            foreach($arrayMateriales as $row){
+
+                $medida = "";
+                $code = "";
+
+                if($info = UnidadMedida::where('id', $row->id_medida)->first()){
+                    $medida = "- " . $info->nombre;
+                }
+
+                if($row->codigo != null){
+                    $code = "- " . $row->codigo;
+                }
 
                 // si solo hay 1 fila, No mostrara el hr, salto de linea
-                if(count($data) == 1){
+                if(count($arrayMateriales) == 1){
                     if(!empty($row)){
                         $tiene = false;
                         $output .= '
-                 <li onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px">'.$row->nombre . '  ' .$row->medida . ' ' .$row->code .'</a></li>
+                 <li class="cursor-pointer" onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px; color: black">'.$row->nombre . '  ' .$medida . ' ' .$code .'</a></li>
                 ';
                     }
                 }
@@ -251,7 +85,7 @@ class RepuestosController extends Controller
                     if(!empty($row)){
                         $tiene = false;
                         $output .= '
-                 <li onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px">'.$row->nombre . ' ' .$row->medida . ' ' .$row->code .'</a></li>
+                 <li class="cursor-pointer" onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px; color: black">'.$row->nombre . ' ' .$row->medida . ' ' .$row->code .'</a></li>
                    <hr>
                 ';
                     }
@@ -281,53 +115,31 @@ class RepuestosController extends Controller
         DB::beginTransaction();
 
         try {
+            $datosContenedor = json_decode($request->contenedorArray, true);
 
-            // PRIMERO GUARDAR UN HISTORIAL
-            $histoEntrada = new HistorialEntradas();
-            $histoEntrada->fecha = $request->fecha;
-            $histoEntrada->descripcion = $request->descripcion;
-            $histoEntrada->id_tipoproyecto = $request->tipoproyecto;
-            $histoEntrada->save();
+            $usuario = auth()->user();
 
-            // HOY GUARDAR HISTORIAL DEL DETALLE
-            for ($i = 0; $i < count($request->cantidad); $i++) {
+            $registro = new Entradas();
+            $registro->id_usuario = $usuario->id;
+            $registro->id_tipoproyecto = $request->tipoproyecto;
+            $registro->fecha = $request->fecha;
+            $registro->descripcion = $request->observacion;
+            $registro->save();
 
-                $histoDetalle = new HistorialEntradasDeta();
-                $histoDetalle->id_historial = $histoEntrada->id;
-                $histoDetalle->id_material = $request->datainfo[$i];
-                $histoDetalle->cantidad = $request->cantidad[$i];
-                $histoDetalle->save();
-            }
+            // idMaterial    infoCantidad
 
+            // SUMAR CANTIDAD
+            foreach ($datosContenedor as $filaArray) {
 
-            // GUARDAR LA CANTIDAD
-            // SI EL MATERIAL EXISTE, SOLO SE SUMARA
-            // SI EL MATERIAL NO EXISTE, SE CREARA
+                $infoProducto = Materiales::where('id', $filaArray['idMaterial'])->first();
 
-            for ($i = 0; $i < count($request->cantidad); $i++) {
-
-
-                if($info = Entradas::where('id_tipoproyecto', $request->tipoproyecto)
-                    ->where('id_material', $request->datainfo[$i])
-                    ->first()){
-                    // MATERIAL ENCONTRADO PARA EL PROYECTO SELECCIONADO
-                    // SOLO SE SUMARA LA CANTIDAD
-
-                    $suma = $info->cantidad + $request->cantidad[$i];
-
-                    // ACTUALIZAR CANTIDAD
-                    Entradas::where('id', $info->id)->update([
-                        'cantidad' => $suma
-                    ]);
-                }else{
-
-                    // MATERIAL NO EXISTE, ASI QUE CREAR CON SU TIPO PROYECTO
-                    $nuevoIngreso = new Entradas();
-                    $nuevoIngreso->id_material = $request->datainfo[$i];
-                    $nuevoIngreso->id_tipoproyecto = $request->tipoproyecto;
-                    $nuevoIngreso->cantidad = $request->cantidad[$i];
-                    $nuevoIngreso->save();
-                }
+                $detalle = new EntradasDetalle();
+                $detalle->id_entradas = $registro->id;
+                $detalle->id_material = $filaArray['idMaterial'];
+                $detalle->cantidad = $filaArray['infoCantidad'];
+                $detalle->nombre_copia = $infoProducto->nombre;
+                $detalle->cantidad_entregada = 0;
+                $detalle->save();
             }
 
             // ENTRADA COMPLETADA
@@ -336,7 +148,7 @@ class RepuestosController extends Controller
             return ['success' => 1];
 
         }catch(\Throwable $e){
-
+            Log::info("error: " . $e);
             DB::rollback();
             return ['success' => 2];
         }
@@ -348,46 +160,28 @@ class RepuestosController extends Controller
     //*******************************************
 
     public function vistaDetalleMaterial($id){
-
-        $infomaterial = Materiales::where('id', $id)->first();
-        $medida = '';
-        if($infoMedida = UnidadMedida::where('id', $infomaterial->id_medida)->first()){
-            $medida = $infoMedida->nombre;
-        }
-
-        return view('backend.admin.inventario.detalle.vistadetalle', compact('id', 'infomaterial', 'medida'));
+        return view('backend.admin.materiales.detalle.vistadetallematerial', compact('id'));
     }
 
 
-    public function tablaDetalleMaterial($id){
+    public function tablaDetalleMaterial($idmaterial){
 
-        // SOLO HABRA 1 MATERIAL POR CADA PROYECTO
-        $arrayEntradas =  Entradas::where('id_material', $id)->get();
-
-        $pilaArrayEntrada = array();
-
-
-        foreach ($arrayEntradas as $data){
-
-            // VERIFICAR QUE LA CANTIDAD SEA MAYOR A 0 PARA PODER
-            // MOSTRARLO
-           if($data->cantidad > 0){
-               array_push($pilaArrayEntrada, $data->id);
-           }
-        }
-
-        $lista = Entradas::whereIn('id', $pilaArrayEntrada)
-            ->orderBy('id_tipoproyecto', 'ASC')
+        $listado = EntradasDetalle::where('id_material', $idmaterial)
+            ->whereColumn('cantidad_entregada', '<', 'cantidad')
             ->get();
 
-        foreach ($lista as $info){
-            // OBTENER NOMBRE DE PROYECTO
+        foreach ($listado as $fila) {
+            $infoEntrada = Entradas::where('id', $fila->id_entradas)->first();
+            $fila->fechaFormat = date("d-m-Y", strtotime($infoEntrada->fecha));
 
-            $infoProyecto = TipoProyecto::where('id', $info->id_tipoproyecto)->first();
-            $info->nombrepro = $infoProyecto->nombre;
+            $fila->cantidadDisponible = ($fila->cantidad - $fila->cantidad_entregada);
+
+            // NOMBRE DE PROYECTO
+            $infoProyecto = TipoProyecto::where('id', $infoEntrada->id_tipoproyecto)->first();
+            $fila->nombreProyecto = $infoProyecto->nombre;
         }
 
-        return view('backend.admin.inventario.detalle.tabladetallematerial', compact('lista'));
+        return view('backend.admin.materiales.detalle.tabladetallematerial', compact('listado'));
     }
 
 }

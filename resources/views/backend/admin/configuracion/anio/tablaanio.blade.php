@@ -8,12 +8,12 @@
                             <thead>
                             <tr>
                                 <th style="width: 60%">Nombre</th>
-                                <th style="width: 6%">Opciones</th>
+                                <th style="width: 7%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
 
-                            @foreach($lista as $dato)
+                            @foreach($listado as $dato)
                                 <tr>
                                     <td>{{ $dato->nombre }}</td>
                                     <td>
@@ -41,6 +41,7 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'asc']],
             "searching": true,
             "ordering": true,
             "info": true,

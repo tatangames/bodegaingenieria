@@ -18,12 +18,8 @@ class CreateCierreProyectoDetalleTable extends Migration
             $table->id();
             $table->bigInteger('id_cierre_proyecto')->unsigned();
 
-            // MATERIAL QUE SALDRA CON LA CANTIDAD ACTUAL QUE TENIA PARA SALIR
             $table->bigInteger('id_entradas_detalle')->unsigned();
             $table->integer('cantidad_salida');
-
-            // EN EL OTRO PROYECTO SOLO SE AUMENTARA LA CANTIDAD DISPONIBLE
-            // SINO EXISTE SOLO SE CREA
 
 
             $table->foreign('id_cierre_proyecto')->references('id')->on('cierre_proyecto');

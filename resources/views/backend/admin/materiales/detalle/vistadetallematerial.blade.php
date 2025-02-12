@@ -17,12 +17,6 @@
 
 <div id="divcontenedor" style="display: none">
 
-    <section class="content-header">
-        <label>Repuesto.</label> <p>{{ $infomaterial->nombre }}</p>
-        <label>Código.</label> <p>{{ $infomaterial->codigo}}</p>
-        <label>medida.</label> <p>{{ $medida }}</p>
-    </section>
-
     <section class="content">
         <div class="container-fluid">
             <div class="card card-gray-dark">

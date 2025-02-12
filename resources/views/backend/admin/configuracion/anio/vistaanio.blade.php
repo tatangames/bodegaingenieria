@@ -13,9 +13,7 @@
         /*Ajustar tablas*/
         table-layout:fixed;
     }
-    .select2-container{
-        height: 30px !important;
-    }
+
 
 </style>
 
@@ -23,13 +21,9 @@
 
     <section class="content-header">
         <div class="row">
-            <h1 style="margin-left: 5px">Registrar Usuario Quien Entrega las Herramientas</h1>
-        </div>
-        <br>
-        <div class="row">
             <button type="button" style="margin-left: 15px" onclick="modalAgregar()" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus-square"></i>
-                Registrar Usuario
+                Nuevo Registro
             </button>
         </div>
 
@@ -58,7 +52,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Nuevo Registro</h4>
+                    <h4 class="modal-title">Registro</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -68,8 +62,8 @@
                         <div class="card-body">
 
                             <div class="form-group">
-                                <label>Nombre:</label>
-                                <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-nuevo" placeholder="Quien Entrega">
+                                <label>Año:</label>
+                                <input type="text" class="form-control" autocomplete="off" maxlength="4" id="nombre-nuevo">
                             </div>
 
                         </div>
@@ -77,7 +71,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarGuardar()">Guardar</button>
+                    <button type="button" class="btn btn-primary" onclick="nuevoRegistro()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -88,7 +82,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Editar Nombre</h4>
+                    <h4 class="modal-title">Editar</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -104,8 +98,8 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Nombre:</label>
-                                        <input type="text" class="form-control" autocomplete="off" maxlength="100" id="nombre-editar" placeholder="Nombre">
+                                        <label>Año:</label>
+                                        <input type="text" class="form-control" autocomplete="off" maxlength="4" id="nombre-editar">
                                     </div>
 
                                 </div>
@@ -115,7 +109,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarEditar()">Actualizar</button>
+                    <button type="button" class="btn btn-primary" onclick="editar()">Actualizar</button>
                 </div>
             </div>
         </div>
@@ -139,18 +133,8 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            var ruta = "{{ URL::to('/admin/registrar/quienentrega/tabla') }}";
+            var ruta = "{{ URL::to('/admin/anio/tabla') }}";
             $('#tablaDatatable').load(ruta);
-
-
-            $('#select-unidad-editar').select2({
-                theme: "bootstrap-5",
-                "language": {
-                    "noResults": function(){
-                        return "Busqueda no encontrada";
-                    }
-                },
-            });
 
             document.getElementById("divcontenedor").style.display = "block";
         });
@@ -159,7 +143,7 @@
     <script>
 
         function recargar(){
-            var ruta = "{{ url('/admin/registrar/quienentrega/tabla') }}";
+            var ruta = "{{ url('/admin/anio/tabla') }}";
             $('#tablaDatatable').load(ruta);
         }
 
@@ -169,60 +153,21 @@
             $('#modalAgregar').modal({backdrop: 'static', keyboard: false})
         }
 
-        function verificarGuardar(){
-            Swal.fire({
-                title: 'Guardar Registro?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    nuevoRegistro();
-                }
-            })
-        }
-
-        function verificarEditar(){
-            Swal.fire({
-                title: 'Actualizar?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    editar();
-                }
-            })
-        }
 
         function nuevoRegistro(){
 
             var nombre = document.getElementById('nombre-nuevo').value;
 
             if(nombre === ''){
-                toastr.error('Nombre es requerido');
+                toastr.error('Año es requerido');
                 return;
             }
-
-            if(nombre.length > 100){
-                toastr.error('Nombre máximo 100 caracteres');
-                return;
-            }
-
 
             openLoading();
             var formData = new FormData();
             formData.append('nombre', nombre);
 
-            axios.post(url+'/registrar/nombre/quienentrega', formData, {
+            axios.post(url+'/anio/nuevo', formData, {
             })
                 .then((response) => {
                     closeLoading();
@@ -246,7 +191,7 @@
             openLoading();
             document.getElementById("formulario-editar").reset();
 
-            axios.post(url+'/informacion/quienentrega',{
+            axios.post(url+'/anio/informacion',{
                 'id': id
             })
                 .then((response) => {
@@ -256,8 +201,6 @@
 
                         $('#id-editar').val(id);
                         $('#nombre-editar').val(response.data.info.nombre);
-
-
                     }else{
                         toastr.error('Información no encontrada');
                     }
@@ -275,22 +218,16 @@
             var nombre = document.getElementById('nombre-editar').value;
 
             if(nombre === ''){
-                toastr.error('Nombre es requerido');
+                toastr.error('Año es requerido');
                 return;
             }
-
-            if(nombre.length > 100){
-                toastr.error('Nombre máximo 100 caracteres');
-                return;
-            }
-
 
             openLoading();
             var formData = new FormData();
             formData.append('id', id);
             formData.append('nombre', nombre);
 
-            axios.post(url+'/actualizar/nombre/quienentrega', formData, {
+            axios.post(url+'/anio/editar', formData, {
             })
                 .then((response) => {
                     closeLoading();

@@ -15,7 +15,7 @@ class CreateMaterialesTable extends Migration
     {
         Schema::create('materiales', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_medida')->unsigned()->nullable();
+            $table->bigInteger('id_medida')->unsigned();
 
             $table->string('nombre', 300);
             $table->string('codigo', 100)->nullable();

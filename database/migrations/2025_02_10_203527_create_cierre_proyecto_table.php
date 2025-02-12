@@ -15,11 +15,7 @@ class CreateCierreProyectoTable extends Migration
     {
         Schema::create('cierre_proyecto', function (Blueprint $table) {
             $table->id();
-
-            // PROYECTO SALDRAN LOS MATERIALES
-            $table->bigInteger('id_tipoproyecto_sale')->unsigned();
-            // PROYECTO A CUAL VAMOS A ENTREGAR LO NUEVO
-            $table->bigInteger('id_tipoproyecto_entre')->unsigned();
+            $table->bigInteger('id_usuario')->unsigned();
 
             $table->date('fecha');
             $table->string('descripcion', 800)->nullable();
@@ -27,9 +23,7 @@ class CreateCierreProyectoTable extends Migration
             // acta de cierre
             $table->string('documento', 100)->nullable();
 
-            // esta entrada debe ser para un proyecto o inventario general
-            $table->foreign('id_tipoproyecto_sale')->references('id')->on('tipoproyecto');
-            $table->foreign('id_tipoproyecto_entre')->references('id')->on('tipoproyecto');
+            $table->foreign('id_usuario')->references('id')->on('usuario');
         });
     }
 
