@@ -218,7 +218,6 @@
                 },
             });
 
-            document.querySelector('#botonaddmaterial').disabled = true;
         });
     </script>
 

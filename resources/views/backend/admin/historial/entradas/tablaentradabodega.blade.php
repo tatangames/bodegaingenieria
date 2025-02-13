@@ -1,27 +1,52 @@
+
+
 <section class="content">
     <div class="container-fluid">
         <div class="row">
+
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 12%">Código</th>
-                                <th style="width: 20%">Herramienta</th>
-                                <th style="width: 15%">Cantidad</th>
+                                <th style="width: 5%">Fecha Ingreso</th>
+                                <th style="width: 15%">Proyecto</th>
+                                <th style="width: 12%">Observación</th>
+                                <th style="width: 6%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
 
-                            @foreach($lista as $dato)
+                            @foreach($listado as $dato)
                                 <tr>
-                                    <td>{{ $dato->codmaterial }}</td>
-                                    <td>{{ $dato->nommaterial }}</td>
-                                    <td>{{ $dato->cantidad }}</td>
+                                    <td>{{ $dato->fecha }}</td>
+                                    <td>{{ $dato->nombreProyecto }}</td>
+                                    <td>{{ $dato->observacion }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-xs"
+                                                onclick="vistaDetalle({{ $dato->id }})">
+                                            <i class="fas fa-eye" title="Detalle"></i>&nbsp; Detalle
+                                        </button>
 
+                                        <button style="margin: 3px" type="button" class="btn btn-danger btn-xs"
+                                                onclick="infoBorrar({{ $dato->id }})">
+                                            <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
+                                        </button>
+
+                                        <button style="margin: 3px" type="button" class="btn btn-warning btn-xs"
+                                                onclick="infoNuevoIngreso({{ $dato->id }})">
+                                            <i class="fas fa-plus" title="Nuevo Ingreso"></i>&nbsp; Nuevo Ingreso
+                                        </button>
+                                    </td>
                                 </tr>
                             @endforeach
+
+                            <script>
+                                setTimeout(function () {
+                                    closeLoading();
+                                }, 500);
+                            </script>
 
                             </tbody>
                         </table>
@@ -38,12 +63,13 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'desc']],
             "searching": true,
             "ordering": true,
             "info": true,
             "autoWidth": false,
             "pagingType": "full_numbers",
-            "lengthMenu": [[10, 25, 50, 100, 150, -1], [10, 25, 50, 100, 150, "Todo"]],
+            "lengthMenu": [[500, -1], [500, "Todo"]],
             "language": {
 
                 "sProcessing": "Procesando...",

@@ -105,25 +105,28 @@ Route::post('/admin/entrada/guardar',  [RepuestosController::class,'guardarEntra
 Route::get('/admin/registro/salida', [SalidasController::class,'indexRegistroSalida'])->name('admin.salida.registro.index');
 Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
 Route::post('/admin/buscar/material/proyecto/disponibilidad', [SalidasController::class, 'infoBodegaMaterialDetalleFila']);
+Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalidaMateriales']);
+
+
+// ---- HISTORIAL ENTRADAS ---
+
+// ---- ENTRADAS
+Route::get('/admin/bodega/historial/entrada/index', [HistorialController::class,'indexHistorialEntradas'])->name('sidebar.bodega.historial.entradas');
+Route::get('/admin/bodega/historial/entrada/tabla/{id}', [HistorialController::class,'tablaHistorialEntradas']);
+Route::get('/admin/bodega/historial/entradadetalle/index/{id}', [HistorialController::class,'indexHistorialEntradasDetalle']);
+Route::get('/admin/bodega/historial/entradadetalle/tabla/{id}', [HistorialController::class,'tablaHistorialEntradasDetalle']);
+// vista para ingresar nuevo producto al lote existente
+Route::get('/admin/bodega/historial/nuevoingresoentradadetalle/index/{id}', [HistorialController::class,'indexNuevoIngresoEntradaDetalle']);
+
+// BORRAR ENTRADA COMPLETA DE PRODUCTOS -> ELIMINARA SALIDAS SI HUBIERON
+Route::post('/admin/bodega/historial/entrada/borrarlote', [HistorialController::class, 'historialEntradaBorrarLote']);
+Route::post('/admin/bodega/historial/entradadetalle/borraritem', [HistorialController::class, 'historialEntradaDetalleBorrarItem']);
 
 
 
 
 
 
-
-
-// detalle repuestos
-
-
-// registro de un proyecto
-
-
-// registrar salida de repuestos
-Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalida']);
-
-
-Route::post('/admin/repuesto/cantidad/bloque', [SalidasController::class,'bloqueCantidades']);
 
 
 // TRANSFERENCIAS
@@ -142,8 +145,7 @@ Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'g
 // HISTORIAL
 
 // listado historial de herramientas para Salida
-Route::get('/admin/historial/salida/herramienta/index', [HistorialController::class,'indexHistorialHerramientaSalida'])->name('admin.historial.salidas.herramientas');
-Route::get('/admin/historial/salida/herramienta/tabla', [HistorialController::class,'tablaHistorialHerramientaSalida']);
+
 Route::post('/admin/historial/salida/herramienta/informacion',  [HistorialController::class,'informacionHistorialSalidaHerramienta']);
 Route::post('/admin/historial/salida/herramienta/actualizar',  [HistorialController::class,'actualizarHistorialSalidaHerramienta']);
 

@@ -189,7 +189,6 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
-
             var id = @json($primerId);
 
             if (id != null) {

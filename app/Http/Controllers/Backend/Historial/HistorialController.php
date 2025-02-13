@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Backend\Historial;
 
 use App\Http\Controllers\Controller;
-use App\Models\Herramientas;
-use App\Models\HistoHerramientaSalida;
-use App\Models\HistoHerramientaSalidaDetalle;
-use App\Models\HistorialSalidas;
-use App\Models\HistorialSalidasDeta;
+use App\Models\Anios;
+use App\Models\Entradas;
+use App\Models\EntradasDetalle;
 use App\Models\Materiales;
-use App\Models\QuienEntrega;
 use App\Models\QuienRecibe;
+use App\Models\Salidas;
+use App\Models\SalidasDetalle;
 use App\Models\TipoProyecto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class HistorialController extends Controller
@@ -22,201 +23,162 @@ class HistorialController extends Controller
         $this->middleware('auth');
     }
 
-    public function indexHistorialHerramientaSalida(){
+    public function indexHistorialEntradas()
+    {
+        $arrayAnio = Anios::orderBy('nombre', 'ASC')->get();
 
-        return view('backend.admin.historial.salidaherramientas.vistasalidaherramientas');
+        $primerId = optional($arrayAnio->first())->id;
+
+        return view('backend.admin.historial.entradas.vistaentradabodega', compact('arrayAnio', 'primerId'));
     }
 
-
-    public function tablaHistorialHerramientaSalida(){
-
-        $lista = HistoHerramientaSalida::orderBy('fecha', 'DESC')->get();
-
-        foreach ($lista as $dato){
-
-            $dato->fecha = date("Y-m-d", strtotime($dato->fecha));
-
-
-            $infoRecibe = QuienRecibe::where('id', $dato->quien_recibe)->first();
-            $infoEntrega = QuienEntrega::where('id', $dato->quien_entrega)->first();
-
-            $dato->nomrecibe = $infoRecibe->nombre;
-            $dato->nomentrega = $infoEntrega->nombre;
+    public function tablaHistorialEntradas($id)
+    {
+        // OBTENER LISTADO DE ENTRADAS QUE SON EL AÑO
+        $pilaIDProyectosAnio = array();
+        $arrayTipo = TipoProyecto::where('id_anio', $id)->get();
+        foreach ($arrayTipo as $item) {
+            array_push($pilaIDProyectosAnio, $item->id);
         }
 
-        return view('backend.admin.historial.salidaherramientas.tablasalidaherramientas', compact('lista'));
+        $listado = Entradas::whereIn('id_tipoproyecto', $pilaIDProyectosAnio)
+            ->orderBy('fecha', 'asc')
+            ->get();
+
+        foreach ($listado as $fila) {
+            $fila->fechaFormat = date("d-m-Y", strtotime($fila->fecha));
+
+            $infoProyecto = TipoProyecto::where('id', $fila->id_tipoproyecto)->first();
+            $fila->nombreProyecto = $infoProyecto->nombre;
+        }
+
+        return view('backend.admin.historial.entradas.tablaentradabodega', compact('listado'));
     }
 
 
-    public function informacionHistorialSalidaHerramienta(Request $request){
-
+    public function historialEntradaBorrarLote(Request $request)
+    {
         $regla = array(
-            'id' => 'required',
+            'id' => 'required', //tabla: bodega_entradas
         );
 
         $validar = Validator::make($request->all(), $regla);
 
-        if ($validar->fails()){ return ['success' => 0];}
+        if ($validar->fails()){return ['success' => 0];}
 
-        if($lista = HistoHerramientaSalida::where('id', $request->id)->first()){
+        // VERIFICAR QUE EXISTA LA ENTRADA
+        if(Entradas::where('id', $request->id)->first()){
 
-            $recibe = QuienRecibe::orderBy('nombre')->get();
-            $entrega = QuienEntrega::orderBy('nombre')->get();
+            DB::beginTransaction();
 
-            return ['success' => 1, 'info' => $lista, 'arrayrecibe' => $recibe, 'arrayentrega' => $entrega];
+
+
+
+            try {
+                // OBTENER TODOS LOS DETALLES DE ESA ENTRADA
+                $arrayEntradaDetalle = EntradasDetalle::where('id_entradas', $request->id)->get();
+                $pilaIdEntradaDetalle = array();
+
+                foreach ($arrayEntradaDetalle as $fila) {
+                    // GUARDAR ID DE CADA ENTRADA DETALLE
+                    array_push($pilaIdEntradaDetalle, $fila->id);
+                }
+
+                // BORRAR SALIDAS DETALLE
+                SalidasDetalle::whereIn('id_entrada_detalle', $pilaIdEntradaDetalle)->delete();
+                // BORRAR SALIDAS
+                Salidas::whereNotIn('id', SalidasDetalle::pluck('id_salida'))->delete();
+
+                // BORRAR ENTRADAS FINALMENTE
+                EntradasDetalle::where('id_entradas', $request->id)->delete();
+                Entradas::where('id', $request->id)->delete();
+
+                Log::info("completado");
+
+                DB::commit();
+                return ['success' => 1];
+
+            } catch (\Throwable $e) {
+                Log::info('ee ' . $e);
+                DB::rollback();
+                return ['success' => 99];
+            }
         }else{
-            return ['success' => 2];
+            return ['success' => 99];
         }
     }
 
-
-
-    public function actualizarHistorialSalidaHerramienta(Request $request){
-
-
+    public function historialEntradaDetalleBorrarItem(Request $request)
+    {
         $regla = array(
-            'id' => 'required',
-            'fecha' => 'required',
+            'id' => 'required', //tabla: entradas_detalle
         );
 
         $validar = Validator::make($request->all(), $regla);
 
-        if ($validar->fails()){ return ['success' => 0];}
+        if ($validar->fails()){return ['success' => 0];}
 
-        if(HistoHerramientaSalida::where('id', $request->id)->first()){
+        if($infoEntradaDeta = EntradasDetalle::where('id', $request->id)->first()){
 
-            HistoHerramientaSalida::where('id', $request->id)->update([
-                'fecha' => $request->fecha,
-                'descripcion' => $request->descripcion,
-                'num_salida' => $request->recibo,
-                'quien_recibe' => $request->idrecibe,
-                'quien_entrega' => $request->identrega
-            ]);
+            DB::beginTransaction();
 
-            return ['success' => 1];
+            try {
+                // OBTENER TODOS LOS DETALLES DE ESA ENTRADA
+
+                // BORRAR SALIDAS DETALLE
+                SalidasDetalle::where('id_entrada_detalle', $infoEntradaDeta->id)->delete();
+                // BORRAR SALIDAS
+                Salidas::whereNotIn('id', SalidasDetalle::pluck('id_salida'))->delete();
+
+                // BORRAR ENTRADAS FINALMENTE
+                EntradasDetalle::where('id', $infoEntradaDeta->id)->delete();
+
+                // SI YA NO HAY ENTRADAS SE DEBERA BORRAR
+                Entradas::whereNotIn('id', EntradasDetalle::pluck('id_entradas'))->delete();
+
+                DB::commit();
+                return ['success' => 1];
+
+            } catch (\Throwable $e) {
+                Log::info('ee ' . $e);
+                DB::rollback();
+                return ['success' => 99];
+            }
         }else{
-            return ['success' => 2];
+            return ['success' => 99];
         }
     }
 
 
-    public function detalleIndexHistorialSalidasHerramientas($id){
+    public function indexHistorialEntradasDetalle($id)
+    {
+        $info = Entradas::where('id', $id)->first();
 
-        return view('backend.admin.historial.salidaherramientas.detalle.vistadetalle', compact('id'));
+        return view('backend.admin.historial.entradas.detalle.vistaentradadetallebodega', compact('id', 'info'));
+    }
+
+    public function tablaHistorialEntradasDetalle($id){
+
+        $listado = DB::table('entradas_detalle AS bo')
+            ->join('materiales AS bm', 'bo.id_material', '=', 'bm.id')
+            ->join('unidadmedida AS uni', 'bm.id_medida', '=', 'uni.id')
+            ->select('bo.id', 'bo.cantidad', 'bm.nombre', 'uni.nombre AS nombreUnidad')
+            ->where('bo.id_entradas', $id)
+            ->get();
+
+        return view('backend.admin.historial.entradas.detalle.tablaentradadetallebodega', compact('listado'));
+    }
+
+    public function indexNuevoIngresoEntradaDetalle($id)
+    {
+        // id: es de entradas
+        $info = Entradas::where('id', $id)->first();
+
+        return view('backend.admin.historial.entradas.detalle.vistaingresoextra', compact('id', 'info'));
     }
 
 
 
-    public function detalleTablaHistorialSalidasHerramientas($id){
-
-        $lista = HistoHerramientaSalidaDetalle::where('id_herra_salida', $id)->get();
-
-        foreach ($lista as $dato){
-
-            $infoMate = Herramientas::where('id', $dato->id_herramienta)->first();
-
-            $dato->nommaterial = $infoMate->nombre;
-            $dato->codmaterial = $infoMate->codigo;
-        }
-
-        return view('backend.admin.historial.salidaherramientas.detalle.tabladetalle', compact('lista'));
-    }
-
-
-
-
-    //***********************************************************************************
-
-    public function indexHistorialRepuestosSalida(){
-
-        return view('backend.admin.historial.salidarepuesto.vistasalidarepuesto');
-    }
-
-
-    public function tablaHistorialRepuestosSalida(){
-
-        $lista = HistorialSalidas::orderBy('fecha', 'DESC')->get();
-
-        foreach ($lista as $dato){
-
-            $infoProy = TipoProyecto::where('id', $dato->id_tipoproyecto)->first();
-
-            $dato->nomproy = $infoProy->nombre;
-        }
-
-        return view('backend.admin.historial.salidarepuesto.tablasalidarepuesto', compact('lista'));
-    }
-
-
-    public function informacionHistorialSalidaRepuesto(Request $request){
-
-        $regla = array(
-            'id' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        if($lista = HistorialSalidas::where('id', $request->id)->first()){
-
-
-            return ['success' => 1, 'info' => $lista];
-        }else{
-            return ['success' => 2];
-        }
-
-    }
-
-
-
-    public function actualizarHistorialSalidaRepuesto(Request $request){
-
-
-        $regla = array(
-            'id' => 'required',
-            'fecha' => 'required',
-        );
-
-        $validar = Validator::make($request->all(), $regla);
-
-        if ($validar->fails()){ return ['success' => 0];}
-
-        if(HistorialSalidas::where('id', $request->id)->first()){
-
-            HistorialSalidas::where('id', $request->id)->update([
-                'fecha' => $request->fecha,
-                'descripcion' => $request->descripcion,
-            ]);
-
-            return ['success' => 1];
-        }else{
-            return ['success' => 2];
-        }
-    }
-
-
-    public function detalleIndexHistorialSalidas($id){
-
-        return view('backend.admin.historial.salidarepuesto.detalle.vistadetalle', compact('id'));
-    }
-
-
-
-    public function detalleTablaHistorialSalidas($id){
-
-        $lista = HistorialSalidasDeta::where('id_historial_salidas', $id)->get();
-
-        foreach ($lista as $dato){
-
-            $infoMate = Materiales::where('id', $dato->id_material)->first();
-
-            $dato->nommaterial = $infoMate->nombre;
-            $dato->codmaterial = $infoMate->codigo;
-        }
-
-        return view('backend.admin.historial.salidarepuesto.detalle.tabladetalle', compact('lista'));
-    }
 
 
 }

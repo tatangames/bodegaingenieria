@@ -37,12 +37,6 @@
                                 </tr>
                             @endforeach
 
-                            <script>
-                                setTimeout(function () {
-                                    closeLoading();
-                                }, 500);
-                            </script>
-
                             </tbody>
                         </table>
                     </div>

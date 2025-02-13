@@ -107,19 +107,14 @@
 
 
                         <li class="nav-item">
-                            <a href="{{ route('admin.historial.salidas.repuestos') }}" target="frameprincipal" class="nav-link">
+                            <a href="{{ route('sidebar.bodega.historial.entradas') }}" target="frameprincipal" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Salida Repuestos</p>
+                                <p>Entradas Registros</p>
                             </a>
                         </li>
 
 
-                        <li class="nav-item">
-                            <a href="{{ route('admin.historial.salidas.herramientas') }}" target="frameprincipal" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Salida Herramientas</p>
-                            </a>
-                        </li>
+
 
 
 

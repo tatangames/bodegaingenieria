@@ -102,13 +102,12 @@ class ConfiguracionController extends Controller
 
 
     public function indexUnidadMedida(){
-        return view('backend.admin.unidadmedida.vistaunidadmedida');
+        return view('backend.admin.configuracion.unidadmedida.vistaunidadmedida');
     }
 
     public function tablaUnidadMedida(){
-
         $lista = UnidadMedida::orderBy('nombre', 'ASC')->get();
-        return view('backend.admin.unidadmedida.tablaunidadmedida', compact('lista'));
+        return view('backend.admin.configuracion.unidadmedida.tablaunidadmedida', compact('lista'));
     }
 
     public function nuevaUnidadMedida(Request $request){
@@ -346,10 +345,7 @@ class ConfiguracionController extends Controller
     }
 
 
-
-
     //******************* LISTA DE PROYECTOS  *******************************
-
 
     public function indexProyectos(){
 
@@ -379,7 +375,6 @@ class ConfiguracionController extends Controller
             'nombre' => 'required',
             'anio' => 'required',
         );
-
 
         $validar = Validator::make($request->all(), $regla);
 
@@ -442,13 +437,6 @@ class ConfiguracionController extends Controller
             return ['success' => 2];
         }
     }
-
-
-
-
-
-
-
 
 
 

@@ -212,10 +212,6 @@
 
 
 
-
-
-
-
     <section class="content-header">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -393,16 +389,20 @@
                 .then((response) => {
                     closeLoading();
 
-                    console.log(response)
-
                     if(response.data.success === 1){
+
+                        if(response.data.disponible === 1){
+                            toastr.info('NO HAY INVENTARIO');
+                            return
+                        }
+
                         $('#id-entradadetalle').val(edrop.id);
                         $('#info-material').val(response.data.nombreMaterial);
 
                         $.each(response.data.arrayIngreso, function( key, val ){
 
-                            var nFilas = $('#matrizM >tbody >tr').length;
-                            nFilas += 1;
+                            /*var nFilas = $('#matrizM >tbody >tr').length;
+                            nFilas += 1;*/
 
                             var markup = "<tr>" +
 
@@ -426,6 +426,7 @@
 
                             $("#matrizM tbody").append(markup);
                         });
+
                         $('#modalCantidad').modal('show');
                     }
                     else {
@@ -441,8 +442,6 @@
 
         // AGREGAR AL DETALLE
         function agregarAlDetalle(){
-
-
 
             // id entrada_detalle
             var arrayIdEntradaDetalle = $("input[name='arrayCantidadSalida[]']").map(function(){return $(this).attr("data-idfilaentradadetalle");}).get();
@@ -566,7 +565,7 @@
             // # de salida
             var numSalida = document.getElementById('numero-salida').value;
             // descripcion
-            var descripc = document.getElementById('descripcion').value;
+            var descripcion = document.getElementById('descripcion').value;
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');
@@ -582,7 +581,6 @@
 
 
             var nRegistro = $('#matriz > tbody >tr').length;
-            let formData = new FormData();
 
             if (nRegistro <= 0){
                 toastr.error('Registro Salida son requeridos');
@@ -590,72 +588,85 @@
             }
 
             var idEntradaDetalle = $("input[name='idmaterialArray[]']").map(function(){return $(this).attr("data-idmaterialArray");}).get();
-            var salidaCantidad = $("input[name='idmaterialArray[]']").map(function(){return $(this).attr("data-cantidadSalida");}).get();
+            var salidaCantidad = $("input[name='salidaArray[]']").map(function(){return $(this).attr("data-cantidadSalida");}).get();
 
 
             //*******************
 
+            // VERIFICAR LO QUE SE INGRESARA
+            for(var a = 0; a < idEntradaDetalle.length; a++){
 
-            for(var p = 0; p < salidaDetalle.length; p++){
+                //let infoIDEntradaDeta = idEntradaDetalle[a];
+                let infoCantidad = salidaCantidad[a];
 
+                if (infoCantidad === '') {
+                    colorRojoTabla(a);
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad es requerida');
+                    return;
+                }
 
+                if (!infoCantidad.match(reglaNumeroEntero)) {
+                    colorRojoTabla(a);
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad debe ser Entero y no negativo');
+                    return;
+                }
+
+                if (infoCantidad <= 0) {
+                    colorRojoTabla(a);
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad no debe ser negativo');
+                    return;
+                }
+
+                // Máximo 1 millón
+                if (infoCantidad > 1000000) {
+                    colorRojoTabla(a);
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad máximo 1 millón');
+                    return;
+                }
+            }
+
+            let formData = new FormData();
+            const contenedorArray = [];
+
+            for(var p = 0; p < salidaCantidad.length; p++){
+                let infoIdEntradaDeta = idEntradaDetalle[p];
+                let infoCantidad = salidaCantidad[p];
+
+                contenedorArray.push({ infoIdEntradaDeta, infoCantidad });
             }
 
             openLoading();
 
             formData.append('fecha', fecha);
-            formData.append('descripcion', descripc);
             formData.append('idproyecto', idProyecto);
+            formData.append('numsalida', numSalida);
+            formData.append('idrecibe', idRecibe);
+            formData.append('descripcion', descripcion);
+            formData.append('contenedorArray', JSON.stringify(contenedorArray));
 
             axios.post(url+'/salida/guardar', formData, {
             })
                 .then((response) => {
                     closeLoading();
 
-                    // CANTIDAD NO ALCANZA PARA RETIRAR
                     if(response.data.success === 1){
-
-                        let fila = response.data.fila;
-                        let cantidad = response.data.cantidadactual;
-                        let cantidadsalida = response.data.cantidadrestar;
-                        colorRojoTabla(fila);
-                        Swal.fire({
-                            title: 'Cantidad no Disponible',
-                            text: "Fila #" + (fila+1) + ", el repuesto cuenta con: " + cantidad + " unidades disponible, y se quiere retirar " + cantidadsalida + " Unidades",
-                            icon: 'info',
-                            showCancelButton: false,
-                            confirmButtonColor: '#28a745',
-                            confirmButtonText: 'Aceptar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-
-                            }
-                        })
+                        // cuando va vacio la salida
+                        toastr.error('Se requiere item de Salida');
                     }
                     else if(response.data.success === 2){
-                        // MATERIAL NO ENCONTRADO
+                        // VERIFICACION: No superar la cantidad maxima que hay de ese MATERIAL - LOTE
                         let fila = response.data.fila;
-                        colorRojoTabla(fila);
-                        Swal.fire({
-                            title: 'Repuesto no Encontrado',
-                            text: "Fila #" + (fila+1) + ", el repuesto no se Encontro, por favor borrar Fila y volver a ingresarlo",
-                            icon: 'info',
-                            showCancelButton: false,
-                            confirmButtonColor: '#28a745',
-                            confirmButtonText: 'Aceptar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-
-                            }
-                        })
-                    } else if(response.data.success === 3){
-
-                        // REGISTRADO CORRECTAMENTE
-                        toastr.success('Salida Registrada');
-                        limpiar();
+                        msgError(fila)
+                    }
+                    else if(response.data.success === 3){
+                        // CUANDO UN MATERIAL NO ESTA ANCLADO AL PROYECTO DE SALIDA
+                        toastr.error('Error, un material de salida, no esta en el Proyecto');
+                    }
+                    else if(response.data.success === 10){
+                        msgActualizado()
                     }
                     else{
-                        toastr.error('Error al guardar');
+                        toastr.error('error al guardar');
                     }
                 })
                 .catch((error) => {
@@ -664,6 +675,42 @@
                 });
         }
 
+        function msgError(fila){
+
+            let msg = "En la Fila: " + fila + ": Se esta superando la cantidad disponible, revisar la salida del mismo Material";
+
+            Swal.fire({
+                title: 'Error',
+                text: msg,
+                icon: 'info',
+                showCancelButton: false,
+                allowOutsideClick: false,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                }
+            })
+        }
+
+        function msgActualizado(){
+            Swal.fire({
+                title: 'Actualizado',
+                text: "",
+                icon: 'success',
+                showCancelButton: false,
+                allowOutsideClick: false,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            })
+        }
 
 
 
@@ -719,6 +766,16 @@
             }
         }
 
+
+        function validateCantidadSalida(input, maxCantidad) {
+            // Remueve caracteres no numéricos
+            input.value = input.value.replace(/[^0-9]/g, '');
+
+            // Convierte el valor a número y verifica el límite
+            if (Number(input.value) > maxCantidad) {
+                input.value = maxCantidad; // Restringe el valor al máximo permitido
+            }
+        }
 
 
     </script>
