@@ -27,7 +27,7 @@
 
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item">Unidades</li>
+                    <li class="breadcrumb-item">Proyectos</li>
                     <li class="breadcrumb-item active">Lista de Proyectos</li>
                 </ol>
             </div>

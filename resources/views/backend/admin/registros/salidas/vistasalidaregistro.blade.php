@@ -835,7 +835,7 @@
 
 
                                     "<td>" +
-                                    "<input disabled value='" + val.cantidad + "' class='form-control' type='text'>" +
+                                    "<input disabled value='" + val.cantidadActual + "' class='form-control' type='text'>" +
                                     "</td>" +
 
                                     "</tr>";

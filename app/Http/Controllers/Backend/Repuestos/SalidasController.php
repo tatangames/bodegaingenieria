@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend\Repuestos;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anios;
 use App\Models\Entradas;
 use App\Models\EntradasDetalle;
 use App\Models\HistorialSalidas;
@@ -262,6 +263,8 @@ class SalidasController extends Controller
         foreach ($listado as $fila) {
             $infoMaterial = Materiales::where('id', $fila->id_material)->first();
             $fila->nombre = $infoMaterial->nombre;
+
+            $fila->cantidadActual = $fila->cantidad - $fila->cantidad_entregada;
         }
 
         return ['success' => 1, 'listado' => $listado];
@@ -274,19 +277,55 @@ class SalidasController extends Controller
 
 
 
-    // *****************************
+    // **************** TRANSFERENCIA DE PROYECTO    ********************
 
     public function indexTransferencias(){
 
-        // LISTADO DE PROYECTOS (MENOS EL ID 1 YA QUE SERA EL INVENTARIO GENERAL)
-        // Y QUE NO HAYAN SIDO TRANSFERIDOS
+        return view('backend.admin.registros.cierres.vistacierreproyecto');
+    }
 
-        $tipoproyecto = TipoProyecto::orderBy('nombre')
-            ->where('id', '!=', 1)
-            ->where('transferido', '!=', 1)
+
+    public function tablaTransferencias()
+    {
+        $listado = TipoProyecto::where('cerrado', 0)
+            ->orderBy('nombre', 'asc')
             ->get();
 
-        return view('backend.admin.repuestos.registros.vistatransferidos', compact('tipoproyecto'));
+        foreach ($listado as $item) {
+            $infoAnio = Anios::where('id', $item->id_anio)->first();
+            $item->nombreAnio = $infoAnio->nombre;
+        }
+
+
+
+        return view('backend.admin.registros.cierres.tablacierreproyecto', compact('listado'));
+    }
+
+    public function indexInventarioProyecto($id)
+    {
+
+        return view('backend.admin.registros.cierres.materiales.vistadetallematerial', compact('id'));
+    }
+
+    public function tablaInventarioProyecto($id)
+    {
+        // viene id proyecto
+
+        $listado = DB::table('entradas_detalle AS ed')
+            ->join('entradas AS e', 'ed.id_entradas', '=', 'e.id')
+            ->select('ed.id_material', 'ed.cantidad', 'ed.cantidad_entregada')
+            ->where('e.id_tipoproyecto', $id)
+            ->whereColumn('ed.cantidad_entregada', '<', 'ed.cantidad')
+            ->get();
+
+        foreach ($listado as $fila) {
+            $infoMaterial = Materiales::where('id', $fila->id_material)->first();
+            $fila->nombre = $infoMaterial->nombre;
+
+            $fila->cantidadActual = $fila->cantidad - $fila->cantidad_entregada;
+        }
+
+        return view('backend.admin.registros.cierres.materiales.tabladetallematerial', compact('listado'));
     }
 
 

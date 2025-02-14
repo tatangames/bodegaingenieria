@@ -136,12 +136,16 @@ Route::post('/admin/bodega/historial/salidadetalle/borraritem', [HistorialContro
 
 
 
-
-
-
-
 // TRANSFERENCIAS
-Route::get('/admin/transferecias/a/huesera', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
+Route::get('/admin/transferecia/proyecto', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
+Route::get('/admin/transferecia/proyecto/tabla', [SalidasController::class,'tablaTransferencias']);
+
+// - Inventario
+Route::get('/admin/transferecia/materiales/index/{id}', [SalidasController::class,'indexInventarioProyecto']);
+Route::get('/admin/transferecia/materiales/tabla/{id}', [SalidasController::class,'tablaInventarioProyecto']);
+
+
+
 Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'geenrarSalidaTransferencia']);
 
 

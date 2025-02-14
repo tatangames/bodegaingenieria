@@ -10,8 +10,7 @@
                                 <th style="width: 10%">Año</th>
                                 <th style="width: 12%">Código</th>
                                 <th style="width: 60%">Proyecto</th>
-                                <th style="width: 15%">Proyecto Finalizado</th>
-                                <th style="width: 8%">Opciones</th>
+                                <th style="width: 13%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -21,27 +20,18 @@
                                     <td>{{ $dato->nombreAnio }}</td>
                                     <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nombre }}</td>
-                                    <td>
-                                        @if ($dato->cerrado == 0)
-                                            NO
-                                        @else
-                                            <span class="badge bg-success">SI</span>
-                                        @endif
-                                    </td>
 
                                     <td>
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Editar"></i>&nbsp; Editar
+                                        <button type="button" class="btn btn-primary btn-xs" onclick="infoMateriales({{ $dato->id }})">
+                                            <i class="fas fa-eye" title="Materiales"></i>&nbsp; Materiales
+                                        </button>
+
+                                        <button type="button"  style="margin: 5px" class="btn btn-danger btn-xs" onclick="infoFinalizar({{ $dato->id }})">
+                                            <i class="fas fa-edit" title="Finalizar"></i>&nbsp; Finalizar
                                         </button>
                                     </td>
                                 </tr>
                             @endforeach
-
-                            <script>
-                                setTimeout(function () {
-                                    closeLoading();
-                                }, 500);
-                            </script>
 
                             </tbody>
                         </table>

@@ -7,42 +7,18 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 10%">Año</th>
-                                <th style="width: 12%">Código</th>
-                                <th style="width: 60%">Proyecto</th>
-                                <th style="width: 15%">Proyecto Finalizado</th>
-                                <th style="width: 8%">Opciones</th>
+                                <th style="width: 50%">Material</th>
+                                <th style="width: 10%">Cantidad Actual</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @foreach($listado as $dato)
                                 <tr>
-                                    <td>{{ $dato->nombreAnio }}</td>
-                                    <td>{{ $dato->codigo }}</td>
                                     <td>{{ $dato->nombre }}</td>
-                                    <td>
-                                        @if ($dato->cerrado == 0)
-                                            NO
-                                        @else
-                                            <span class="badge bg-success">SI</span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Editar"></i>&nbsp; Editar
-                                        </button>
-                                    </td>
+                                    <td>{{ $dato->cantidadActual }}</td>
                                 </tr>
                             @endforeach
-
-                            <script>
-                                setTimeout(function () {
-                                    closeLoading();
-                                }, 500);
-                            </script>
-
                             </tbody>
                         </table>
                     </div>
@@ -58,6 +34,7 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'asc']],
             "searching": true,
             "ordering": true,
             "info": true,
