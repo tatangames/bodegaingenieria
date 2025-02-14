@@ -28,73 +28,169 @@
 
 <div id="divcontenedor" style="display: none">
 
+    <div class="card-header d-flex p-0">
+        <h3 class="card-title p-3"></h3>
+
+        <ul class="nav nav-pills ml-auto p-2">
+            <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Salidas</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Inventario</a></li>
+        </ul>
+    </div>
+
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+
+                <!-- inicio -->
+                <div>
+
+                    <form>
+                        <div class="card-body">
+
+                            <section class="content">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-12">
+
+                                            <div class="card card-gray-dark">
+                                                <div class="card-header">
+                                                    <h3 class="card-title">Información</h3>
+                                                </div>
+
+                                                <div class="card-body">
+                                                    <div class="card-body col-md-6">
+                                                        <div class="row">
+                                                            <label>Fecha:</label>
+                                                            <input style="width: 35%; margin-left: 25px;" type="date" class="form-control" id="fecha">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Asignar Proyecto (No saldran los Finalizados):</label>
+                                                        <select id="select-tipoproyecto" class="form-control" onchange="borrarTabla(this)">
+                                                            <option value="">Seleccionar Proyecto</option>
+                                                            @foreach($arrayProyectos as $item)
+                                                                <option value="{{$item->id}}">{{ $item->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-4">
+                                                        <label>Asignar Quien Recibe:</label>
+                                                        <select id="select-quienrecibe" class="form-control">
+                                                            @foreach($arrayRecibe as $item)
+                                                                <option value="{{$item->id}}">{{ $item->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-3">
+                                                        <label># de Salida:</label>
+                                                        <input type="text" class="form-control" id="numero-salida">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Descripción (Opcional):</label>
+                                                        <input type="text" class="form-control" autocomplete="off" maxlength="800" id="descripcion">
+                                                    </div>
+
+                                                    <div class="form-group" style="float: right">
+                                                        <br>
+                                                        <button type="button" id="botonaddmaterial" onclick="abrirModal()" class="btn btn-primary btn-sm float-right" style="margin-top:10px; margin-right: 15px;">
+                                                            <i class="fas fa-search" title="Buscar Material"></i> Buscar Material</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- INVENTARIO - TABS 2 -->
+            <div class="tab-pane" id="tab_2">
+
+                <form>
+                    <div class="card-body">
+
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table id="tablaInventario" class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 60%">Material</th>
+                                            <th style="width: 15%">Cantidad</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- fin - Tabs -->
+        </div>
+    </div>
+
+
+
+    <!-- LISTADO DE MATERIALES A DESCARGAR DEL BUSCADOR -->
+
+
+
     <section class="content-header">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h2>Registro de Salidas</h2>
+                <h2>Detalle de Salida</h2>
             </div>
         </div>
     </section>
 
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-
-                <div class="col-md-10">
-
-                    <div class="card card-gray-dark">
-                        <div class="card-header">
-                            <h3 class="card-title">Información</h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="card-body col-md-6">
-                                <div class="row">
-                                    <label>Fecha:</label>
-                                    <input style="width: 35%; margin-left: 25px;" type="date" class="form-control" id="fecha">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Asignar Proyecto (No saldran los Finalizados):</label>
-                                <select id="select-tipoproyecto" class="form-control" onchange="borrarTabla(this)">
-                                    <option value="">Seleccionar Proyecto</option>
-                                    @foreach($arrayProyectos as $item)
-                                        <option value="{{$item->id}}">{{ $item->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-4">
-                                <label>Asignar Quien Recibe:</label>
-                                <select id="select-quienrecibe" class="form-control">
-                                    @foreach($arrayRecibe as $item)
-                                        <option value="{{$item->id}}">{{ $item->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-3">
-                                <label># de Salida:</label>
-                                <input type="text" class="form-control" id="numero-salida">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Descripción (Opcional):</label>
-                                <input type="text" class="form-control" autocomplete="off" maxlength="800" id="descripcion">
-                            </div>
-
-                            <div class="form-group" style="float: right">
-                                <br>
-                                <button type="button" id="botonaddmaterial" onclick="abrirModal()" class="btn btn-primary btn-sm float-right" style="margin-top:10px; margin-right: 15px;">
-                                    <i class="fas fa-search" title="Buscar Material"></i> Buscar Material</button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card card-gray-dark">
+                <div class="card-header">
+                    <h3 class="card-title">Información de Ingreso</h3>
                 </div>
+
+                <table class="table" id="matriz" data-toggle="table" style="margin-right: 15px; margin-left: 15px;">
+                    <thead>
+                    <tr>
+                        <th style="width: 3%">#</th>
+                        <th style="width: 10%">Material</th>
+                        <th style="width: 6%">Salida</th>
+                        <th style="width: 5%">Opciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
             </div>
         </div>
     </section>
+
+    <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-success" onclick="preguntaGuardar()">Guardar</button>
+    </div>
 
 
     <div class="modal fade" id="modalRepuesto" >
@@ -147,11 +243,6 @@
             </div>
         </div>
     </div>
-
-
-
-    <!-- LISTADO DE MATERIALES A DESCARGAR DEL BUSCADOR -->
-
 
 
     <div class="modal fade" id="modalCantidad">
@@ -207,52 +298,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-    <section class="content-header">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h2>Detalle de Salida</h2>
-            </div>
-        </div>
-    </section>
-
-    <section class="content">
-        <div class="container-fluid">
-            <div class="card card-gray-dark">
-                <div class="card-header">
-                    <h3 class="card-title">Información de Ingreso</h3>
-                </div>
-
-                <table class="table" id="matriz" data-toggle="table" style="margin-right: 15px; margin-left: 15px;">
-                    <thead>
-                    <tr>
-                        <th style="width: 3%">#</th>
-                        <th style="width: 10%">Material</th>
-                        <th style="width: 6%">Salida</th>
-                        <th style="width: 5%">Opciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-    </section>
-
-    <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-success" onclick="preguntaGuardar()">Guardar</button>
-    </div>
-
-
-
-
-
 
 
 </div>
@@ -312,7 +357,6 @@
         function abrirModal(){
             document.getElementById('tablaRepuesto').innerHTML = "";
             document.getElementById("formulario-repuesto").reset();
-            $('#select-equipo').prop('selectedIndex', 0).change();
             $('#modalRepuesto').modal('show');
         }
 
@@ -347,7 +391,6 @@
 
                 var row = $(e).closest('tr');
                 let texto = e.value;
-
 
                 axios.post(url+'/buscar/material/porproyecto', {
                     'query' : texto,
@@ -494,29 +537,33 @@
                 let infoFilaIdEntradaDetalle = arrayIdEntradaDetalle[z];
                 let filaCantidad = arrayCantidadSalida[z];
 
-                var markup = "<tr>" +
+                if(filaCantidad !== ''){
+                    if(filaCantidad !== 0){
+                        var markup = "<tr>" +
 
-                    "<td>" +
-                    "<p id='fila" + (nFilas) + "' class='form-control' style='max-width: 65px'>" + (nFilas) + "</p>" +
-                    "</td>" +
+                            "<td>" +
+                            "<p id='fila" + (nFilas) + "' class='form-control' style='max-width: 65px'>" + (nFilas) + "</p>" +
+                            "</td>" +
 
-                    "<td>" +
-                    "<input name='idmaterialArray[]' type='hidden' data-idmaterialArray='" + infoFilaIdEntradaDetalle + "'>" +
-                    "<input disabled value='" + nombreTexto + "' class='form-control' type='text'>" +
-                    "</td>" +
+                            "<td>" +
+                            "<input name='idmaterialArray[]' type='hidden' data-idmaterialArray='" + infoFilaIdEntradaDetalle + "'>" +
+                            "<input disabled value='" + nombreTexto + "' class='form-control' type='text'>" +
+                            "</td>" +
 
-                    "<td>" +
-                    "<input name='salidaArray[]' disabled data-cantidadSalida='" + filaCantidad + "'" +
-                    " value='" + filaCantidad + "' class='form-control' type='text'>" +
-                    "</td>" +
+                            "<td>" +
+                            "<input name='salidaArray[]' disabled data-cantidadSalida='" + filaCantidad + "'" +
+                            " value='" + filaCantidad + "' class='form-control' type='text'>" +
+                            "</td>" +
 
-                    "<td>" +
-                    "<button type='button' class='btn btn-block btn-danger' onclick='borrarFila(this)'>Borrar</button>" +
-                    "</td>" +
+                            "<td>" +
+                            "<button type='button' class='btn btn-block btn-danger' onclick='borrarFila(this)'>Borrar</button>" +
+                            "</td>" +
 
-                    "</tr>";
+                            "</tr>";
 
-                $("#matriz tbody").append(markup);
+                        $("#matriz tbody").append(markup);
+                    }
+                }
             }
 
 
@@ -697,7 +744,7 @@
 
         function msgActualizado(){
             Swal.fire({
-                title: 'Actualizado',
+                title: 'Salida Registrada',
                 text: "",
                 icon: 'success',
                 showCancelButton: false,
@@ -754,15 +801,58 @@
             $("#matriz tbody tr").remove();
         }
 
-
         function borrarTabla(e){
             let id = $(e).val();
 
             if(id == ''){
                 $("#matriz tbody tr").remove();
+                $("#tablaInventario tbody tr").remove();
+
                 document.querySelector('#botonaddmaterial').disabled = true;
             }else{
                 document.querySelector('#botonaddmaterial').disabled = false;
+
+                // CARGAR INVENTARIO
+                var idproyecto = document.getElementById('select-tipoproyecto').value;
+
+                openLoading();
+                var formData = new FormData();
+                formData.append('idproyecto', idproyecto);
+
+                axios.post(url+'/salida/buscarinventario', formData, {
+                })
+                    .then((response) => {
+                        closeLoading();
+                        if(response.data.success === 1){
+
+                            $.each(response.data.listado, function( key, val ){
+
+                                var markup = "<tr>" +
+
+                                    "<td>" +
+                                    "<input disabled value='" + val.nombre + "' class='form-control' type='text'>" +
+                                    "</td>" +
+
+
+                                    "<td>" +
+                                    "<input disabled value='" + val.cantidad + "' class='form-control' type='text'>" +
+                                    "</td>" +
+
+                                    "</tr>";
+
+                                $("#tablaInventario tbody").append(markup);
+
+                            });
+
+                        }
+                        else {
+                            toastr.error('Error al registrar');
+                        }
+                    })
+                    .catch((error) => {
+                        toastr.error('Error al registrar');
+                        closeLoading();
+                    });
             }
         }
 

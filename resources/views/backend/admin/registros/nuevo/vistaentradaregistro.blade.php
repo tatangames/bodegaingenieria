@@ -121,7 +121,7 @@
                             <div class="form-group" >
                                 <label class="control-label">Cantidad</label>
                                 <div class="col-md-6">
-                                    <input id="cantidad" min="0" max="1000000"  class='form-control' autocomplete="off" placeholder="0">
+                                    <input type="number" id="cantidad" min="0" max="1000000"  class='form-control' autocomplete="off" placeholder="0">
                                 </div>
                             </div>
 
@@ -242,7 +242,7 @@
             var cantidad = document.getElementById('cantidad').value;
 
             if(repuesto.dataset.info == 0){
-                toastr.error("Repuesto es requerido");
+                toastr.error("Material es requerido");
                 return;
             }
 

@@ -37,8 +37,6 @@
                     <div class="card-body">
 
                         <div class="border-box" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
-
-
                             <section class="content">
                                 <div class="container-fluid">
                                     <div class="row">
@@ -60,15 +58,14 @@
                                                 <tbody>
                                                 <tr>
                                                     <td>
-                                                        <input id="inputBuscador" data-idproducto='0' autocomplete="off" class='form-control' style='width:100%' onkeyup='buscarMaterial(this)' maxlength='300' type='text'>
-                                                        <div class='droplista' id="midropmenu" style='position: absolute; z-index: 9; width: 75% !important;'></div>
+                                                        <input id="repuesto" data-info='0' autocomplete="off" class='form-control' style='width:100%' onkeyup='buscarMaterial(this)' maxlength='400'  type='text'>
+                                                        <div class='droplista' style='position: absolute; z-index: 9; width: 75% !important;'></div>
                                                     </td>
                                                 </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-
                                 </div>
                             </section>
 
@@ -80,14 +77,7 @@
                                         <div class="form-group col-md-2" style="margin-top: 5px">
                                             <label class="control-label" style="color: #686868">Cantidad: </label>
                                             <div>
-                                                <input type="text" autocomplete="off" class="form-control" id="cantidad" placeholder="0">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group col-md-2" style="margin-top: 5px">
-                                            <label class="control-label" style="color: #686868">Precio: </label>
-                                            <div>
-                                                <input type="number" min="0" max="1000000" autocomplete="off" class="form-control" id="precio-producto" placeholder="0.00">
+                                                <input id="cantidad" min="0" max="1000000"  class='form-control' autocomplete="off" type="number" placeholder="0">
                                             </div>
                                         </div>
 
@@ -137,24 +127,10 @@
                             <th style="width: 3%">#</th>
                             <th style="width: 10%">Producto</th>
                             <th style="width: 6%">Cantidad</th>
-                            <th style="width: 6%">Precio</th>
                             <th style="width: 5%">Opciones</th>
                         </tr>
                         </thead>
                         <tbody>
-
-                        </tbody>
-                    </table>
-
-
-                    <table class="table" id="matriz-totales" data-toggle="table" style="float: right">
-                        <thead>
-                        <tr style="float: right">
-                            <th>Precio Total</th>
-                        </tr>
-                        </thead>
-                        <tbody style="float: right">
-                        <td style="width: 125px"> <label type="text" class="form-control" id="precioTotal" >$0.00</label></td>
 
                         </tbody>
                     </table>
@@ -164,11 +140,8 @@
         </section>
 
         <div class="modal-footer justify-content-end" style="margin-top: 25px;">
-            <button type="button" class="btn btn-success" onclick="preguntarGuardar()">Guardar Listado de Productos</button>
+            <button type="button" class="btn btn-success" onclick="preguntarGuardar()">Guardar Listado</button>
         </div>
-
-
-
 
 </div>
 
@@ -218,10 +191,10 @@
 
                 if(texto === ''){
                     // si se limpia el input, setear el atributo id
-                    $(e).attr('data-idproducto', 0);
+                    $(e).attr('data-info', 0);
                 }
 
-                axios.post(url+'/bodega/buscar/producto', {
+                axios.post(url+'/buscar/material/global', {
                     'query' : texto
                 })
                     .then((response) => {
@@ -247,81 +220,46 @@
             $(txtContenedorGlobal).val(texto);
 
             // agregar el id al atributo del input descripcion
-            $(txtContenedorGlobal).attr('data-idproducto', edrop.id);
-
-            document.activeElement.blur();
+            $(txtContenedorGlobal).attr('data-info', edrop.id);
         }
 
 
         function agregarFila(){
 
-            var precioProducto = document.getElementById('precio-producto').value;
+            var repuesto = document.querySelector('#repuesto');
+            var nomRepuesto = document.getElementById('repuesto').value;
             var cantidad = document.getElementById('cantidad').value;
-            var inputBuscador = document.querySelector('#inputBuscador');
 
-            var reglaNumeroEntero = /^[0-9]\d*$/;
-            var reglaNumeroDiesDecimal = /^([0-9]+\.?[0-9]{0,10})$/;
-
-
-            if(inputBuscador.dataset.idproducto == 0){
-                toastr.error("Producto es requerido");
+            if(repuesto.dataset.info == 0){
+                toastr.error("Material es requerido");
                 return;
             }
 
-            //**************
+            var reglaNumeroEntero = /^[0-9]\d*$/;
+
+            //*************
 
             if(cantidad === ''){
-                toastr.error('Cantidad es requerido');
+                toastr.error('Cantidad es requerida');
                 return;
             }
 
             if(!cantidad.match(reglaNumeroEntero)) {
-                toastr.error('Cantidad es requerido');
+                toastr.error('Cantidad debe ser número entero y no Negativo');
                 return;
             }
 
-            if(cantidad < 0){
-                toastr.error('Cantidad Mínima no debe tener negativos');
+            if(cantidad <= 0){
+                toastr.error('Cantidad no debe ser negativo o cero');
                 return;
             }
 
-            if(cantidad > 9000000){
-                toastr.error('Cantidad máximo debe ser 9 millones');
+            if(cantidad > 1000000){
+                toastr.error('Cantidad máximo 1 millón');
                 return;
             }
 
             //**************
-
-            var nomProducto = document.getElementById('inputBuscador').value;
-
-
-            //*************
-
-            if(precioProducto === ''){
-                toastr.error('Precio Producto es requerido');
-                return;
-            }
-
-            if(!precioProducto.match(reglaNumeroDiesDecimal)) {
-                toastr.error('Precio Producto debe ser número Decimal (10 decimales)');
-                return;
-            }
-
-            if(precioProducto < 0){
-                toastr.error('Precio Producto no debe ser negativo');
-                return;
-            }
-
-            if(precioProducto > 9000000){
-                toastr.error('Precio Producto debe ser máximo 9 millones');
-                return;
-            }
-
-
-
-            //**************
-
-            // Crear un objeto Date a partir del valor del input
 
             var nFilas = $('#matriz >tbody >tr').length;
             nFilas += 1;
@@ -333,17 +271,12 @@
                 "</td>" +
 
                 "<td>" +
-                "<input name='arrayNombre[]' disabled data-idproducto='" + inputBuscador.dataset.idproducto + "' value='" + nomProducto + "' class='form-control' type='text'>" +
+                "<input name='descripcionArray[]' disabled data-info='" + repuesto.dataset.info + "' value='" + nomRepuesto + "' class='form-control' type='text'>" +
                 "</td>" +
 
                 "<td>" +
-                "<input name='arrayCantidad[]' disabled value='" + cantidad + "' class='form-control' type='text'>" +
+                "<input name='cantidadArray[]' disabled value='" + cantidad + "' class='form-control' type='number'>" +
                 "</td>" +
-
-                "<td>" +
-                "<input name='arrayPrecio[]' data-precio='" + precioProducto + "' disabled value='$" + precioProducto + "' class='form-control' type='text'>" +
-                "</td>" +
-
 
                 "<td>" +
                 "<button type='button' class='btn btn-block btn-danger' onclick='borrarFila(this)'>Borrar</button>" +
@@ -353,11 +286,6 @@
 
             $("#matriz tbody").append(markup);
 
-
-            // CALCULAR TODAS LAS FILAS
-            calcularFilas();
-
-
             Swal.fire({
                 position: 'center',
                 icon: 'success',
@@ -366,11 +294,8 @@
                 timer: 1500
             })
 
-            $(txtContenedorGlobal).attr('data-idproducto', '0');
-
-            document.getElementById('cantidad').value = '';
-            document.getElementById('precio-producto').value = '';
-            document.getElementById('inputBuscador').value = '';
+            $(txtContenedorGlobal).attr('data-info', '0');
+            document.getElementById("formulario-repuesto").reset();
         }
 
         function borrarFila(elemento){
@@ -388,36 +313,12 @@
                 var element = table.rows[r].cells[0].children[0];
                 document.getElementById(element.id).innerHTML = ""+conteo;
             }
-
-            calcularFilas();
         }
-
-        function calcularFilas(){
-
-            var cantidad = $("input[name='arrayCantidad[]']").map(function(){return $(this).val();}).get();
-            var precio = $("input[name='arrayPrecio[]']").map(function(){return $(this).attr("data-precio");}).get();
-            var precioTotal = 0;
-
-            for(var a = 0; a < cantidad.length; a++){
-
-                let infoCantidad = cantidad[a];
-                let infoPrecio = precio[a];
-
-                let multiplicado = infoCantidad * infoPrecio;
-
-                precioTotal += multiplicado;
-            }
-
-            let precioFormat = '$' + Number(precioTotal).toFixed(2);
-
-            document.getElementById('precioTotal').innerHTML = precioFormat;
-        }
-
 
         function preguntarGuardar(){
 
             Swal.fire({
-                title: '¿Registrar Productos?',
+                title: '¿Registrar?',
                 text: '',
                 icon: 'info',
                 showCancelButton: true,
@@ -435,120 +336,82 @@
 
         function registrarProductos(){
 
+            var idEntrada = {{ $id }};
+
+            var reglaNumeroEntero = /^[0-9]\d*$/;
             var nRegistro = $('#matriz > tbody >tr').length;
 
             if (nRegistro <= 0){
-                toastr.error('Productos a Ingresar son requeridos');
+                toastr.error('Registro Entrada son requeridos');
                 return;
             }
 
-            var arrayIdProducto = $("input[name='arrayNombre[]']").map(function(){return $(this).attr("data-idproducto");}).get();
-            var arrayCantidad = $("input[name='arrayCantidad[]']").map(function(){return $(this).val();}).get();
-            var arrayPrecio = $("input[name='arrayPrecio[]']").map(function(){return $(this).attr("data-precio");}).get();
+            var descripcionAtributo = $("input[name='descripcionArray[]']").map(function(){return $(this).attr("data-info");}).get();
+            var cantidad = $("input[name='cantidadArray[]']").map(function(){return $(this).val();}).get();
 
-            var reglaNumeroEntero = /^[0-9]\d*$/;
-            var reglaNumeroDiesDecimal = /^([0-9]+\.?[0-9]{0,10})$/;
+            for(var a = 0; a < cantidad.length; a++){
 
-
-            // VALIDACIONES DE CADA FILA, RECORRER 1 ELEMENTO YA QUE TODOS TIENEN LA MISMA CANTIDAD DE FILAS
-
-            colorBlancoTabla();
-
-            for(var a = 0; a < arrayIdProducto.length; a++){
-
-                let idProducto = arrayIdProducto[a];
-                let cantidadProducto = arrayCantidad[a];
-                let precioProducto = arrayPrecio[a];
+                let detalle = descripcionAtributo[a];
+                let datoCantidad = cantidad[a];
 
                 // identifica si el 0 es tipo number o texto
-                if(idProducto == 0){
+                if(detalle == 0){
                     colorRojoTabla(a);
-                    alertaMensaje('info', 'No encontrado', 'En la Fila #' + (a+1) + " El Producto no se encuentra. Por favor borrar la Fila y buscar de nuevo el Producto");
+                    alertaMensaje('info', 'No encontrado', 'En la Fila #' + (a+1) + " El material no se encuentra. Por favor buscar de nuevo el Material");
                     return;
                 }
 
-                // **** VALIDAR CANTIDAD DE PRODUCTO
-
-                if (cantidadProducto === '') {
+                if (datoCantidad === '') {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad de producto es requerida. Por favor borrar la Fila y buscar de nuevo el Producto');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad es requerida');
                     return;
                 }
 
-                if (!cantidadProducto.match(reglaNumeroEntero)) {
+                if (!datoCantidad.match(reglaNumeroEntero)) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad debe ser entero y no negativo. Por favor borrar la Fila y buscar de nuevo el Producto');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad debe ser Entero y no negativo');
                     return;
                 }
 
-                if (cantidadProducto < 0) {
+                if (datoCantidad <= 0) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad no debe ser negativo. Por favor borrar la Fila y buscar de nuevo el Producto');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad no debe ser negativo');
                     return;
                 }
 
-                if (cantidadProducto > 9000000) {
+                // Máximo 1 millón
+                if (datoCantidad > 1000000) {
                     colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Cantidad máximo 9 millones. Por favor borrar la Fila y buscar de nuevo el Producto');
+                    toastr.error('Fila #' + (a + 1) + ' Cantidad máximo 1 millón');
                     return;
                 }
+            }
 
 
+            //*******************
 
-                // **** VALIDAR PRECIO DE PRODUCTO
+            let formData = new FormData();
+            const contenedorArray = [];
 
-                if (precioProducto === '') {
-                    colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Precio de producto es requerida. Por favor borrar la Fila y buscar de nuevo el Producto');
-                    return;
-                }
+            // como tienen la misma cantidad de filas, podemos recorrer
+            // todas las filas de una vez
+            for(var p = 0; p < cantidad.length; p++){
 
-                if (!precioProducto.match(reglaNumeroDiesDecimal)) {
-                    colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Precio debe ser decimal (10 decimales) y no negativo. Por favor borrar la Fila y buscar de nuevo el Producto');
-                    return;
-                }
+                let infoIdProducto = descripcionAtributo[p];
+                let infoCantidad = cantidad[p];
 
-                if (precioProducto < 0) {
-                    colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Precio no debe ser negativo. Por favor borrar la Fila y buscar de nuevo el Producto');
-                    return;
-                }
-
-                if (precioProducto > 9000000) {
-                    colorRojoTabla(a);
-                    toastr.error('Fila #' + (a + 1) + ' Precio máximo 9 millones. Por favor borrar la Fila y buscar de nuevo el Producto');
-                    return;
-                }
-
+                contenedorArray.push({ infoIdProducto, infoCantidad });
             }
 
             openLoading();
 
-            let formData = new FormData();
-
-            let identrada = {{ $id }};
-
-            const contenedorArray = [];
-
-            for(var i = 0; i < arrayIdProducto.length; i++){
-
-                let infoIdProducto = arrayIdProducto[i];
-                let infoCantidad = arrayCantidad[i];
-                let infoPrecio = arrayPrecio[i];
-
-                // ESTOS NOMBRES SE UTILIZAN EN CONTROLADOR
-                contenedorArray.push({ infoIdProducto, infoCantidad, infoPrecio });
-            }
-
+            formData.append('identrada', idEntrada);
             formData.append('contenedorArray', JSON.stringify(contenedorArray));
-            formData.append('identrada', identrada);
 
             axios.post(url+'/bodega/registrar/productosextras', formData, {
             })
                 .then((response) => {
                     closeLoading();
-
                     if(response.data.success === 1){
                         toastr.success('Registrado correctamente');
                         limpiar();
@@ -564,13 +427,7 @@
         }
 
         function limpiar(){
-
-            document.getElementById('inputBuscador').value = '';
-            document.getElementById('cantidad').value = '';
-            document.getElementById('precio-producto').value = '';
-
-            document.getElementById('precioTotal').innerHTML = "$0.00";
-
+            document.getElementById('repuesto').value = '';
             $("#matriz tbody tr").remove();
         }
 

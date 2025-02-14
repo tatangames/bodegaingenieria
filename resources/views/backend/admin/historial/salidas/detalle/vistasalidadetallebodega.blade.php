@@ -16,36 +16,31 @@
 
 <div id="divcontenedor" style="display: none">
 
-    <section class="content" style="margin-top: 15px">
+    <section class="content-header">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+
+            </div>
+
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">Bodega</li>
+                    <li class="breadcrumb-item active">Detalle - Historial Salidas</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
         <div class="container-fluid">
             <div class="card card-gray-dark">
                 <div class="card-header">
-                    <h3 class="card-title">Listado de Proyectos</h3>
+                    <h3 class="card-title">Listado</h3>
                 </div>
                 <div class="card-body">
-
-                    <div class="row d-flex align-items-center">
-                        <div class="form-group col-md-3">
-                            <label style="color: #686868">Proyecto</label>
-                            <div>
-                                <select id="select-proyectos" class="form-control">
-                                    @foreach($arrayProyectos as $item)
-                                        <option value="{{$item->id}}">{{$item->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-auto">
-                            <button type="button" onclick="buscarListado()" class="btn btn-success btn-sm">
-                                <i class="fas fa-search"></i>
-                                Buscar
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="row">
                         <div class="col-md-12">
+
                             <div id="tablaDatatable">
                             </div>
                         </div>
@@ -54,8 +49,6 @@
             </div>
         </div>
     </section>
-
-
 
 </div>
 
@@ -74,13 +67,10 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
-            var id = @json($primerId); // idproyecto
 
-            if (id != null) {
-                openLoading()
-                var ruta = "{{ URL::to('/admin/bodega/historial/entrada/tabla') }}/" + id;
-                $('#tablaDatatable').load(ruta);
-            }
+            let id = {{ $id }};
+            var ruta = "{{ URL::to('/admin/bodega/historial/salidadetalle/tabla') }}/" + id;
+            $('#tablaDatatable').load(ruta);
 
             document.getElementById("divcontenedor").style.display = "block";
         });
@@ -88,33 +78,17 @@
 
     <script>
 
-        function buscarListado(){
-            var idproyecto = document.getElementById('select-proyectos').value;
-
-            if(idproyecto === ''){
-                toastr.error('Proyecto es requerida');
-                return;
-            }
-            openLoading()
-            var ruta = "{{ URL::to('/admin/bodega/historial/entrada/tabla') }}/" + idproyecto;
-            $('#tablaDatatable').load(ruta);
-        }
-
         function recargar(){
-            var id = document.getElementById('select-proyectos').value;
-            var ruta = "{{ URL::to('/admin/bodega/historial/entrada/tabla') }}/" + id;
+            let id = {{ $id }};
+            var ruta = "{{ URL::to('/admin/bodega/historial/salidadetalle/tabla') }}/" + id;
             $('#tablaDatatable').load(ruta);
-        }
-
-        function vistaDetalle(idsolicitud){
-            window.location.href="{{ url('/admin/bodega/historial/entradadetalle/index') }}/" + idsolicitud;
         }
 
         function infoBorrar(id){
             Swal.fire({
                 title: 'ADVERTENCIA',
-                text: "Esto eliminará todo el ingreso de productos. Si hubo salidas de producto también se eliminarán. Las solicitudes pueden pasar a pendiente, ya que si tuvo salidas, este se eliminará",
-                icon: 'warning',
+                text: "Esto eliminará la salida de este producto.",
+                icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#d33',
@@ -127,14 +101,12 @@
             })
         }
 
-        // BORRAR LOTE DE ENTRADA COMPLETO
         function borrarRegistro(id){
-
             openLoading();
             var formData = new FormData();
             formData.append('id', id);
 
-            axios.post(url+'/bodega/historial/entrada/borrarlote', formData, {
+            axios.post(url+'/bodega/historial/salidadetalle/borraritem', formData, {
             })
                 .then((response) => {
                     closeLoading();
@@ -150,11 +122,6 @@
                     toastr.error('Error al borrar');
                     closeLoading();
                 });
-        }
-
-
-        function infoNuevoIngreso(id){
-            window.location.href="{{ url('/admin/bodega/historial/nuevoingresoentradadetalle/index') }}/" + id;
         }
 
     </script>

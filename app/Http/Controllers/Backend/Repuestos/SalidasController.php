@@ -32,6 +32,7 @@ class SalidasController extends Controller
 
         $arrayProyectos = TipoProyecto::orderBy('nombre')->get();
         $arrayRecibe = QuienRecibe::orderBy('nombre')->get();
+
         return view('backend.admin.registros.salidas.vistasalidaregistro', compact('arrayProyectos', 'arrayRecibe'));
     }
 
@@ -61,6 +62,7 @@ class SalidasController extends Controller
             $listado = EntradasDetalle::whereIn('id_entradas', $pilaArrayIdEntrada)
                 ->whereIn('id_material', $pilaArrayIdMaterial)
                 ->whereColumn('cantidad_entregada', '<', 'cantidad')
+                ->whereRaw('id IN (SELECT MIN(id) FROM entradas_detalle GROUP BY id_material)')
                 ->get();
 
             $output = '<ul class="dropdown-menu" style="display:block; position:relative; overflow: auto; max-height: 300px; width: 550px">';
@@ -240,7 +242,30 @@ class SalidasController extends Controller
 
 
 
+    public function buscarInventarioVista(Request $request)
+    {
+        $regla = array(
+            'idproyecto' => 'required',
+        );
 
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        $listado = DB::table('entradas_detalle AS ed')
+            ->join('entradas AS e', 'ed.id_entradas', '=', 'e.id')
+            ->select('ed.id_material', 'ed.cantidad', 'ed.cantidad_entregada')
+            ->where('e.id_tipoproyecto', $request->idproyecto)
+            ->whereColumn('ed.cantidad_entregada', '<', 'ed.cantidad')
+            ->get();
+
+        foreach ($listado as $fila) {
+            $infoMaterial = Materiales::where('id', $fila->id_material)->first();
+            $fila->nombre = $infoMaterial->nombre;
+        }
+
+        return ['success' => 1, 'listado' => $listado];
+    }
 
 
 

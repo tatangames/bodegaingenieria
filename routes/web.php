@@ -106,6 +106,7 @@ Route::get('/admin/registro/salida', [SalidasController::class,'indexRegistroSal
 Route::post('/admin/buscar/material/porproyecto',  [SalidasController::class,'buscadorMaterialPorProyecto']);
 Route::post('/admin/buscar/material/proyecto/disponibilidad', [SalidasController::class, 'infoBodegaMaterialDetalleFila']);
 Route::post('/admin/salida/guardar',  [SalidasController::class,'guardarSalidaMateriales']);
+Route::post('/admin/salida/buscarinventario',  [SalidasController::class,'buscarInventarioVista']);
 
 
 // ---- HISTORIAL ENTRADAS ---
@@ -117,10 +118,20 @@ Route::get('/admin/bodega/historial/entradadetalle/index/{id}', [HistorialContro
 Route::get('/admin/bodega/historial/entradadetalle/tabla/{id}', [HistorialController::class,'tablaHistorialEntradasDetalle']);
 // vista para ingresar nuevo producto al lote existente
 Route::get('/admin/bodega/historial/nuevoingresoentradadetalle/index/{id}', [HistorialController::class,'indexNuevoIngresoEntradaDetalle']);
+Route::post('/admin/bodega/registrar/productosextras',  [HistorialController::class,'registrarProductosExtras']);
 
 // BORRAR ENTRADA COMPLETA DE PRODUCTOS -> ELIMINARA SALIDAS SI HUBIERON
 Route::post('/admin/bodega/historial/entrada/borrarlote', [HistorialController::class, 'historialEntradaBorrarLote']);
 Route::post('/admin/bodega/historial/entradadetalle/borraritem', [HistorialController::class, 'historialEntradaDetalleBorrarItem']);
+
+
+// --- HISTORIAL - SALIDAS MANUAL
+Route::get('/admin/bodega/historial/salidas/index', [HistorialController::class,'indexHistorialSalidas'])->name('sidebar.bodega.historial.salidas');
+Route::get('/admin/bodega/historial/salidas/tabla/{id}', [HistorialController::class,'tablaHistorialSalidas']);
+Route::get('/admin/bodega/historial/salidadetalle/index/{id}', [HistorialController::class,'indexHistorialSalidasDetalle']);
+Route::get('/admin/bodega/historial/salidadetalle/tabla/{id}', [HistorialController::class,'tablaHistorialSalidasDetalle']);
+Route::post('/admin/bodega/historial/salidadetalle/borraritem', [HistorialController::class,'salidaDetalleBorrarItem']);
+
 
 
 
