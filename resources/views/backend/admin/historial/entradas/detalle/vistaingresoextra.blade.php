@@ -412,7 +412,11 @@
             })
                 .then((response) => {
                     closeLoading();
+
                     if(response.data.success === 1){
+                        toastr.error('El proyecto ya esta Finalizado');
+                    }
+                    else if(response.data.success === 2){
                         toastr.success('Registrado correctamente');
                         limpiar();
                     }

@@ -38,6 +38,7 @@ class HistorialController extends Controller
     public function tablaHistorialEntradas($id)
     {
         // viene idproyecto
+        $infoProyecto = TipoProyecto::where('id', $id)->first();
 
         $listado = Entradas::where('id_tipoproyecto', $id)
             ->orderBy('fecha', 'asc')
@@ -45,12 +46,9 @@ class HistorialController extends Controller
 
         foreach ($listado as $fila) {
             $fila->fechaFormat = date("d-m-Y", strtotime($fila->fecha));
-
-            $infoProyecto = TipoProyecto::where('id', $fila->id_tipoproyecto)->first();
-            $fila->nombreProyecto = $infoProyecto->nombre;
         }
 
-        return view('backend.admin.historial.entradas.tablaentradabodega', compact('listado'));
+        return view('backend.admin.historial.entradas.tablaentradabodega', compact('listado', 'infoProyecto'));
     }
 
 
@@ -65,11 +63,19 @@ class HistorialController extends Controller
         if ($validar->fails()){return ['success' => 0];}
 
         // VERIFICAR QUE EXISTA LA ENTRADA
-        if(Entradas::where('id', $request->id)->first()){
+        if($infoEntrada = Entradas::where('id', $request->id)->first()){
 
             DB::beginTransaction();
 
             try {
+
+                $infoProyecto = TipoProyecto::where('id', $infoEntrada->id_tipoproyecto)->first();
+                if($infoProyecto->cerrado == 1){
+                    // NO SE PUEDE BORRAR, PROYECTO ESTA CERRADO
+                    return ['success' => 1];
+                }
+
+
                 // OBTENER TODOS LOS DETALLES DE ESA ENTRADA
                 $arrayEntradaDetalle = EntradasDetalle::where('id_entradas', $request->id)->get();
                 $pilaIdEntradaDetalle = array();
@@ -88,10 +94,8 @@ class HistorialController extends Controller
                 EntradasDetalle::where('id_entradas', $request->id)->delete();
                 Entradas::where('id', $request->id)->delete();
 
-                Log::info("completado");
-
                 DB::commit();
-                return ['success' => 1];
+                return ['success' => 2];
 
             } catch (\Throwable $e) {
                 Log::info('ee ' . $e);
@@ -118,6 +122,15 @@ class HistorialController extends Controller
             DB::beginTransaction();
 
             try {
+                $infoEntrada = Entradas::where('id', $infoEntradaDeta->id_entradas)->first();
+                $infoProyecto = TipoProyecto::where('id', $infoEntrada->id_tipoproyecto)->first();
+
+                if($infoProyecto->cerrado == 1){
+                    // PROYECTO YA CERRO, NO SE PUEDE BORRAR NADA YA
+                    return ['success' => 1];
+                }
+
+
                 // OBTENER TODOS LOS DETALLES DE ESA ENTRADA
 
                 // BORRAR SALIDAS DETALLE
@@ -132,7 +145,7 @@ class HistorialController extends Controller
                 Entradas::whereNotIn('id', EntradasDetalle::pluck('id_entradas'))->delete();
 
                 DB::commit();
-                return ['success' => 1];
+                return ['success' => 2];
 
             } catch (\Throwable $e) {
                 Log::info('ee ' . $e);
@@ -154,14 +167,18 @@ class HistorialController extends Controller
 
     public function tablaHistorialEntradasDetalle($id){
 
+        $infoEntradas = Entradas::where('id', $id)->first();
+        $infoProyecto = TipoProyecto::where('id', $infoEntradas->id_tipoproyecto)->first();
+
         $listado = DB::table('entradas_detalle AS bo')
             ->join('materiales AS bm', 'bo.id_material', '=', 'bm.id')
             ->join('unidadmedida AS uni', 'bm.id_medida', '=', 'uni.id')
-            ->select('bo.id', 'bo.cantidad', 'bm.nombre', 'uni.nombre AS nombreUnidad')
+            ->select('bo.id', 'bo.cantidad', 'bm.nombre', 'uni.nombre AS nombreUnidad', 'bo.id_entradas')
             ->where('bo.id_entradas', $id)
             ->get();
 
-        return view('backend.admin.historial.entradas.detalle.tablaentradadetallebodega', compact('listado'));
+        return view('backend.admin.historial.entradas.detalle.tablaentradadetallebodega', compact('listado', 'infoProyecto',
+        'infoEntradas'));
     }
 
     public function indexNuevoIngresoEntradaDetalle($id)
@@ -189,6 +206,15 @@ class HistorialController extends Controller
 
         try {
 
+            $infoEntrada = Entradas::where('id', $request->identrada)->first();
+            $infoProyecto = TipoProyecto::where('id', $infoEntrada->id_tipoproyecto)->first();
+
+            if($infoProyecto->cerrado == 1){
+                // EL PROYECTO YA ESTA FINALIZADO
+                return ['success' => 1];
+            }
+
+
             // Obtiene los datos enviados desde el formulario como una cadena JSON y luego decódificala
             $datosContenedor = json_decode($request->contenedorArray, true); // El segundo argumento convierte el resultado en un arreglo
 
@@ -206,7 +232,7 @@ class HistorialController extends Controller
             }
 
             DB::commit();
-            return ['success' => 1];
+            return ['success' => 2];
 
         } catch (\Throwable $e) {
             Log::info('error ' . $e);
@@ -231,9 +257,7 @@ class HistorialController extends Controller
 
     public function indexHistorialSalidas()
     {
-        $arrayProyectos = TipoProyecto::where('cerrado', 0)
-            ->orderBy('nombre', 'ASC')
-            ->get();
+        $arrayProyectos = TipoProyecto::orderBy('nombre', 'ASC')->get();
 
         $primerId = optional($arrayProyectos->first())->id;
 
@@ -255,6 +279,8 @@ class HistorialController extends Controller
             $fila->nombreRecibe = $infoRecibe->nombre;
         }
 
+
+
         return view('backend.admin.historial.salidas.tablasalidabodega', compact('listado'));
     }
 
@@ -267,6 +293,9 @@ class HistorialController extends Controller
 
     public function tablaHistorialSalidasDetalle($id){
 
+        $infoSalida = Salidas::where('id', $id)->first();
+        $infoProyecto = TipoProyecto::where('id', $infoSalida->id_tipoproyecto)->first();
+
         $listado = SalidasDetalle::where('id_salida', $id)->get();
 
         foreach ($listado as $fila) {
@@ -277,9 +306,12 @@ class HistorialController extends Controller
 
             $infoMedida = UnidadMedida::where('id', $infoMaterial->id_medida)->first();
             $fila->nombreUnidad = $infoMedida->nombre;
+
+            // PARA MOSTRAR O NO EL BOTON BORRAR
+            $fila->cierreProyecto = $infoProyecto->cerrado;
         }
 
-        return view('backend.admin.historial.salidas.detalle.tablasalidadetallebodega', compact('listado'));
+        return view('backend.admin.historial.salidas.detalle.tablasalidadetallebodega', compact('listado', 'infoSalida'));
     }
 
 
@@ -298,6 +330,15 @@ class HistorialController extends Controller
             DB::beginTransaction();
 
             try {
+                // EVITAR QUE BORRE SI HA FINALIZADO PROYECTO
+                $infoSalida = Salidas::where('id', $infoSalidaDeta->id_salida)->first();
+                $infoProyecto = TipoProyecto::where('id', $infoSalida->id_tipoproyecto)->first();
+
+                if($infoProyecto->cerrado == 1){
+                    // PROYECTO YA ESTA CERRADO
+                    return ['success' => 1];
+                }
+
 
                 $infoBodegaEntraDeta = EntradasDetalle::where('id', $infoSalidaDeta->id_entrada_detalle)->first();
 
@@ -314,7 +355,7 @@ class HistorialController extends Controller
                 Salidas::whereNotIn('id', SalidasDetalle::pluck('id_salida'))->delete();
 
                 DB::commit();
-                return ['success' => 1];
+                return ['success' => 2];
 
             } catch (\Throwable $e) {
                 Log::info('ee ' . $e);

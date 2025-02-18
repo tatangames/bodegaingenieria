@@ -26,7 +26,7 @@
 
                     <div class="row d-flex align-items-center">
                         <div class="form-group col-md-3">
-                            <label style="color: #686868">Año Proyecto</label>
+                            <label style="color: #686868">Proyectos</label>
                             <div>
                                 <select id="select-proyectos" class="form-control">
                                     @foreach($arrayProyectos as $item)
@@ -71,7 +71,6 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-            openLoading()
 
             var id = @json($primerId); // idproyecto
 

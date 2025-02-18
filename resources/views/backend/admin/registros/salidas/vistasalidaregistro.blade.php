@@ -697,13 +697,12 @@
                     closeLoading();
 
                     if(response.data.success === 1){
-                        // cuando va vacio la salida
-                        toastr.error('Se requiere item de Salida');
+                        // PROYECTO YA ESTA CERRADO
+                        toastr.error('Proyecto ya esta Cerrado');
                     }
                     else if(response.data.success === 2){
-                        // VERIFICACION: No superar la cantidad maxima que hay de ese MATERIAL - LOTE
-                        let fila = response.data.fila;
-                        msgError(fila)
+                        // cuando va vacio la salida
+                        toastr.error('Se requiere item de Salida');
                     }
                     else if(response.data.success === 3){
                         // CUANDO UN MATERIAL NO ESTA ANCLADO AL PROYECTO DE SALIDA

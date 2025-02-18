@@ -55,7 +55,6 @@ class RepuestosController extends Controller
                 ->orWhere('codigo', 'LIKE', "%{$query}%")
                 ->get();
 
-
             $output = '<ul class="dropdown-menu" style="display:block; position:relative; overflow: auto; ">';
             $tiene = true;
             foreach($arrayMateriales as $row){
@@ -85,7 +84,7 @@ class RepuestosController extends Controller
                     if(!empty($row)){
                         $tiene = false;
                         $output .= '
-                 <li class="cursor-pointer" onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px; color: black">'.$row->nombre . ' ' .$row->medida . ' ' .$row->code .'</a></li>
+                 <li class="cursor-pointer" onclick="modificarValor(this)" id="'.$row->id.'"><a href="#" style="margin-left: 3px; color: black">'.$row->nombre . ' ' .$medida . ' ' .$code .'</a></li>
                    <hr>
                 ';
                     }
@@ -115,6 +114,12 @@ class RepuestosController extends Controller
         DB::beginTransaction();
 
         try {
+
+            $infoProyecto = TipoProyecto::where('id', $request->tipoproyecto)->first();
+            if($infoProyecto->cerrado == 1){
+                return ['success' => 1];
+            }
+
             $datosContenedor = json_decode($request->contenedorArray, true);
 
             $usuario = auth()->user();
@@ -124,6 +129,7 @@ class RepuestosController extends Controller
             $registro->id_tipoproyecto = $request->tipoproyecto;
             $registro->fecha = $request->fecha;
             $registro->descripcion = $request->observacion;
+            $registro->cierre_proyecto = 0;
             $registro->save();
 
             // idMaterial    infoCantidad
@@ -145,12 +151,12 @@ class RepuestosController extends Controller
             // ENTRADA COMPLETADA
 
             DB::commit();
-            return ['success' => 1];
+            return ['success' => 2];
 
         }catch(\Throwable $e){
             Log::info("error: " . $e);
             DB::rollback();
-            return ['success' => 2];
+            return ['success' => 99];
         }
     }
 

@@ -95,7 +95,7 @@ Route::post('/admin/proyecto/informacion', [ConfiguracionController::class, 'inf
 Route::post('/admin/proyecto/editar', [ConfiguracionController::class, 'editarProyecto']);
 
 
-// --- REGISTRO DE NUEVOS ENTRADAS DE MATERIAL ---
+// --- ENTRADAS DE MATERIAL A PROYECTO ---
 Route::get('/admin/registro/entrada', [RepuestosController::class,'indexRegistroEntrada'])->name('admin.entrada.registro.index');
 Route::post('/admin/buscar/material/global',  [RepuestosController::class,'buscadorMaterialGlobal']);
 Route::post('/admin/entrada/guardar',  [RepuestosController::class,'guardarEntrada']);
@@ -114,6 +114,7 @@ Route::post('/admin/salida/buscarinventario',  [SalidasController::class,'buscar
 // ---- ENTRADAS
 Route::get('/admin/bodega/historial/entrada/index', [HistorialController::class,'indexHistorialEntradas'])->name('sidebar.bodega.historial.entradas');
 Route::get('/admin/bodega/historial/entrada/tabla/{id}', [HistorialController::class,'tablaHistorialEntradas']);
+// - Detalle
 Route::get('/admin/bodega/historial/entradadetalle/index/{id}', [HistorialController::class,'indexHistorialEntradasDetalle']);
 Route::get('/admin/bodega/historial/entradadetalle/tabla/{id}', [HistorialController::class,'tablaHistorialEntradasDetalle']);
 // vista para ingresar nuevo producto al lote existente
@@ -125,7 +126,7 @@ Route::post('/admin/bodega/historial/entrada/borrarlote', [HistorialController::
 Route::post('/admin/bodega/historial/entradadetalle/borraritem', [HistorialController::class, 'historialEntradaDetalleBorrarItem']);
 
 
-// --- HISTORIAL - SALIDAS MANUAL
+// --- HISTORIAL - SALIDAS ---
 Route::get('/admin/bodega/historial/salidas/index', [HistorialController::class,'indexHistorialSalidas'])->name('sidebar.bodega.historial.salidas');
 Route::get('/admin/bodega/historial/salidas/tabla/{id}', [HistorialController::class,'tablaHistorialSalidas']);
 Route::get('/admin/bodega/historial/salidadetalle/index/{id}', [HistorialController::class,'indexHistorialSalidasDetalle']);
@@ -136,22 +137,19 @@ Route::post('/admin/bodega/historial/salidadetalle/borraritem', [HistorialContro
 
 
 
-// TRANSFERENCIAS
+// --- FINALIZACIÓN DE PROYECTO
 Route::get('/admin/transferecia/proyecto', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
 Route::get('/admin/transferecia/proyecto/tabla', [SalidasController::class,'tablaTransferencias']);
-
-// - Inventario
+// - Inventario de materiales que tengo de un proyecto
 Route::get('/admin/transferecia/materiales/index/{id}', [SalidasController::class,'indexInventarioProyecto']);
 Route::get('/admin/transferecia/materiales/tabla/{id}', [SalidasController::class,'tablaInventarioProyecto']);
+// - Información de proyectos a cuales entregarle los materiales
+Route::post('/admin/transferencia/proyectos/listarecibiran',  [SalidasController::class,'infoProyectosRecibiran']);
+// - Registrar TRANSFERENCIA FINAL DE PROYECTO
+Route::post('/admin/transferencia/general/salida',  [SalidasController::class,'generarSalidaTransferencia']);
 
 
 
-Route::post('/admin/generar/salida/transferencia',  [SalidasController::class,'geenrarSalidaTransferencia']);
-
-
-
-
-// registrar quien recibe
 
 
 

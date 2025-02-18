@@ -98,7 +98,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarGuardar()">Guardar</button>
+                    <button type="button" class="btn btn-primary" onclick="nuevo()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -156,7 +156,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="verificarEditar()">Actualizar</button>
+                    <button type="button" class="btn btn-primary" onclick="editar()">Actualizar</button>
                 </div>
             </div>
         </div>
@@ -222,39 +222,7 @@
             $('#modalAgregar').modal({backdrop: 'static', keyboard: false})
         }
 
-        function verificarGuardar(){
-            Swal.fire({
-                title: 'Guardar Material?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    nuevo();
-                }
-            })
-        }
 
-        function verificarEditar(){
-            Swal.fire({
-                title: 'Actualizar Material?',
-                text: "",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Si'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    editar();
-                }
-            })
-        }
 
         function nuevo(){
 

@@ -486,6 +486,10 @@
                 .then((response) => {
                     closeLoading();
                     if(response.data.success === 1){
+                        // PROYECTO YA ESTABA CERRADO
+                        toastr.error('Proyecto esta Cerrado');
+                    }
+                    else if(response.data.success === 2){
                         toastr.success('Registrado correctamente');
                         limpiar();
                     }

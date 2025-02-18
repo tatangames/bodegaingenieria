@@ -110,7 +110,11 @@
             })
                 .then((response) => {
                     closeLoading();
+
                     if(response.data.success === 1){
+                        toastr.error('Proyecto ya Finalizo');
+                    }
+                    else if(response.data.success === 2){
                         toastr.success('Borrado correctamente');
                         recargar();
                     }

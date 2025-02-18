@@ -323,6 +323,9 @@
                     closeLoading();
 
                     if(response.data.success === 1){
+                        toastr.error('Proyecto ya esta Finalizado');
+                    }
+                    else if(response.data.success === 2){
                         toastr.success('Actualizado correctamente');
                         $('#modalEditar').modal('hide');
                         recargar();

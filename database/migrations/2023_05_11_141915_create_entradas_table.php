@@ -20,6 +20,9 @@ class CreateEntradasTable extends Migration
             $table->date('fecha');
             $table->string('descripcion', 800)->nullable();
 
+            // PARA SABER QUE ESTA ENTRADA FUE QUE RECIBI DE UN X PROYECTO
+            $table->boolean('cierre_proyecto');
+
             $table->foreign('id_tipoproyecto')->references('id')->on('tipoproyecto');
             $table->foreign('id_usuario')->references('id')->on('usuario');
         });

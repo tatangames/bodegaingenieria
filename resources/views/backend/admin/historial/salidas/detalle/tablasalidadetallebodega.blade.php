@@ -21,10 +21,16 @@
                                     <td>{{ $dato->nombreUnidad }}</td>
                                     <td>{{ $dato->cantidad_salida }}</td>
                                     <td>
-                                        <button style="margin: 3px" type="button" class="btn btn-danger btn-xs"
-                                                onclick="infoBorrar({{ $dato->id }})">
-                                            <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
-                                        </button>
+
+                                        @if($dato->cierreProyecto == 0)
+                                            <button style="margin: 3px" type="button" class="btn btn-danger btn-xs"
+                                                    onclick="infoBorrar({{ $dato->id }})">
+                                                <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
+                                            </button>
+                                        @else
+                                            <span class="badge bg-primary">Proyecto Finalizado</span>
+                                        @endif
+
                                     </td>
                                 </tr>
                             @endforeach

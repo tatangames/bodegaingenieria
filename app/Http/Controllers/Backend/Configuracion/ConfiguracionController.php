@@ -182,7 +182,11 @@ class ConfiguracionController extends Controller
 
     public function tablaRegistroQuienRecibe(){
 
-        $lista = QuienRecibe::orderBy('nombre', 'ASC')->get();
+        $lista = QuienRecibe::where('id', '!=', 1)
+            ->orderBy('nombre', 'ASC')
+            ->get();
+
+
         return view('backend.admin.configuracion.quienrecibe.tablaquienrecibe', compact('lista'));
     }
 
@@ -424,7 +428,11 @@ class ConfiguracionController extends Controller
 
         if ($validar->fails()){ return ['success' => 0];}
 
-        if(TipoProyecto::where('id', $request->id)->first()){
+        if($info = TipoProyecto::where('id', $request->id)->first()){
+
+            if($info->cerrado == 1){
+                return ['success' => 1];
+            }
 
             TipoProyecto::where('id', $request->id)->update([
                 'id_anio' => $request->anio,
@@ -432,7 +440,7 @@ class ConfiguracionController extends Controller
                 'codigo' => $request->codigo
             ]);
 
-            return ['success' => 1];
+            return ['success' => 2];
         }else{
             return ['success' => 2];
         }

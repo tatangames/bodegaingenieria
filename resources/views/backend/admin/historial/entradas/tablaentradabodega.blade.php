@@ -11,8 +11,8 @@
                             <thead>
                             <tr>
                                 <th style="width: 5%">Fecha Ingreso</th>
-                                <th style="width: 15%">Proyecto</th>
                                 <th style="width: 12%">Observación</th>
+                                <th style="width: 6%">Entrada por Cierre Pro.</th>
                                 <th style="width: 6%">Opciones</th>
                             </tr>
                             </thead>
@@ -21,23 +21,37 @@
                             @foreach($listado as $dato)
                                 <tr>
                                     <td>{{ $dato->fecha }}</td>
-                                    <td>{{ $dato->nombreProyecto }}</td>
                                     <td>{{ $dato->observacion }}</td>
+
+                                    <td>@if($dato->cierre_proyecto == 1)
+                                            <span class="badge bg-success">Entrada por Cierre</span>
+                                    @endif
+                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-info btn-xs"
                                                 onclick="vistaDetalle({{ $dato->id }})">
                                             <i class="fas fa-eye" title="Detalle"></i>&nbsp; Detalle
                                         </button>
 
-                                        <button style="margin: 3px" type="button" class="btn btn-danger btn-xs"
-                                                onclick="infoBorrar({{ $dato->id }})">
-                                            <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
-                                        </button>
+                                        <!-- VERIFICAR QUE NO SE REGISTRO LA ENTRADA POR CIERRE DE OTRO PROYECTO -->
+                                        @if($dato->cierre_proyecto == 0)
 
-                                        <button style="margin: 3px" type="button" class="btn btn-warning btn-xs"
-                                                onclick="infoNuevoIngreso({{ $dato->id }})">
-                                            <i class="fas fa-plus" title="Nuevo Ingreso"></i>&nbsp; Nuevo Ingreso
-                                        </button>
+                                            <!-- PROYECTO COMPLETO NO ESTA FINALIZADO AUN -->
+                                            @if($infoProyecto->cerrado == 0)
+                                                <button style="margin: 3px" type="button" class="btn btn-danger btn-xs"
+                                                        onclick="infoBorrar({{ $dato->id }})">
+                                                    <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
+                                                </button>
+
+                                                <button style="margin: 3px" type="button" class="btn btn-warning btn-xs"
+                                                        onclick="infoNuevoIngreso({{ $dato->id }})">
+                                                    <i class="fas fa-plus" title="Nuevo Ingreso"></i>&nbsp; Nuevo Ingreso
+                                                </button>
+                                            @endif
+                                        @endif
+
+
+
                                     </td>
                                 </tr>
                             @endforeach

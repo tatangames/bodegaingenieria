@@ -5,6 +5,8 @@
     <link href="{{ asset('css/dataTables.bootstrap4.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('css/toastr.min.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('css/buttons_estilo.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/select2.min.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" type="text/css" rel="stylesheet">
 @stop
 
 <style>
@@ -24,24 +26,23 @@
                 </div>
                 <div class="card-body">
 
-                    <div class="row d-flex align-items-center">
-                        <div class="form-group col-md-3">
-                            <label style="color: #686868">Proyecto</label>
-                            <div>
-                                <select id="select-proyectos" class="form-control">
-                                    @foreach($arrayProyectos as $item)
-                                        <option value="{{$item->id}}">{{$item->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <div class="form-group">
+                        <label style="color: #686868">Proyecto</label>
+                        <div>
+                            <select id="select-proyectos" class="form-control">
+                                @foreach($arrayProyectos as $item)
+                                    <option value="{{$item->id}}">{{$item->nombre}}</option>
+                                @endforeach
+                            </select>
                         </div>
+                    </div>
 
-                        <div class="col-auto">
-                            <button type="button" onclick="buscarListado()" class="btn btn-success btn-sm">
-                                <i class="fas fa-search"></i>
-                                Buscar
-                            </button>
-                        </div>
+
+                    <div class="col-auto">
+                        <button type="button" onclick="buscarListado()" class="btn btn-success btn-sm">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
                     </div>
 
                     <div class="row">
@@ -70,9 +71,19 @@
     <script src="{{ asset('js/axios.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/alertaPersonalizada.js') }}"></script>
+    <script src="{{ asset('js/select2.min.js') }}" type="text/javascript"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
+
+            $('#select-proyectos').select2({
+                theme: "bootstrap-5",
+                "language": {
+                    "noResults": function(){
+                        return "Busqueda no encontrada";
+                    }
+                },
+            });
 
             var id = @json($primerId); // idproyecto
 
@@ -138,7 +149,12 @@
             })
                 .then((response) => {
                     closeLoading();
+
                     if(response.data.success === 1){
+                        toastr.error('Proyecto ya esta Finalizado');
+                        recargar();
+                    }
+                    else if(response.data.success === 2){
                         toastr.success('Borrado correctamente');
                         recargar();
                     }

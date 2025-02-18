@@ -26,7 +26,7 @@
                                             <i class="fas fa-eye" title="Materiales"></i>&nbsp; Materiales
                                         </button>
 
-                                        <button type="button"  style="margin: 5px" class="btn btn-danger btn-xs" onclick="infoFinalizar({{ $dato->id }})">
+                                        <button type="button"  style="margin: 5px" class="btn btn-danger btn-xs" onclick="infoProyectosFinalizados({{ $dato->id }})">
                                             <i class="fas fa-edit" title="Finalizar"></i>&nbsp; Finalizar
                                         </button>
                                     </td>

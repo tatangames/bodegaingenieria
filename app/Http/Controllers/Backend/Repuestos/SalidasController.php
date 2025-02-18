@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Backend\Repuestos;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anios;
+use App\Models\CierreProyecto;
+use App\Models\CierreProyectoDetalle;
 use App\Models\Entradas;
 use App\Models\EntradasDetalle;
 use App\Models\HistorialSalidas;
@@ -31,8 +33,11 @@ class SalidasController extends Controller
 
     public function indexRegistroSalida(){
 
-        $arrayProyectos = TipoProyecto::orderBy('nombre')->get();
-        $arrayRecibe = QuienRecibe::orderBy('nombre')->get();
+        $arrayProyectos = TipoProyecto::where('cerrado', 0)
+            ->orderBy('nombre')->get();
+
+        $arrayRecibe = QuienRecibe::where('id', '!=', 1)
+            ->orderBy('nombre')->get();
 
         return view('backend.admin.registros.salidas.vistasalidaregistro', compact('arrayProyectos', 'arrayRecibe'));
     }
@@ -53,18 +58,30 @@ class SalidasController extends Controller
                 array_push($pilaArrayIdMaterial, $fila->id);
             }
 
+
+
+
             // TODAS LAS ENTRADAS DEL PROYECTO
             $arrayEntradas = Entradas::where('id_tipoproyecto', $idproyecto)->get();
             foreach ($arrayEntradas as $fila) {
                 array_push($pilaArrayIdEntrada, $fila->id);
             }
 
+
+
             // SOLO MATERIAL DISPONIBLE
             $listado = EntradasDetalle::whereIn('id_entradas', $pilaArrayIdEntrada)
                 ->whereIn('id_material', $pilaArrayIdMaterial)
                 ->whereColumn('cantidad_entregada', '<', 'cantidad')
-                ->whereRaw('id IN (SELECT MIN(id) FROM entradas_detalle GROUP BY id_material)')
-                ->get();
+                ->orderBy('id') // Ordenar para obtener el primer registro de cada material
+                ->get()
+                ->unique('id_material') // Filtrar en PHP si la consulta no lo resuelve
+                ->values();
+
+            Log::info('ee');
+            Log::info($listado);
+
+
 
             $output = '<ul class="dropdown-menu" style="display:block; position:relative; overflow: auto; max-height: 300px; width: 550px">';
             $tiene = true;
@@ -169,11 +186,16 @@ class SalidasController extends Controller
 
         try {
 
+            $infoProyecto = TipoProyecto::where('id', $request->idproyecto)->first();
+            if($infoProyecto->cerrado == 1){
+                return ['success' => 1];
+            }
+
             $datosContenedor = json_decode($request->contenedorArray, true);
 
             // EVITAR QUE VENGA VACIO
             if($datosContenedor == null){
-                return ['success' => 1];
+                return ['success' => 2];
             }
 
 
@@ -201,6 +223,7 @@ class SalidasController extends Controller
             $reg->fecha = $request->fecha;
             $reg->descripcion = $request->descripcion;
             $reg->orden_salida = $request->numsalida;
+            $reg->cierre_proyecto = 0;
             $reg->save();
 
             // infoIdEntradaDetalle, filaCantidadSalida
@@ -296,8 +319,6 @@ class SalidasController extends Controller
             $item->nombreAnio = $infoAnio->nombre;
         }
 
-
-
         return view('backend.admin.registros.cierres.tablacierreproyecto', compact('listado'));
     }
 
@@ -326,6 +347,165 @@ class SalidasController extends Controller
         }
 
         return view('backend.admin.registros.cierres.materiales.tabladetallematerial', compact('listado'));
+    }
+
+
+    public function infoProyectosRecibiran(Request $request)
+    {
+        $regla = array(
+            'id' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        $listado = TipoProyecto::where('id', '!=', $request->id)
+                  ->where('cerrado', 0)->get();
+
+
+        $infoPro = TipoProyecto::where('id', $request->id)->first();
+        $nombreProyecto = $infoPro->nombre;
+
+        return ['success' => 1, 'listado' => $listado, 'proyecto' => $nombreProyecto];
+    }
+
+
+    public function generarSalidaTransferencia(Request $request)
+    {
+        $regla = array(
+            'identrega' => 'required',
+            'idrecibe' => 'required',
+            'fecha' => 'required',
+        );
+
+        // documento, descripcion
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+
+        DB::beginTransaction();
+
+        try {
+
+            $infoProEntrega = TipoProyecto::where('id', $request->identrega)->first();
+
+            // Evitar que proyecto no estaba cerrado
+            if($infoProEntrega->cerrado == 1){
+                return ['success' => 1];
+            }
+
+            // ACTUALIZAR EL CIERRE
+            TipoProyecto::where('id', $request->identrega)->update([
+                'cerrado' => 1
+            ]);
+
+
+            $pilaArrayIdEntrada = array();
+
+            // TODAS LAS ENTRADAS DEL PROYECTO
+            $arrayEntradas = Entradas::where('id_tipoproyecto', $infoProEntrega->id)->get();
+            foreach ($arrayEntradas as $fila) {
+                array_push($pilaArrayIdEntrada, $fila->id);
+            }
+
+            // SOLO MATERIAL DISPONIBLE
+            $arrayEntradaDetalle = EntradasDetalle::whereIn('id_entradas', $pilaArrayIdEntrada)
+                ->whereColumn('cantidad_entregada', '<', 'cantidad')
+                ->get();
+
+            $usuario = auth()->user();
+            $nomDocumento = null;
+
+            if ($request->hasFile('documento')) {
+
+                $cadena = Str::random(15);
+                $tiempo = microtime();
+                $union = $cadena . $tiempo;
+                $nombre = str_replace(' ', '_', $union);
+
+                $extension = '.' . $request->documento->getClientOriginalExtension();
+                $nomDocumento = $nombre . strtolower($extension);
+                $avatar = $request->file('documento');
+                Storage::disk('archivos')->put($nomDocumento, \File::get($avatar));
+            }
+
+
+            if ($arrayEntradaDetalle->isNotEmpty()) {
+
+                // LAS ENTRADAS YA NO PODRAN ELIMINARSE DEL PROYECTO PORQUE HA FINALIZADO
+                $regEntradas = new Entradas();
+                $regEntradas->id_usuario = $usuario->id;
+                $regEntradas->id_tipoproyecto = $request->idrecibe;
+                $regEntradas->fecha = $request->fecha;
+                $regEntradas->descripcion = $request->descripcion;
+                $regEntradas->cierre_proyecto = 1;
+                $regEntradas->save();
+
+                // GENERAR LA SALIDA DEL PROYECTO QUE ENTREGA
+                $regSalida = new Salidas();
+                $regSalida->id_usuario = $usuario->id;
+                $regSalida->id_tipoproyecto = $request->identrega;
+                $regSalida->id_recibe = 1; // cierre de proyecto
+                $regSalida->fecha = $request->fecha;
+                $regSalida->descripcion = $request->descripcion;
+                $regSalida->orden_salida = null;
+                $regSalida->cierre_proyecto = 1;
+                $regSalida->save();
+
+
+                // GUARDAR UN HISTORIAL PARA REPORTES DE QUE SE PASO
+                $registroCi = new CierreProyecto();
+                $registroCi->id_usuario = $usuario->id;
+                $registroCi->fecha = $request->fecha;
+                $registroCi->descripcion = $request->descripcion;
+                $registroCi->documento = $nomDocumento;
+                $registroCi->id_entrega = $request->identrega;  // ID DE PROYECTO QUE FINALIZO
+                $registroCi->id_recibe = $request->idrecibe;  // ID DE PROYECTO QUE RECIBE
+                $registroCi->id_entrada = $regEntradas->id; // ENTREDA PARA QUE RECIBE
+                $registroCi->id_salida = $regSalida->id; // SALIDA PARA QUIEN ENTREGA
+                $registroCi->save();
+
+
+
+
+                // RECORRER CADA MATERIAL QUE SE VA A TRASPASAR
+                foreach ($arrayEntradaDetalle as $fila) {
+
+                    $actualCantidad = $fila->cantidad - $fila->cantidad_entregada;
+
+                    // ANIVELAR
+                    EntradasDetalle::where('id', $fila->id)->update([
+                        'cantidad_entregada' => $fila->cantidad
+                    ]);
+
+                    $detalle = new SalidasDetalle();
+                    $detalle->id_salida = $regSalida->id;
+                    $detalle->id_entrada_detalle = $fila->id;
+                    $detalle->cantidad_salida = $actualCantidad;
+                    $detalle->save();
+
+                    $detalle = new EntradasDetalle();
+                    $detalle->id_entradas = $regEntradas->id;
+                    $detalle->id_material = $fila->id_material;
+                    $detalle->cantidad = $actualCantidad;
+                    $detalle->nombre_copia = $fila->nombre_copia;
+                    $detalle->cantidad_entregada = 0;
+                    $detalle->save();
+                }
+            }
+
+
+            DB::commit();
+            return ['success' => 10];
+
+        } catch (\Throwable $e) {
+            Log::info('error ' . $e);
+            DB::rollback();
+            return ['success' => 99];
+        }
     }
 
 

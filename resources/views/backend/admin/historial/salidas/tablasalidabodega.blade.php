@@ -14,6 +14,7 @@
                                 <th style="width: 10%"># Orden Salida</th>
                                 <th style="width: 15%">Recibe</th>
                                 <th style="width: 20%">Descripción</th>
+                                <th style="width: 5%">Cierre Pro.</th>
                                 <th style="width: 6%">Opciones</th>
                             </tr>
                             </thead>
@@ -25,6 +26,11 @@
                                     <td>{{ $dato->orden_salida }}</td>
                                     <td>{{ $dato->nombreRecibe }}</td>
                                     <td>{{ $dato->descripcion }}</td>
+                                    <td>
+                                        @if($dato->cierre_proyecto == 1)
+                                            <span class="badge bg-success">Cierre Proyecto</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-info btn-xs"
                                                 onclick="vistaDetalle({{ $dato->id }})">
