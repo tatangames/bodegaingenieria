@@ -389,6 +389,7 @@ class ConfiguracionController extends Controller
         $registro->codigo = $request->codigo;
         $registro->nombre = $request->nombre;
         $registro->cerrado = 0;
+        $registro->fecha_cierre = null;
 
         if($registro->save()){
             return ['success' => 1];

@@ -23,6 +23,10 @@ class CreateTipoproyectoTable extends Migration
             // PROYECTOS FINALIZADO
             $table->boolean('cerrado');
 
+            // CUANDO UN PROYECTO NO TENGA MATERIALES, Y SE CIERRA.
+            // NO SE REGISTRA NINGUN CIERRE_PROYECTO, SOLO TENDREMOS FECHA DE CIERRE
+            $table->date('fecha_cierre')->nullable();
+
             $table->foreign('id_anio')->references('id')->on('anio');
         });
     }

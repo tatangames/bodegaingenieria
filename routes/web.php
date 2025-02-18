@@ -134,9 +134,6 @@ Route::get('/admin/bodega/historial/salidadetalle/tabla/{id}', [HistorialControl
 Route::post('/admin/bodega/historial/salidadetalle/borraritem', [HistorialController::class,'salidaDetalleBorrarItem']);
 
 
-
-
-
 // --- FINALIZACIÓN DE PROYECTO
 Route::get('/admin/transferecia/proyecto', [SalidasController::class,'indexTransferencias'])->name('admin.transferencias.index');
 Route::get('/admin/transferecia/proyecto/tabla', [SalidasController::class,'tablaTransferencias']);
@@ -151,66 +148,25 @@ Route::post('/admin/transferencia/general/salida',  [SalidasController::class,'g
 
 
 
+// --- ** REPORTES ** ---
 
 
+// - REPORTES DE ENTRADAS
+Route::get('/admin/entradas/reporte/vista', [ReportesController::class,'indexEntradasReporte'])->name('admin.entradas.reporte.index');
+Route::get('/admin/reporte/pdf/entradas/{idproyecto}', [ReportesController::class,'reportePdfEntradas']);
 
+// - REPORTE DE SALIDAS
+Route::get('/admin/salidas/reporte/vista', [ReportesController::class,'indexSalidasReporte'])->name('admin.salidas.reporte.index');
+Route::get('/admin/reporte/pdf/salidas/{idproyecto}/{idrecibe}', [ReportesController::class,'reportePdfSalidas']);
 
-// HISTORIAL
-
-// listado historial de herramientas para Salida
-
-Route::post('/admin/historial/salida/herramienta/informacion',  [HistorialController::class,'informacionHistorialSalidaHerramienta']);
-Route::post('/admin/historial/salida/herramienta/actualizar',  [HistorialController::class,'actualizarHistorialSalidaHerramienta']);
-
-Route::get('/admin/historial/salida/herramientas/detalle/{id}', [HistorialController::class,'detalleIndexHistorialSalidasHerramientas']);
-Route::get('/admin/historial/salida/herramientas/detalletabla/{id}', [HistorialController::class,'detalleTablaHistorialSalidasHerramientas']);
-
-
-// listado historial de repuestos para salida
-Route::get('/admin/historial/salida/repuestos/index', [HistorialController::class,'indexHistorialRepuestosSalida'])->name('admin.historial.salidas.repuestos');
-Route::get('/admin/historial/salida/repuestos/tabla', [HistorialController::class,'tablaHistorialRepuestosSalida']);
-Route::post('/admin/historial/salida/repuestos/informacion',  [HistorialController::class,'informacionHistorialSalidaRepuesto']);
-Route::post('/admin/historial/salida/repuestos/actualizar',  [HistorialController::class,'actualizarHistorialSalidaRepuesto']);
-
-Route::get('/admin/historial/salida/repuestos/detalle/{id}', [HistorialController::class,'detalleIndexHistorialSalidas']);
-Route::get('/admin/historial/salida/repuestos/detalletabla/{id}', [HistorialController::class,'detalleTablaHistorialSalidas']);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// REPORTES DE ENTRADAS Y SALIDAS DE REPUESTOS
-Route::get('/admin/entrada/reporte/vista', [ReportesController::class,'indexEntradaReporte'])->name('admin.entrada.reporte.index');
-Route::get('/admin/reporte/registro/{tipo}/{desde}/{hasta}', [ReportesController::class,'reportePdfEntradaSalida']);
-
-
-// REPORTES DE INVENTARIO
+// - REPORTE DE INVENTARIO ACTUAL DE PROYECTOS
 Route::get('/admin/reporte/inventario', [ReportesController::class,'vistaParaReporteInventario'])->name('admin.reporte.inventario.index');
-Route::get('/admin/reporte/inventario/pdf/{tipo}', [ReportesController::class,'reporteInventarioActual']);
+Route::get('/admin/reporte/pdf/inventario/{idproyecto}', [ReportesController::class,'reportePdfInventario']);
 
-// que ha salido para x proyecto
-Route::get('/admin/reporte/inventario/quehasalido/proyecto', [ReportesController::class,'vistaQueHaSalidoProyecto'])->name('admin.reporte.inventario.salidaproyecto.index');
-Route::get('/admin/reporte/quehasalido/proyectos/pdf/{idproy}/{desde}/{hasta}/{tipo}', [ReportesController::class,'pdfQueHaSalidoProyectos']);
+// - REPORTE DE PROYECTOS FINALIZADOS
+Route::get('/admin/reporte/finalizados', [ReportesController::class,'vistaParaReporteFinalizados'])->name('admin.reporte.finalizados.index');
+Route::get('/admin/reporte/pdf/finalizados/{idproyecto}', [ReportesController::class,'reportePdfFinalizados']);
 
-// inventario que materiales tiene x proyecto ahorita
-Route::get('/admin/reporte/inventario/quetengopor/proyecto', [ReportesController::class,'vistaQueTengoPorProyecto'])->name('admin.reporte.inventario.tengoporproyecto.index');
-Route::get('/admin/reporte/quetengopor/proyectos/pdf/{idproy}', [ReportesController::class,'reporteQueTengoPorProyecto']);
-
-// ver los materiales que sobraron de un proyecto completado
-Route::get('/admin/reporte/inventario/sobranteterminado/proyecto', [ReportesController::class,'vistaProyectoCompletado'])->name('admin.reporte.inventario.proyectocompletado.index');
-Route::get('/admin/reporte/inventario/sobranteterminado/proy/{idtrans}', [ReportesController::class,'reporteProyectoTerminado']);
 
 
 

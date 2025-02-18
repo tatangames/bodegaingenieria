@@ -109,7 +109,7 @@
                         <li class="nav-item">
                             <a href="{{ route('sidebar.bodega.historial.entradas') }}" target="frameprincipal" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Entradas Registros</p>
+                                <p>Entradas</p>
                             </a>
                         </li>
 
@@ -188,9 +188,16 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.entrada.reporte.index') }}" target="frameprincipal" class="nav-link">
+                                    <a href="{{ route('admin.entradas.reporte.index') }}" target="frameprincipal" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Entradas y Salidas</p>
+                                        <p>Entradas</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.salidas.reporte.index') }}" target="frameprincipal" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Salidas</p>
                                     </a>
                                 </li>
 
@@ -201,30 +208,13 @@
                                     </a>
                                 </li>
 
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.reporte.inventario.salidaproyecto.index') }}" target="frameprincipal" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Salida por Proyecto</p>
-                                    </a>
-                                </li>
 
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.reporte.inventario.tengoporproyecto.index') }}" target="frameprincipal" class="nav-link">
+                                    <a href="{{ route('admin.reporte.finalizados.index') }}" target="frameprincipal" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Inventario Proyecto</p>
+                                        <p>Finalizados</p>
                                     </a>
                                 </li>
-
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.reporte.inventario.proyectocompletado.index') }}" target="frameprincipal" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Proyecto Completado</p>
-                                    </a>
-                                </li>
-
-
-
-
 
                             </ul>
                         </li>

@@ -462,8 +462,8 @@ class SalidasController extends Controller
                 $registroCi->fecha = $request->fecha;
                 $registroCi->descripcion = $request->descripcion;
                 $registroCi->documento = $nomDocumento;
-                $registroCi->id_entrega = $request->identrega;  // ID DE PROYECTO QUE FINALIZO
-                $registroCi->id_recibe = $request->idrecibe;  // ID DE PROYECTO QUE RECIBE
+                $registroCi->id_entrega_proyecto = $request->identrega;  // ID DE PROYECTO QUE FINALIZO
+                $registroCi->id_recibe_proyecto = $request->idrecibe;  // ID DE PROYECTO QUE RECIBE
                 $registroCi->id_entrada = $regEntradas->id; // ENTREDA PARA QUE RECIBE
                 $registroCi->id_salida = $regSalida->id; // SALIDA PARA QUIEN ENTREGA
                 $registroCi->save();
@@ -495,6 +495,11 @@ class SalidasController extends Controller
                     $detalle->cantidad_entregada = 0;
                     $detalle->save();
                 }
+            }else{
+                // ACTUALIZAR FECHA DE CIERRE
+                TipoProyecto::where('id', $request->identrega)->update([
+                    'fecha_cierre' => $request->fecha
+                ]);
             }
 
 
