@@ -15,7 +15,7 @@ class RecibeMaterialSeeder extends Seeder
     public function run()
     {
         QuienRecibe::create([
-            'nombre' => 'Cierre de Proyecto',
+            'nombre' => 'Registro Cierre de Proyecto',
         ]);
     }
 }

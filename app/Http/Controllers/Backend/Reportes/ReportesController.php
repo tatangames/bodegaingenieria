@@ -573,7 +573,6 @@ class ReportesController extends Controller
 
         $hayDatos = false;
         $descripcionCierre = "";
-        $fechaCierre = "";
         $infoProyectoRecibe = null;
         $infoAnioRecibe = null;
 
@@ -581,14 +580,12 @@ class ReportesController extends Controller
         if($infoCierre = CierreProyecto::where('id_entrega_proyecto', $idproyecto)->first()){
             $hayDatos = true;
 
+            // FECHA DE CIERRE DE PROYECTO
             $fechaCierre = date("d-m-Y", strtotime($infoCierre->fecha));
             $descripcionCierre = $infoCierre->descripcion;
 
             $infoProyectoRecibe = TipoProyecto::where('id', $infoCierre->id_recibe_proyecto)->first();
             $infoAnioRecibe = Anios::where('id', $infoProyectoRecibe->id_anio)->first();
-
-
-
 
             $infoSalida = Salidas::where('id', $infoCierre->id_recibe_proyecto)->first();
             $arraySalidaDeta = SalidasDetalle::where('id_salida', $infoSalida->id)->get();

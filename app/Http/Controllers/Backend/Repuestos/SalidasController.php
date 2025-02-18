@@ -432,6 +432,10 @@ class SalidasController extends Controller
                 Storage::disk('archivos')->put($nomDocumento, \File::get($avatar));
             }
 
+            // ACTUALIZAR FECHA DE CIERRE
+            TipoProyecto::where('id', $request->identrega)->update([
+                'fecha_cierre' => $request->fecha
+            ]);
 
             if ($arrayEntradaDetalle->isNotEmpty()) {
 
@@ -470,7 +474,6 @@ class SalidasController extends Controller
 
 
 
-
                 // RECORRER CADA MATERIAL QUE SE VA A TRASPASAR
                 foreach ($arrayEntradaDetalle as $fila) {
 
@@ -495,13 +498,7 @@ class SalidasController extends Controller
                     $detalle->cantidad_entregada = 0;
                     $detalle->save();
                 }
-            }else{
-                // ACTUALIZAR FECHA DE CIERRE
-                TipoProyecto::where('id', $request->identrega)->update([
-                    'fecha_cierre' => $request->fecha
-                ]);
             }
-
 
             DB::commit();
             return ['success' => 10];

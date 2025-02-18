@@ -135,9 +135,9 @@
         formData.append('usuario', usuario);
         formData.append('password', password);
 
-        // alcaelectrica/admin/login
+        // ingenieria/admin/login
 
-        axios.post('/admin/login', formData, {
+        axios.post('/ingenieria/admin/login', formData, {
         })
             .then((response) => {
                 closeLoading();
