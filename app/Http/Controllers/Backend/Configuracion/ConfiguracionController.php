@@ -7,6 +7,7 @@ use App\Models\Anios;
 use App\Models\Encargados;
 use App\Models\EntradasDetalle;
 use App\Models\Materiales;
+use App\Models\ProyectoEncargado;
 use App\Models\QuienEntrega;
 use App\Models\QuienRecibe;
 use App\Models\TipoProyecto;
@@ -447,6 +448,69 @@ class ConfiguracionController extends Controller
             return ['success' => 2];
         }
     }
+
+
+    // ***** ENCARGOS DE CADA PROYECTO ******
+
+    public function indexEncargadoProyecto($id)
+    {
+
+        $listaEncargados = Encargados::orderBy('nombre', 'ASC')->get();
+
+        return view('backend.admin.configuracion.proyectos.encargados.vistaproyectoencargados', compact('id', 'listaEncargados'));
+    }
+
+
+    public function tablaEncargadoProyecto($idproyecto)
+    {
+        $arrayEncargados = ProyectoEncargado::where('id_tipoproyecto', $idproyecto)->get();
+
+        foreach ($arrayEncargados as $item) {
+            $infoEncargado = Encargados::where('id', $item->id_encargado)->first();
+            $item->nombreEncargado = $infoEncargado->nombre;
+        }
+
+        return view('backend.admin.configuracion.proyectos.encargados.tablaproyectoencargados', compact('arrayEncargados'));
+    }
+
+
+    public function nuevoEncargadoProyecto(Request $request){
+
+        $regla = array(
+            'id' => 'required', // idproyecto
+            'idencargado' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        $registro = new ProyectoEncargado();
+        $registro->id_tipoproyecto = $request->id;
+        $registro->id_encargado = $request->idencargado;
+        $registro->save();
+
+        return ['success' => 1];
+    }
+
+
+    public function borrarEncargadoProyecto(Request $request){
+
+        $regla = array(
+            'id' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        ProyectoEncargado::where('id', $request->id)->delete();
+
+        return ['success' => 1];
+    }
+
+
+
 
 
 

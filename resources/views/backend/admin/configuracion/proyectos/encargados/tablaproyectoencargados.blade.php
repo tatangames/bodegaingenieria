@@ -7,47 +7,25 @@
                         <table id="tabla" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="width: 10%">Año</th>
-                                <th style="width: 12%">Código</th>
-                                <th style="width: 60%">Proyecto</th>
-                                <th style="width: 15%">Proyecto Finalizado</th>
-                                <th style="width: 8%">Opciones</th>
+                                <th style="width: 60%">Nombre</th>
+                                <th style="width: 15%">Opciones</th>
                             </tr>
                             </thead>
                             <tbody>
 
-                            @foreach($listado as $dato)
+                            @foreach($arrayEncargados as $dato)
                                 <tr>
-                                    <td>{{ $dato->nombreAnio }}</td>
-                                    <td>{{ $dato->codigo }}</td>
-                                    <td>{{ $dato->nombre }}</td>
-                                    <td>
-                                        @if ($dato->cerrado == 0)
-                                            NO
-                                        @else
-                                            <span class="badge bg-success">SI</span>
-                                        @endif
-                                    </td>
+                                    <td>{{ $dato->nombreEncargado }}</td>
 
                                     <td>
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="informacion({{ $dato->id }})">
-                                            <i class="fas fa-eye" title="Editar"></i>&nbsp; Editar
-                                        </button>
 
-                                        <button type="button" style="margin: 6px" class="btn btn-success btn-xs" onclick="vistaEncargados({{ $dato->id }})">
-                                            <i class="fas fa-edit" title="Encargado"></i>&nbsp; Encargado
+                                        <button type="button" class="btn btn-danger btn-xs" onclick="infoBorrar({{ $dato->id }})">
+                                            <i class="fas fa-trash" title="Borrar"></i>&nbsp; Borrar
                                         </button>
-
                                     </td>
+
                                 </tr>
                             @endforeach
-
-                            <script>
-                                setTimeout(function () {
-                                    closeLoading();
-                                }, 500);
-                            </script>
-
                             </tbody>
                         </table>
                     </div>
@@ -63,6 +41,7 @@
         $("#tabla").DataTable({
             "paging": true,
             "lengthChange": true,
+            "order": [[0, 'asc']],
             "searching": true,
             "ordering": true,
             "info": true,

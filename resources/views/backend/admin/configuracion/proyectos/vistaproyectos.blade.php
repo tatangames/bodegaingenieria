@@ -341,6 +341,11 @@
         }
 
 
+        function vistaEncargados(id){
+            window.location.href="{{ url('/admin/proyecto/encargados/index') }}/" + id;
+        }
+
+
     </script>
 
 

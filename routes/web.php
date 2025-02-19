@@ -103,6 +103,14 @@ Route::post('/admin/proyecto/nuevo', [ConfiguracionController::class, 'nuevoProy
 Route::post('/admin/proyecto/informacion', [ConfiguracionController::class, 'informacionProyecto']);
 Route::post('/admin/proyecto/editar', [ConfiguracionController::class, 'editarProyecto']);
 
+// - LISTA DE ENCARGADOS DEL PROYECTO
+Route::get('/admin/proyecto/encargados/index/{idproyecto}', [ConfiguracionController::class,'indexEncargadoProyecto']);
+Route::get('/admin/proyecto/encargados/tabla/{idproyecto}', [ConfiguracionController::class,'tablaEncargadoProyecto']);
+Route::post('/admin/proyecto/encargados/nuevo', [ConfiguracionController::class, 'nuevoEncargadoProyecto']);
+Route::post('/admin/proyecto/encargados/borrar', [ConfiguracionController::class, 'borrarEncargadoProyecto']);
+
+
+
 
 // --- ENTRADAS DE MATERIAL A PROYECTO ---
 Route::get('/admin/registro/entrada', [RepuestosController::class,'indexRegistroEntrada'])->name('admin.entrada.registro.index');
