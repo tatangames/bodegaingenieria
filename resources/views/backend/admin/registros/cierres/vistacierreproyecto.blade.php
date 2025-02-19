@@ -15,8 +15,6 @@
 </style>
 
 <div id="divcontenedor" style="display: none">
-
-
     <section class="content" style="margin-top: 15px">
         <div class="container-fluid">
             <div class="card card-gray-dark">
@@ -149,9 +147,16 @@
 
                         document.getElementById("select-proyectos").options.length = 0;
 
-                        $.each(response.data.listado, function( key, val ){
-                            $('#select-proyectos').append('<option value="' +val.id +'" selected="selected">'+ val.nombre +'</option>');
-                        });
+                        // SI TIENE MATERIALES DEBERA ESCOGER A QUIEN ENTRAGARLE
+                        // SINO TIENE MATERIALES SOLO SALDRA OPCION DE CERRAR
+                        if(response.data.hayMaterialDisponible == 1){
+                            $.each(response.data.listado, function( key, val ){
+                                $('#select-proyectos').append('<option value="' +val.id +'" selected="selected">'+ val.nombre +'</option>');
+                            });
+                        }else{
+                            $('#select-proyectos').append('<option value="0" selected="selected">No Materiales Disponibles (Solo Cerrar Proyecto)</option>');
+                        }
+
                     }else{
                         toastr.error('Información no encontrada');
                     }
@@ -194,10 +199,6 @@
 
             var documento = document.getElementById('documento');
 
-            if(idrecibe === ''){
-                toastr.error('Proyecto Recibe es requerido');
-                return
-            }
 
             if(fecha === ''){
                 toastr.error('Fecha es requerida');

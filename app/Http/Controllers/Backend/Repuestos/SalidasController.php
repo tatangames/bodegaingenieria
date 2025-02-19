@@ -367,7 +367,26 @@ class SalidasController extends Controller
         $infoPro = TipoProyecto::where('id', $request->id)->first();
         $nombreProyecto = $infoPro->nombre;
 
-        return ['success' => 1, 'listado' => $listado, 'proyecto' => $nombreProyecto];
+        // SABER SI TIENE MATERIALES DISPONIBLES EL PROYECTO A CERRAR
+
+        $pilaArrayIdEntrada = array();
+        $arrayEntradas = Entradas::where('id_tipoproyecto', $request->id)->get();
+        foreach ($arrayEntradas as $fila) {
+            array_push($pilaArrayIdEntrada, $fila->id);
+        }
+
+        $arrayEntradaDetalle = EntradasDetalle::whereIn('id_entradas', $pilaArrayIdEntrada)
+            ->whereColumn('cantidad_entregada', '<', 'cantidad')
+            ->get();
+
+        $hayMaterialDisponible = 0;
+        if ($arrayEntradaDetalle->isNotEmpty()) {
+            $hayMaterialDisponible = 1;
+        }
+
+        return ['success' => 1, 'listado' => $listado,
+            'proyecto' => $nombreProyecto ,
+            'hayMaterialDisponible' => $hayMaterialDisponible];
     }
 
 
@@ -401,7 +420,6 @@ class SalidasController extends Controller
             TipoProyecto::where('id', $request->identrega)->update([
                 'cerrado' => 1
             ]);
-
 
             $pilaArrayIdEntrada = array();
 
@@ -459,7 +477,6 @@ class SalidasController extends Controller
                 $regSalida->cierre_proyecto = 1;
                 $regSalida->save();
 
-
                 // GUARDAR UN HISTORIAL PARA REPORTES DE QUE SE PASO
                 $registroCi = new CierreProyecto();
                 $registroCi->id_usuario = $usuario->id;
@@ -471,8 +488,6 @@ class SalidasController extends Controller
                 $registroCi->id_entrada = $regEntradas->id; // ENTREDA PARA QUE RECIBE
                 $registroCi->id_salida = $regSalida->id; // SALIDA PARA QUIEN ENTREGA
                 $registroCi->save();
-
-
 
                 // RECORRER CADA MATERIAL QUE SE VA A TRASPASAR
                 foreach ($arrayEntradaDetalle as $fila) {

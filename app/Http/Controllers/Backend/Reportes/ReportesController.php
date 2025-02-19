@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Reportes;
 use App\Http\Controllers\Controller;
 use App\Models\Anios;
 use App\Models\CierreProyecto;
+use App\Models\Encargados;
 use App\Models\Entradas;
 use App\Models\EntradasDetalle;
 use App\Models\Herramientas;
@@ -14,6 +15,7 @@ use App\Models\HistorialSalidasDeta;
 use App\Models\HistorialTransferido;
 use App\Models\HistorialTransferidoDetalle;
 use App\Models\Materiales;
+use App\Models\ProyectoEncargado;
 use App\Models\QuienRecibe;
 use App\Models\Salidas;
 use App\Models\SalidasDetalle;
@@ -56,6 +58,11 @@ class ReportesController extends Controller
 
         $infoProyecto = TipoProyecto::where('id', $idproyecto)->first();
         $infoAnio = Anios::where('id', $infoProyecto->id_anio)->first();
+        $arrayEncargados = ProyectoEncargado::where('id_tipoproyecto', $idproyecto)->get();
+        foreach ($arrayEncargados as $item) {
+            $infoEncargado = Encargados::where('id', $item->id_encargado)->first();
+            $item->nombreEncargado = $infoEncargado->nombre;
+        }
 
         $mpdf->SetTitle('Entradas');
 
@@ -117,8 +124,15 @@ class ReportesController extends Controller
                 <div style='text-align: left; margin-top: 10px;'>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Año: <strong>$infoAnio->nombre</strong></p>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Codigo: <strong>$infoProyecto->codigo</strong></p>
-                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p>
-                </div>
+                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p>";
+
+                if ($arrayEncargados->isNotEmpty()) {
+                    foreach ($arrayEncargados as $item) {
+                        $tabla .= " <p style='font-size: 14px; margin: 0; color: #000;'>Encargado: <strong>$item->nombreEncargado</strong></p>";
+                    }
+                }
+
+            $tabla .= "</div>
               ";
 
             foreach ($arrayEntradas as $dd) {
@@ -222,7 +236,11 @@ class ReportesController extends Controller
 
         $infoProyecto = TipoProyecto::where('id', $idproyecto)->first();
         $infoAnio = Anios::where('id', $infoProyecto->id_anio)->first();
-
+        $arrayEncargados = ProyectoEncargado::where('id_tipoproyecto', $idproyecto)->get();
+        foreach ($arrayEncargados as $item) {
+            $infoEncargado = Encargados::where('id', $item->id_encargado)->first();
+            $item->nombreEncargado = $infoEncargado->nombre;
+        }
 
         if($idrecibe == '0') { // TODOS
             $arraySalidas = Salidas::where('id_tipoproyecto', $idproyecto)
@@ -299,8 +317,15 @@ class ReportesController extends Controller
                 <div style='text-align: left; margin-top: 10px;'>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Año: <strong>$infoAnio->nombre</strong></p>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Codigo: <strong>$infoProyecto->codigo</strong></p>
-                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p>
-                </div>
+                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p> ";
+
+            if ($arrayEncargados->isNotEmpty()) {
+                foreach ($arrayEncargados as $item) {
+                    $tabla .= " <p style='font-size: 14px; margin: 0; color: #000;'>Encargado: <strong>$item->nombreEncargado</strong></p>";
+                }
+            }
+
+        $tabla .="</div>
               ";
 
         foreach ($arraySalidas as $dd) {
@@ -412,7 +437,11 @@ class ReportesController extends Controller
 
         $infoProyecto = TipoProyecto::where('id', $idproyecto)->first();
         $infoAnio = Anios::where('id', $infoProyecto->id_anio)->first();
-
+        $arrayEncargados = ProyectoEncargado::where('id_tipoproyecto', $idproyecto)->get();
+        foreach ($arrayEncargados as $item) {
+            $infoEncargado = Encargados::where('id', $item->id_encargado)->first();
+            $item->nombreEncargado = $infoEncargado->nombre;
+        }
 
         // fecha actual
         $fechaActual = date("d-m-Y", strtotime(Carbon::now('America/El_Salvador')));
@@ -495,8 +524,15 @@ class ReportesController extends Controller
                 <div style='text-align: left; margin-top: 10px;'>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Año: <strong>$infoAnio->nombre</strong></p>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Codigo: <strong>$infoProyecto->codigo</strong></p>
-                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p>
-                </div>
+                <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p> ";
+
+            if ($arrayEncargados->isNotEmpty()) {
+                foreach ($arrayEncargados as $item) {
+                    $tabla .= " <p style='font-size: 14px; margin: 0; color: #000;'>Encargado: <strong>$item->nombreEncargado</strong></p>";
+                }
+            }
+
+        $tabla .="</div>
               ";
 
 
@@ -521,6 +557,8 @@ class ReportesController extends Controller
                     <td style='font-size: 11px'>$item->cantidadActual</td>
                 </tr>";
         }
+
+
 
         $tabla .= "</tbody></table>";
 
@@ -568,6 +606,12 @@ class ReportesController extends Controller
 
         $infoProyecto = TipoProyecto::where('id', $idproyecto)->first();
         $infoAnio = Anios::where('id', $infoProyecto->id_anio)->first();
+
+        $arrayEncargados = ProyectoEncargado::where('id_tipoproyecto', $idproyecto)->get();
+        foreach ($arrayEncargados as $item) {
+            $infoEncargado = Encargados::where('id', $item->id_encargado)->first();
+            $item->nombreEncargado = $infoEncargado->nombre;
+        }
 
         $mpdf->SetTitle('Finalizado');
 
@@ -660,8 +704,16 @@ class ReportesController extends Controller
                 <div style='text-align: left; margin-top: 10px;'>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Año: <strong>$infoAnio->nombre</strong></p>
                  <p style='font-size: 14px; margin: 0; color: #000;'>Codigo: <strong>$infoProyecto->codigo</strong></p>
-                 <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p>
-                 <p style='font-size: 14px; margin: 0; color: #000;'>Descripción: <strong>$descripcionCierre</strong></p>
+                 <p style='font-size: 14px; margin: 0; color: #000;'>Proyecto: <strong>$infoProyecto->nombre</strong></p> ";
+
+
+                    if ($arrayEncargados->isNotEmpty()) {
+                        foreach ($arrayEncargados as $item) {
+                            $tabla .= " <p style='font-size: 14px; margin: 0; color: #000;'>Encargado: <strong>$item->nombreEncargado</strong></p>";
+                        }
+                    }
+
+              $tabla .="   <p style='font-size: 14px; margin: 0; color: #000;'>Descripción: <strong>$descripcionCierre</strong></p>
                 </div>
               ";
 
