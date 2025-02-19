@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Configuracion;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anios;
+use App\Models\Encargados;
 use App\Models\EntradasDetalle;
 use App\Models\Materiales;
 use App\Models\QuienEntrega;
@@ -172,7 +173,7 @@ class ConfiguracionController extends Controller
 
 
 
-//**************** PERSONA QUE RECIBE LOS MATERIALES ********************************
+    //**************** PERSONA QUE RECIBE LOS MATERIALES ********************************
 
     public function indexVistaRegistroQuienRecibe(){
 
@@ -446,6 +447,92 @@ class ConfiguracionController extends Controller
             return ['success' => 2];
         }
     }
+
+
+
+
+
+
+
+    //**************** ENCARGADOS DE PROYECTOS ********************************
+
+    public function indexEncargados(){
+
+        return view('backend.admin.configuracion.encargado.vistaencargado');
+    }
+
+
+    public function tablaEncargados(){
+
+        $lista = Encargados::orderBy('nombre', 'ASC')->get();
+
+        return view('backend.admin.configuracion.encargado.tablaencargado', compact('lista'));
+    }
+
+
+    public function registrarEncargado(Request $request){
+
+        $regla = array(
+            'nombre' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        $dato = new Encargados();
+        $dato->nombre = $request->nombre;
+
+        if($dato->save()){
+            return ['success' => 1];
+        }else{
+            return ['success' => 2];
+        }
+    }
+
+
+    public function informacionEncargado(Request $request){
+
+        $regla = array(
+            'id' => 'required',
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        if($lista = Encargados::where('id', $request->id)->first()){
+
+            return ['success' => 1, 'info' => $lista];
+        }else{
+            return ['success' => 2];
+        }
+    }
+
+
+    public function actualizarEncargado(Request $request){
+
+        $regla = array(
+            'id' => 'required',
+            'nombre' => 'required'
+        );
+
+        $validar = Validator::make($request->all(), $regla);
+
+        if ($validar->fails()){ return ['success' => 0];}
+
+        if(Encargados::where('id', $request->id)->first()){
+
+            Encargados::where('id', $request->id)->update([
+                'nombre' => $request->nombre
+            ]);
+
+            return ['success' => 1];
+        }else{
+            return ['success' => 2];
+        }
+    }
+
 
 
 

@@ -137,7 +137,7 @@
 
         // ingenieria/admin/login
 
-        axios.post('/ingenieria/admin/login', formData, {
+        axios.post('/admin/login', formData, {
         })
             .then((response) => {
                 closeLoading();

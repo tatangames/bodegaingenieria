@@ -86,6 +86,15 @@ Route::get('/admin/detalle/material/cantidad/{id}', [RepuestosController::class,
 Route::get('/admin/detalle/materialtabla/cantidad/{id}', [RepuestosController::class,'tablaDetalleMaterial']);
 
 
+// --- ENCARGADOS DE PROYECTOS ---
+Route::get('/admin/encargados/index', [ConfiguracionController::class,'indexEncargados'])->name('admin.encargados.index');
+Route::get('/admin/encargados/tabla', [ConfiguracionController::class,'tablaEncargados']);
+Route::post('/admin/encargados/nuevo',  [ConfiguracionController::class,'registrarEncargado']);
+Route::post('/admin/encargados/informacion',  [ConfiguracionController::class,'informacionEncargado']);
+Route::post('/admin/encargados/editar',  [ConfiguracionController::class,'actualizarEncargado']);
+
+
+
 
 // --- LISTA DE PROYECTOS ---
 Route::get('/admin/proyecto/index', [ConfiguracionController::class,'indexProyectos'])->name('admin.tiposproyecto.index');
